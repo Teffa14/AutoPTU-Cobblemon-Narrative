@@ -2,7 +2,7 @@
 
 Narrative and world-state design repository for the Ouros AutoPTU + Cobblemon project.
 
-The long-term goal is a persistent Pokémon world where player decisions, battles, discoveries, relationships, faction activity, ecological knowledge, settlement changes, public memory, recurring events, investigations, institutional responses and environmental changes can become durable world state. Minecraft/Cobblemon provides the explorable overworld; AutoPTU provides the tactical grid-battle rules engine.
+The long-term goal is a persistent Pokémon world where player decisions, battles, discoveries, relationships, faction activity, ecological knowledge, settlement changes, public memory, recurring events, investigations, institutional responses, material culture, production, trade and environmental changes can become durable world state. Minecraft/Cobblemon provides the explorable overworld; AutoPTU provides the tactical grid-battle rules engine.
 
 ## Repository layers
 
@@ -20,6 +20,7 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Observation, settlement & time research — pass 04](research/2026-08-18-observation-settlement-time-scan-04.md)
 - [Public memory, events & legacy research — pass 05](research/2026-08-18-public-memory-events-legacy-scan-05.md)
 - [Cases, authority & custody research — pass 06](research/2026-08-18-cases-authority-custody-scan-06.md)
+- [Material culture, crafting & economy research — pass 07](research/2026-08-18-material-culture-crafting-economy-scan-07.md)
 
 ### Systems design
 - [Ouros narrative architecture](design/ouros-narrative-architecture.md)
@@ -28,6 +29,7 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Observation, settlement & time layer](design/observation-settlement-time-layer.md)
 - [Public memory, event & legacy layer](design/public-memory-event-legacy-layer.md)
 - [Case, authority & custody layer](design/case-authority-custody-layer.md)
+- [Material culture, crafting & economy layer](design/material-culture-economy-crafting-layer.md)
 
 ### Non-canon Ouros candidates
 - [First worldbuilding seeds](proposals/2026-08-18-worldbuilding-seeds.md)
@@ -36,15 +38,18 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Observation & settlement seeds — pass 04](proposals/2026-08-18-observation-settlement-seeds-04.md)
 - [Public memory & event seeds — pass 05](proposals/2026-08-18-public-memory-event-seeds-05.md)
 - [Case & authority seeds — pass 06](proposals/2026-08-18-case-authority-seeds-06.md)
+- [Material culture & crafting seeds — pass 07](proposals/2026-08-18-material-culture-seeds-07.md)
 
 ## Mechanical source priority
 
-Narrative proposals must not invent combat legality. When mechanics are required, validate against the project's supplied PTU/Caelo source set, including the PTU Core Rulebook, Pokédex material, Caelo Player's Guide, Caelo rulebook/errata, character-creation material and Caelo Region Location & Encounter List, plus the actual AutoPTU implementation state.
+Narrative proposals must not invent combat legality, crafting legality or item behavior. When mechanics are required, validate against the project's supplied PTU/Caelo source set, including the PTU Core Rulebook, Pokédex material, Caelo Player's Guide, Caelo rulebook/errata, character-creation material and Caelo Region Location & Encounter List, plus the actual AutoPTU implementation state.
 
 External stories are inspiration sources, not rules sources.
 
 ## Generation rule
 
-Research may propose structures and original candidates, but generated objectives should be traceable to current world facts, actor motives, ecological state, player history, public memory, case state, institutional mandate or executable game mechanics. Material should not enter future `canon/` until reviewed.
+Research may propose structures and original candidates, but generated objectives should be traceable to current world facts, actor motives, ecological state, player history, public memory, case state, institutional mandate, material provenance, workshop/service state, supply routes or executable game mechanics. Material should not enter future `canon/` until reviewed.
 
 Case generation must keep allegations, hypotheses, evidence, public belief and canonical truth separate. The generator must not invent legal powers, ownership rules, detention procedures or criminal status until those systems are explicitly established for Ouros.
+
+Production generation must keep mechanical item definitions separate from narrative item instances. The generator must not invent recipes, prices, crafting prerequisites, yields, repair bonuses or resource-producing Pokémon powers that are not supported by the governing PTU/Caelo data and current implementation.
