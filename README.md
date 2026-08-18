@@ -15,10 +15,13 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 
 - [Narrative research scan — 2026-08-18](research/2026-08-18-source-scan.md)
 - [Mission, dungeon & RP research — pass 02](research/2026-08-18-missions-dungeons-rp-scan-02.md)
+- [Factions, fields, bonds & investigation research — pass 03](research/2026-08-18-factions-fields-bonds-scan-03.md)
 - [Ouros narrative architecture](design/ouros-narrative-architecture.md)
 - [Mission & dungeon grammar](design/mission-dungeon-grammar.md)
+- [World agency layer](design/world-agency-layer.md)
 - [First worldbuilding seeds](proposals/2026-08-18-worldbuilding-seeds.md)
 - [Adventure seeds — pass 02](proposals/2026-08-18-adventure-seeds-02.md)
+- [World agency seeds — pass 03](proposals/2026-08-18-world-agency-seeds-03.md)
 
 ## Mechanical source priority
 
