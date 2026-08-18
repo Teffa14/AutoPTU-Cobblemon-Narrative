@@ -14,8 +14,11 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 ## Current foundation
 
 - [Narrative research scan — 2026-08-18](research/2026-08-18-source-scan.md)
+- [Mission, dungeon & RP research — pass 02](research/2026-08-18-missions-dungeons-rp-scan-02.md)
 - [Ouros narrative architecture](design/ouros-narrative-architecture.md)
+- [Mission & dungeon grammar](design/mission-dungeon-grammar.md)
 - [First worldbuilding seeds](proposals/2026-08-18-worldbuilding-seeds.md)
+- [Adventure seeds — pass 02](proposals/2026-08-18-adventure-seeds-02.md)
 
 ## Mechanical source priority
 
