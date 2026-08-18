@@ -2,7 +2,7 @@
 
 Narrative and world-state design repository for the Ouros AutoPTU + Cobblemon project.
 
-The long-term goal is a persistent Pokémon world where player decisions, battles, discoveries, relationships, faction activity, ecological knowledge, settlement changes, public memory, recurring events, investigations, institutional responses, material culture, production, trade, mythology, archaeology, sacred-site stewardship, mentorship, clubs, learning communities, travel networks, transport services, expeditions, wild Pokémon collectives and environmental changes can become durable world state. Minecraft/Cobblemon provides the explorable overworld; AutoPTU provides the tactical grid-battle rules engine.
+The long-term goal is a persistent Pokémon world where player decisions, battles, discoveries, relationships, faction activity, ecological knowledge, settlement changes, public memory, recurring events, investigations, institutional responses, material culture, production, trade, mythology, archaeology, sacred-site stewardship, mentorship, clubs, learning communities, travel networks, transport services, expeditions, wild Pokémon collectives, crises, rescue operations, recovery projects and environmental changes can become durable world state. Minecraft/Cobblemon provides the explorable overworld; AutoPTU provides the tactical grid-battle rules engine.
 
 ## Repository layers
 
@@ -25,6 +25,7 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Social bonds, mentorship, clubs & learning research — pass 09](research/2026-08-18-social-bonds-mentorship-clubs-scan-09.md)
 - [Travel, transport & expedition logistics research — pass 10](research/2026-08-18-travel-transport-expedition-scan-10.md)
 - [Wild collectives, territory & group ecology research — pass 11](research/2026-08-18-wild-collectives-territory-scan-11.md)
+- [Crisis, rescue & recovery research — pass 12](research/2026-08-18-crisis-rescue-recovery-scan-12.md)
 
 ### Systems design
 - [Ouros narrative architecture](design/ouros-narrative-architecture.md)
@@ -38,6 +39,7 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Social bonds, mentorship & clubs layer](design/social-bonds-mentorship-clubs-layer.md)
 - [Travel, transport & expedition layer](design/travel-transport-expedition-layer.md)
 - [Wild collective agency layer](design/wild-collective-agency-layer.md)
+- [Crisis, rescue & recovery layer](design/crisis-rescue-recovery-layer.md)
 
 ### Non-canon Ouros candidates
 - [First worldbuilding seeds](proposals/2026-08-18-worldbuilding-seeds.md)
@@ -51,16 +53,17 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Social bonds, mentorship & clubs seeds — pass 09](proposals/2026-08-18-social-bonds-seeds-09.md)
 - [Travel, transport & expedition seeds — pass 10](proposals/2026-08-18-travel-transport-expedition-seeds-10.md)
 - [Wild collective seeds — pass 11](proposals/2026-08-18-wild-collective-seeds-11.md)
+- [Crisis, rescue & recovery seeds — pass 12](proposals/2026-08-18-crisis-rescue-recovery-seeds-12.md)
 
 ## Mechanical source priority
 
-Narrative proposals must not invent combat legality, crafting legality, item behavior, supernatural powers, ritual effects, social progression rewards, Pokémon Loyalty mechanics, Legendary encounter permissions, overworld movement rules, mount eligibility, travel speeds, carrying limits, transport capacities, navigation checks, pack bonuses, collective morale, group leadership mechanics or wild-group combat modifiers. When mechanics are required, validate against the project's supplied PTU/Caelo source set, including the PTU Core Rulebook, Pokédex material, Caelo Player's Guide, Caelo rulebook/errata, character-creation material and Caelo Region Location & Encounter List, plus the actual AutoPTU implementation state.
+Narrative proposals must not invent combat legality, crafting legality, item behavior, supernatural powers, ritual effects, social progression rewards, Pokémon Loyalty mechanics, Legendary encounter permissions, overworld movement rules, mount eligibility, travel speeds, carrying limits, transport capacities, navigation checks, pack bonuses, collective morale, group leadership mechanics, hazard damage, weather penalties, drowning or suffocation rules, evacuation checks, rescue actions or wild-group combat modifiers. When mechanics are required, validate against the project's supplied PTU/Caelo source set, including the PTU Core Rulebook, Pokédex material, Caelo Player's Guide, Caelo rulebook/errata, character-creation material and Caelo Region Location & Encounter List, plus the actual AutoPTU implementation state.
 
 External stories are inspiration sources, not rules sources.
 
 ## Generation rule
 
-Research may propose structures and original candidates, but generated objectives should be traceable to current world facts, actor motives, ecological state, player history, public memory, case state, institutional mandate, material provenance, workshop/service state, supply routes, cultural traditions, archaeological observations, mythic claims, social history, mentorship state, club projects, route state, transport availability, wild-collective state or executable game mechanics. Material should not enter future `canon/` until reviewed.
+Research may propose structures and original candidates, but generated objectives should be traceable to current world facts, actor motives, ecological state, player history, public memory, case state, institutional mandate, material provenance, workshop/service state, supply routes, cultural traditions, archaeological observations, mythic claims, social history, mentorship state, club projects, route state, transport availability, wild-collective state, crisis state or executable game mechanics. Material should not enter future `canon/` until reviewed.
 
 Case generation must keep allegations, hypotheses, evidence, public belief and canonical truth separate. The generator must not invent legal powers, ownership rules, detention procedures or criminal status until those systems are explicitly established for Ouros.
 
@@ -73,3 +76,5 @@ Social generation must keep observable shared events separate from inferred priv
 Travel generation must keep physical connection state, transport-service state and actor route knowledge separate. Routine known travel should compress when no meaningful decision intersects the journey. Personal Pokémon-assisted traversal requires authoritative validation of the individual Pokémon's legal movement/capability state; public transport, guides and institutional mobility remain valid alternatives when world state supports them. Route incidents must come from actual route, clock, ecology, faction, case, service or player-intent state rather than mandatory filler encounters.
 
 Wild-collective generation must keep population abundance, persistent group identity, currently visible subgroup and tactical encounter participants separate. Leadership, territory, kinship, cooperation, communication and group memory require species-grounded or observed evidence; they are never inferred merely from multiple Pokémon spawning together. Collective state may shape why an encounter occurs and what persists afterward, but it cannot grant unsupported PTU combat bonuses or replace actual Pack Mon, swarm, escape, capture or encounter rules.
+
+Crisis generation must keep actual hazard state, forecasts, field reports, rumors and public belief separate. A crisis should evolve through explicit world state and may create route closures, service disruption, shelters, missing-actor searches, ecological displacement and recovery projects, but it must not appear randomly only because the world has been quiet. Preparedness must create traceable state before impact; recovery must remain playable afterward. Exact hazard effects, Skill checks, weather penalties, movement legality, rescue actions and tactical objectives remain governed by PTU/Caelo plus AutoPTU rather than narrative generation.
