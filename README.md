@@ -29,6 +29,7 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Contests, performance culture & creative circuits research — pass 13](research/2026-08-18-contests-performance-culture-scan-13.md)
 - [Care, recovery & Pokémon welfare research — pass 14](research/2026-08-18-care-recovery-welfare-scan-14.md)
 - [Battle institutions, challenge circuits & competitive progression research — pass 15](research/2026-08-18-battle-institutions-challenge-circuits-scan-15.md)
+- [Encounter contracts, boss objectives & implementation readiness — pass 16](research/2026-08-18-encounter-contracts-boss-objectives-scan-16.md)
 
 ### Systems design
 - [Ouros narrative architecture](design/ouros-narrative-architecture.md)
@@ -46,6 +47,7 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Contest, performance culture & creative circuit layer](design/contest-performance-culture-layer.md)
 - [Care, recovery & Pokémon welfare layer](design/care-recovery-welfare-layer.md)
 - [Battle institutions & challenge circuits layer](design/battle-institutions-challenge-circuits-layer.md)
+- [Encounter implementation contracts](design/encounter-implementation-contracts.md)
 
 ### Non-canon Ouros candidates
 - [First worldbuilding seeds](proposals/2026-08-18-worldbuilding-seeds.md)
@@ -63,6 +65,7 @@ The long-term goal is a persistent Pokémon world where player decisions, battle
 - [Contest & performance seeds — pass 13](proposals/2026-08-18-contest-performance-seeds-13.md)
 - [Care, recovery & Pokémon welfare seeds — pass 14](proposals/2026-08-18-care-recovery-welfare-seeds-14.md)
 - [Battle institution & challenge circuit seeds — pass 15](proposals/2026-08-18-battle-institution-seeds-15.md)
+- [Capability-aware encounter seeds — pass 16](proposals/2026-08-18-encounter-contract-seeds-16.md)
 
 ## Mechanical source priority
 
@@ -93,3 +96,5 @@ Performance generation must keep event logistics, planned routines, formal mecha
 Care generation must keep mechanical health state, observable condition, diagnosis, treatment plan, completed treatment, narrative recovery and public knowledge separate. A statement that a Pokémon looks ill cannot create a PTU status; a narrative visit to a clinic cannot remove an Injury; and a mechanically healed Pokémon can still have an authored recovery story when continuity supports it. Wild Pokémon may receive treatment without becoming owned. Medical case details remain private by default, while aggregate facility signals may support ecological or infrastructure investigations. Routine legal healing should compress when no meaningful decision exists, and recovery time should create alternative play rather than repetitive waiting. Exact healing, Injury, rest, Center, Medicine, item and status rules remain governed by PTU/Caelo plus AutoPTU.
 
 Battle-institution generation must keep institutional identity, public challenge information, formal battle contracts, authoritative AutoPTU results, qualification state, public prestige and private opponent information separate. A loss may create a rematch history and training hook but cannot grant a buff; a Leader may remember only legally observed information; an exhibition cannot silently award formal progression; and tournament brackets must not fabricate PTU dice results for off-screen matches. The generator must not create Badge thresholds, ranking math, roster scaling, level suppression, custom Moves, custom Orders, hidden boss bonuses, item allowances, withdrawal rules, seeding policy or rewards without explicit PTU/Caelo and AutoPTU validation.
+
+Encounter generation must attach implementation dependencies to mechanically rich battle concepts using the permanent capability categories in `design/encounter-implementation-contracts.md`. Every dependency is evaluated from current evidence as VERIFIED, PARTIAL, BLOCKING or UNKNOWN. A representative mechanic never upgrades a whole family: Burn does not prove status lifecycle, weather arithmetic does not prove battlefield weather, Shift/Jump does not prove forced movement, one Move or TrainerFeature event does not prove the full registry, and legal-action enumeration does not prove tactical AI. When the intended encounter depends on unfinished families, preserve both a FULL version and, when the narrative premise survives simplification, a REDUCED version that removes missing mechanics rather than reimplementing them in Minecraft scripts. Promotion from REDUCED to FULL requires current PTU/Caelo review, Java tests/contracts for the exact behavior, and adapter/playback evidence when the encounter runs through Minecraft/Cobblemon/Craftics.
