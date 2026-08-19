@@ -320,7 +320,7 @@ Use a curated, static approved policy/roster rather than claiming the rival lear
 
 ## 10. Readiness snapshot from live Java evidence
 
-Snapshot basis: AutoPTU-Java `main` inspected at commit `63110d03ada723f41a671137a945e8f7b0316198`.
+Snapshot basis: AutoPTU-Java `main` inspected through commit `6570d95ac874bc26bc6bcc8ffe64d007bba37e34`, with representative parity slices from `046cc9f97ed8893e97674222f80789afcdf2cc7f` and `1757163fe793335e24a17769ee0fdfb78e87c754`.
 
 ```yaml
 capabilities:
@@ -335,15 +335,21 @@ capabilities:
   terrain/weather/hazards/zones/reactions: BLOCKING
   move-specific behavior: PARTIAL
   abilities: PARTIAL
-  items: BLOCKING
+  items: PARTIAL
   Trainer Features/perks: BLOCKING
   AI legal-action infrastructure: VERIFIED
   AI tactical policy: BLOCKING
   Minecraft/Cobblemon/Craftics adapter/playback support: BLOCKING
 ```
 
-Why lifecycle remains PARTIAL despite the new authoritative round-lifecycle commit:
-The round controller/parity slice is real, but production encounters still need the unported general status, terrain, reaction and hook families to participate correctly in lifecycle timing. The category should become VERIFIED only when its expected interaction surface is covered, not because round boundaries alone exist.
+Why lifecycle remains PARTIAL:
+The authoritative round controller now has an ordered lifecycle hook registry with seams for future status, terrain, delayed-hit, temporary-effect, ability and Trainer Feature work. The built-in registry currently proves a round-start move-frequency reset path, not the full population and ordering of those rule families.
+
+Why abilities remain PARTIAL:
+Canonical ability identity plus the parity-backed Mega Launcher/Errata effective-move hook proves the registry seam and one concrete behavior. It does not prove the complete Ability library, triggers, lifecycle effects or interactions.
+
+Why items are now PARTIAL rather than BLOCKING:
+Canonical held-item state, semantic rule-effect playback events and the parity-backed Pink Pearl damage hook prove an authoritative item path. The rest of the item registry and item behaviors remain unverified.
 
 ## 11. Example contract — Storm Signal Tower
 
@@ -452,8 +458,10 @@ For every new mechanically rich candidate:
 - Weather damage-base arithmetic does not prove battlefield weather.
 - Shift and Jump do not prove push/pull/knockback/interception.
 - One authoritative Move test does not prove the move library.
+- Mega Launcher parity does not prove the Ability family.
+- Held-item state plus one Pink Pearl hook does not prove the Item family.
+- A lifecycle registry seam does not prove all lifecycle-triggered rule families.
 - A TrainerFeatureEvent type does not prove Trainer Features.
-- Item ownership/reservation does not prove battle item effects.
 - Legal BattleChoice generation does not prove tactical AI.
 - A headless semantic event does not prove Minecraft can animate or synchronize it.
 - One boss fixture does not prove every boss archetype.
