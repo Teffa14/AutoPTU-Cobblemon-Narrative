@@ -3,6 +3,14 @@
 Status: READ-ONLY EVIDENCE SNAPSHOT for narrative dependency planning.
 Date: 2026-08-24
 
+## Repository authority correction
+
+Pass 70 already owns Fisheries through `design/fisheries-angling-aquaculture-layer.md`. The final repository audit caught this before completion of Pass 157.
+
+Pass 157 therefore adds only `design/fisheries-stock-assessment-effort-monitoring-protocol.md`, an extension for evidence quality, effort normalization, independent surveys, assessment revisions, release dispositions and scoped management-measure revisions.
+
+No second Fisheries authority remains in the branch.
+
 ## Live heads inspected
 
 - AutoPTU-Java main: `3caac611a987322a70dbdc34c56d613b96dadb92`
@@ -49,10 +57,10 @@ The new POST-damage bridge does not promote any complete family. It provides a b
 
 PTU 1.05 publicly contains explicit Fishing rules and Fishing Rod equipment. The current project search did not expose a dedicated AutoPTU fishing runtime subsystem that could be treated as an end-to-end authoritative Minecraft integration.
 
-Therefore Pass 157 distinguishes:
+Therefore Pass 70 + the Pass 157 protocol distinguish:
 
 - PTU Fishing as a rules procedure that must be validated/implemented exactly when invoked;
-- Fisheries management as overworld world state;
+- Fisheries management/monitoring as overworld world state;
 - Pokémon capture/custody as Pokémon Agency / authoritative capture logic;
 - Minecraft fishing presentation as non-authoritative until an adapter exists.
 
@@ -111,7 +119,7 @@ PARTIAL if used:
 
 REDUCED version completes the release in world state and removes the non-target Pokémon from tactical participation before battle. No restraint, injury or survival result is invented.
 
-### Survey Net Recovery After Storm — FULL
+### Survey Device Recovery After Storm — FULL
 
 BLOCKING:
 
@@ -128,7 +136,7 @@ REDUCED version resolves Freshwater/Weather and equipment recovery outside battl
 
 No battle-engine dependency is required.
 
-Fisheries, Supply Chains, Markets, Metrology, Archives and Science can compare:
+Pass 70 Fisheries, the Pass 157 monitoring protocol, Supply Chains, Markets, Metrology, Archives and Science can compare:
 
 - landing records;
 - effort records;
@@ -194,19 +202,16 @@ No missing Caelo fishing, aquatic handling, capture, current, drowning, net, res
 
 ## Narrative implementation consequence
 
-Pass 157 can advance immediately through:
+Pass 70 remains the Fisheries/Aquaculture authority. Pass 157 can immediately deepen it through:
 
-- fishery management-unit history;
-- activity and effort ledgers;
-- independent surveys;
-- stock-assessment revisions with uncertainty;
-- catch/effort indices;
-- non-target interaction records;
-- release disposition history;
-- seasonal/area control revisions;
-- migration/stock boundary hypotheses;
-- public fishing-event history;
-- landing provenance where canon permits a harvested resource;
+- source-class provenance for fishery evidence;
+- catch/effort index revisions;
+- independent survey history;
+- stock-assessment revision and review state;
+- data-limited uncertainty;
+- non-target release dispositions;
+- scoped management-measure revisions;
+- cross-year comparisons;
 - reduced static-battle encounter versions.
 
 FULL fisheries encounters remain gated behind exact capability families rather than delegated to Minecraft.
