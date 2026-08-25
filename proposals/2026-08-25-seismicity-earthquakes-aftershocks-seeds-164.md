@@ -1,256 +1,141 @@
-# Seismicity, Earthquakes and Aftershocks — Ouros Seeds 164
+# Seismic Catalog, Monitoring and Revision — Ouros Seeds 164
 
-Status: NON-CANON / PROPOSED. These are candidate situations, arcs and encounter contracts derived from the Pass 164 research. None establish a real Ouros fault, earthquake history, institution, technology or Pokémon behavior.
+Status: NON-CANON / PROPOSED. Pass 71 remains the seismic/ground-failure authority. These candidates extend it specifically through monitoring networks, event catalogs, source-solution revisions, felt reports, station history and aftershock-membership review.
 
-Authority: use `design/seismicity-ground-shaking-aftershock-monitoring-protocol.md` as the subordinate event/observation protocol. Geology, Crisis, Slope Instability, Architecture/Public Works, Groundwater, Metrology, Timekeeping and other existing layers retain their own authority.
+Authority: `design/seismic-faults-ground-failure-layer.md` owns seismic events and ground response. `design/seismic-event-catalog-monitoring-revision-protocol.md` owns only the Pass 164 revision/provenance extension.
 
-## Thirty worldbuilding and adventure candidates
+## Thirty candidates
 
-### 1. Two Towns, One Earthquake
+1. The Detection That Became Two Events — one automatic detection is later split after a second station’s local recording is recovered.
 
-Two settlements experience the same seismic event very differently. One has intense felt shaking but little structural damage; the other reports less dramatic shaking while older infrastructure closes for inspection. The mystery is not “which report is true?” Both may be.
+2. Two Detections, One Event — neighboring networks initially publish separate event IDs and later merge them without deleting either publication history.
 
-### 2. Three Estimates in Three Reports
+3. The Station That Was Seven Seconds Slow — Timekeeping correction shifts a source solution while every raw waveform remains unchanged.
 
-An automatic bulletin, a same-day reviewed estimate and a later archival revision disagree about origin time/location or event size. Each remains valid evidence of what was known when it was published.
+4. The Quiet Station — one instrument records little shaking while nearby residents report more. Site context and instrument state are reviewed before either evidence is dismissed.
 
-### 3. The Station Failed Before the Main Event
+5. The Loud Station — a station consistently records stronger motion than nearby sites. Its foundation/site history becomes as important as the earthquake itself.
 
-A monitoring station stopped reporting before the earthquake. The missing data creates uncertainty but does not imply sabotage. Power, radio, maintenance and instrument history provide separate hypotheses.
+6. The Relocated Station — a monitoring site moved during redevelopment. A twenty-year graph becomes misleading until the relocation history is applied.
 
-### 4. The Sensor Detected It, Nobody Felt It
+7. The Unreviewed Weekend Feed — automatic detections accumulate while the reviewing institution operates reduced staffing. The world distinguishes public feed latency from physical event timing.
 
-A small event appears cleanly in station data but produces no confirmed felt reports. It becomes useful later as baseline evidence rather than a quest.
+8. The Event With No Felt Reports — a clean instrumental detection becomes a useful background-seismicity baseline rather than a quest.
 
-### 5. Everyone Felt It, the Sensor Was Offline
+9. The Felt Event With No Nearby Station — many consistent reports exist inside a sparse network gap. The catalog can remain less precise without rejecting the experience of residents.
 
-A settlement produces consistent felt observations during a network outage. The event can still enter Chronicle with uncertainty and later source revision.
+10. The Quarry Event in the Wrong Feed — an automatic detection is later reclassified after comparing operation records and station geometry. No crime is implied.
 
-### 6. The Aftershock Damaged the Already-Damaged Approach
+11. The Mine and the Earthquake — two signals occur close together. Review concludes both existed rather than choosing one dramatic explanation.
 
-The original earthquake closes a bridge for inspection. A later, smaller associated event affects an approach embankment. Architecture and ground-failure history remain separate from the event catalog.
+12. The Catalog Correction Everyone Calls a Cover-Up — an early estimate is corrected publicly. Media/Public Memory tracks the rumor; Cases does not open automatically.
 
-### 7. The Old Crack
+13. The Old Bulletin Was Correct for Its Time — a museum display preserves an early event map alongside the later solution, showing how knowledge changed.
 
-A dramatic wall crack becomes famous as “the earthquake crack.” Historical photographs show it existed years earlier. The event may have widened it, done nothing to it or merely made people notice it.
+14. The Felt Report in Another Language — translation preserves uncertainty that a first public summary accidentally flattened.
 
-### 8. Riverbank Lateral Spread Candidate
+15. The Anonymous Report Cluster — privacy-preserving felt reports reveal a local pattern while preventing the archive from fabricating identities.
 
-Post-event surveyors find displacement near saturated sediment. Liquefaction/lateral spreading becomes a scoped hypothesis rather than a biome-derived certainty.
+16. The Aftershock Candidate That Stayed Unresolved — a later event remains outside the official sequence because evidence never becomes strong enough.
 
-### 9. The Playground Sand Boils
+17. The Aftershock Removed Years Later — a better regional model revises sequence membership without erasing earlier planning decisions based on the old catalog.
 
-Water and sediment appear through cracks after shaking. The site becomes a field investigation and temporary access question, not an automatic toxic or combat hazard.
+18. The Sequence That Gained an Older Member — reprocessed archival data reveals a small event that occurred minutes before the formerly recognized first member.
 
-### 10. The Spring Changed After Shaking
+19. The Network Merger — two institutions begin sharing data standards while keeping independent authority and histories.
 
-A spring’s discharge changes after the event. The timing is real; causation remains Groundwater’s question.
+20. The Data Format Nobody Can Read Easily — old station media survives physically, but interpretation requires Archives/Technology work before it can inform Science.
 
-### 11. The Landslide Came Later
+21. The Analog Drum in the Museum — a historical record becomes scientifically useful again after careful digitization and time-reference reconstruction.
 
-A slope remains standing through the main event and fails during rain days later. The earthquake is relevant context, but Slope Instability owns the failure and can preserve multiple contributing factors.
+22. The Broken Telemetry, Intact Local Storage — Communications failed, but the station kept recording. Data arrives late and revises the event after Crisis already acted.
 
-### 12. Quarry False Alarm
+23. The Station Powered by an Emergency Cache — an earlier resilience investment keeps one important site online during a wider outage.
 
-A known quarry blast produces a signal that initially enters the automatic event feed. Review later classifies it differently. Nothing criminal occurred.
+24. Whiscash Before Three Events — three observations look suggestive until the full multi-year record includes many similar behaviors without earthquakes. The conclusion may remain open.
 
-### 13. The Mine Blast and the Small Event
+25. Whiscash During the Wrong Tremor — local Pokémon behavior coincides with a quarry blast, demonstrating why observation and source classification must stay separate.
 
-Two signals occur close together. The region argues about whether there was one event or two until additional stations and timing review separate them.
+26. The Sensor Pokémon Rumor Without a Sensor Pokémon — residents misremember a historical warning story. Oral History and Archives preserve how the legend changed.
 
-### 14. The Public Blames Whiscash
+27. The Public Map With a Missing Triangle — a blank area reflects sparse station coverage rather than an earthquake-free zone.
 
-Whiscash is seen behaving unusually before or during local tremors. Public memory immediately links the Pokémon to the earthquake. Instrument/geology evidence does not support direct causation. This seed should preserve the possibility that the behavior itself is still interesting.
+28. Player-Built Station Under Review — a club or research group installs a new instrument, but its data remains provisional until Metrology validates the installation and network rules accept it.
 
-### 15. Whiscash Left the Canal Early
+29. Three Generations of Technicians — one station accumulates maintenance notes, instrument changes and local expertise across careers without turning staff into flawless narrators.
 
-A recurring individual leaves a familiar area before a felt event. One observation is not enough to establish prediction. Years of future records may strengthen, weaken or leave the relationship unresolved.
+30. Nothing Happened This Year — the network records routine background activity and no notable event. The quiet vintage becomes important decades later.
 
-### 16. The Clock Jumped During the Event
+## Longer arcs
 
-Two stations disagree on event timing because one clock was reset or lost synchronization. Timekeeping and Metrology correct the comparison without rewriting raw records.
+### Five Catalog Vintages of Meridian Basin
 
-### 17. The Museum Seismogram
+A single region accumulates five years of improved monitoring. Early vintages rely heavily on felt reports and sparse stations. Later vintages add better clocks, another station and revised processing. Historical events receive better estimates, but the old bulletins remain part of Chronicle because roads, response plans and public memory were shaped by them.
 
-An old analog or historical seismic record survives in a museum/archive. Modern researchers reinterpret an event that local history had described very differently.
+### The Station That Moved Twice
 
-### 18. The Rebuilt Street Remembers
+One monitoring site begins on a hill, relocates during construction, and later moves again after a land-use change. Researchers decades later must reconstruct which long-term differences reflect regional seismicity and which reflect site history. The arc can remain scientific and institutional with no villain.
 
-A street is completely rebuilt after ground failure. Subsurface monitoring and plaques preserve the event history even when no visible damage remains.
+### The Aftershock Ledger
 
-### 19. The Bridge Is Intact, the Approach Is Not
+One Pass 71 aftershock sequence accumulates candidate events, accepted members, rejected candidates and later revisions. The narrative payoff is not discovering a secret mastermind; it is showing how a scientific catalog can improve while preserving decisions made under earlier uncertainty.
 
-The span itself passes inspection but settlement or lateral spreading affects the approach. Travel remains interrupted for a reason the public finds unintuitive.
+## Encounter contract: Monitoring Station Access Interruption
 
-### 20. The Station Moved During Reconstruction
+Narrative premise: a station contains local data needed for a catalog review, but an independent confrontation blocks safe access.
 
-A monitoring site is relocated after redevelopment. Long-term comparisons now need a station-history correction instead of pretending the time series is perfectly continuous.
-
-### 21. The Route Closed Twice for Different Reasons
-
-The same pass closes first for shaking-related inspection, later for rockfall and years afterward for unrelated maintenance. Chronicle should preserve all three causes.
-
-### 22. The Aftershock Shelter
-
-Residents choose to spend a night in a public-space shelter after a significant event sequence. The scene can focus on information, uncertainty and mutual aid rather than another battle.
-
-### 23. The Community Drill Paid Off
-
-An earlier routine exercise makes evacuation and inspection notably smoother. Institutional competence reduces quest load instead of generating extra crises.
-
-### 24. The Quiet Year of Instruments
-
-A full year of monitoring produces no notable event. That quiet interval becomes important decades later when researchers compare background seismicity.
-
-### 25. The Century-Old Fault on a New Map
-
-A geological interpretation changes after new field evidence. The physical feature did not suddenly appear; only institutional understanding changed.
-
-### 26. The Seismic Station on a Sacred Site
-
-A monitoring installation and a culturally significant place occupy the same landscape. Access, maintenance and data continuity require coordination among existing authorities. The science does not invalidate cultural meaning, and cultural importance does not fabricate seismic readings.
-
-### 27. Two Sensors, One Bad Foundation
-
-Adjacent instruments disagree because one installation has a site/foundation problem. Metrology resolves the instrument question before scientists interpret the event.
-
-### 28. Floodgate Jammed After Shaking
-
-A gate stops functioning after a local event. Timing suggests a relationship, but Technology/Public Works must determine what physically failed.
-
-### 29. Three Generations of Station Data
-
-The same ridge monitoring site outlives several technicians, instrument revisions and communication systems. Its institutional history becomes part of the regional Chronicle.
-
-### 30. Nothing Happened After the Advisory
-
-A period of elevated monitoring and public caution ends without a damaging event. This remains a successful episode of uncertainty management, not a “failed quest.”
-
-## Longer-term arcs
-
-### Five Events at Meridian Basin
-
-NON-CANON premise: one basin experiences five scientifically interesting events over many years. They are not an escalation ladder.
-
-Year one establishes sparse station coverage and conflicting felt reports. A later event reveals strong site-to-site differences. Another produces a small ground-failure investigation but little structural damage. A quiet period improves monitoring. Years later, a modest event becomes easier to understand because the basin now has better clocks, instruments, geology and institutional handoffs.
-
-The payoff is historical depth: the region learns how to observe and respond. It does not become a region where earthquakes happen every time players need content.
-
-### The Aftershock Archive
-
-NON-CANON premise: one historically significant event generated a long aftershock sequence. Archives contain old public bulletins, repair orders, photographs, witness interviews and station records that were interpreted differently at the time.
-
-A modern infrastructure project reopens questions about which later events actually belonged to the sequence, what damage came from which episode and what people reasonably knew on each date.
-
-The arc can remain noncombat for long stretches. Its antagonist is incomplete evidence, not a conspiracy by default.
-
-### One Event, Three Towns
-
-NON-CANON premise: the same earthquake becomes three different settlement memories because local geology, building history, water conditions and response capacity differ.
-
-One town remembers damaged masonry. Another remembers liquefaction and route closure. The third remembers almost no damage but a long communications outage. Decades later, a regional memorial or museum tries to tell one coherent story and discovers that all three local narratives are incomplete rather than mutually exclusive.
-
-## Encounter contract: Transit Hub Aftershock Evacuation
-
-Narrative premise: a transport hub already under post-event inspection must pause operations when another felt event occurs. A separate hostile or panicked confrontation prevents normal reopening.
-
-### FULL intended version
-
-Potential scene elements:
-- civilians/responders moving toward exits;
-- damaged or temporarily restricted lanes;
-- characters choosing between evacuation support and combat positioning;
-- after-event inspections changing which parts of the hub remain usable;
-- non-hostile actors with `EVACUATE`, `WITHDRAW`, `CLEAR_ROUTE` or `PROTECT_CIVILIAN` objectives.
-
-Engine capability dependencies:
-- targeting/footprints/range/LoS: VERIFIED foundation when combat occurs;
+FULL dependencies:
+- targeting/footprints/range/LoS: VERIFIED foundation;
 - base movement legality: VERIFIED foundation;
-- complete movement including push/pull/knockback/interception/forced movement: BLOCKING if actors must move through threatened space, be displaced or intercepted;
-- core calculations: VERIFIED foundation;
-- action economy/initiative: VERIFIED foundation;
-- full turn/round lifecycle: PARTIAL if the scenario runs timed phases or repeated event windows;
-- full stateful damage pipeline: PARTIAL if environmental/debris damage is represented;
-- status lifecycle: PARTIAL only if an exact Status mechanic is used;
-- terrain/weather/hazards/zones/reactions: BLOCKING for changing unsafe zones, debris or tactical aftershock effects;
-- move-specific behavior: PARTIAL by exact Move use;
-- abilities: PARTIAL by exact Ability use;
-- items: PARTIAL by exact Item use;
-- Trainer Features/perks: PARTIAL by exact Feature use;
-- AI legal-action infrastructure: VERIFIED foundation;
-- AI tactical policy: BLOCKING for evacuation/protection objectives;
+- complete movement: BLOCKING for technician traversal, withdrawal or interception;
+- core calculations: VERIFIED;
+- action economy/initiative: VERIFIED;
+- full turn/round lifecycle: PARTIAL if access windows are timed inside battle;
+- full stateful damage: PARTIAL if environmental damage exists;
+- status lifecycle: PARTIAL by exact use;
+- terrain/weather/hazards/zones/reactions: BLOCKING if unstable terrain/debris changes tactics;
+- move-specific behavior, abilities, items, Trainer Features/perks: PARTIAL by exact use;
+- AI legal-action infrastructure: VERIFIED;
+- AI tactical policy: BLOCKING for REACH_DEVICE, PROTECT_TECHNICIAN, WITHDRAW or CLEAR_ROUTE;
 - Minecraft/Cobblemon/Craftics adapter/playback: BLOCKING.
 
-### REDUCED version
+REDUCED: technician remains outside the grid. World state confirms one safe access area. AutoPTU resolves a static conventional encounter; data retrieval occurs afterward. Combat never validates the instrument or the event solution.
 
-Crisis resolves the aftershock first. Civilians leave the battle area. Architecture/Public Works excludes damaged geometry. The server freezes one stable static arena in an adjacent concourse or exterior plaza. AutoPTU resolves only the independent confrontation.
+## Encounter contract: Archive Seismogram Recovery
 
-No debris damage, moving civilians, earthquake Move, forced displacement or dynamic ground failure is invented.
+Narrative premise: a fragile historical station record must be moved during a facility incident while a separate threat is present.
 
-Narrative premise preserved: the confrontation interrupts post-event evacuation/reopening.
+FULL: complete movement BLOCKING for a moving custodian/objective; AI tactical policy BLOCKING for PROTECT_CUSTODIAN/REACH_EXIT; adapter/playback BLOCKING. Environmental family is BLOCKING if fire, collapse, debris or protected zones affect tactics. Items remain PARTIAL if the archive object has tactical behavior.
 
-## Encounter contract: Seismic Station Recovery
+REDUCED: Archives secures the record before combat and removes custodians. AutoPTU receives a static arena. Winning does not interpret or authenticate the seismogram.
 
-Narrative premise: a monitoring station stops transmitting after an event sequence. A technician/research team needs physical access while wildlife or another independent threat occupies the area.
+## Encounter contract: Felt-Report Collection During Evacuation
 
-### FULL intended version
+Narrative premise: after Crisis has already ordered evacuation, researchers/officials are collecting voluntary local observations when an independent confrontation interrupts operations.
 
-Potential objectives include `REACH_DEVICE`, `PROTECT_TECHNICIAN`, `WITHDRAW` and `CLEAR_ROUTE`, with an unstable or partially restricted approach.
+FULL: complete movement, AI tactical policy and adapter/playback are BLOCKING for civilians/researchers. Environment is BLOCKING only if the physical event remains tactically active.
 
-Dependencies:
-- VERIFIED foundation: targeting, base movement legality, core calculations, action economy/initiative, AI legal-action infrastructure;
-- BLOCKING: complete movement for moving technician/objective access; AI tactical policy for objective behavior; adapter/playback;
-- BLOCKING environmental family if slope state, aftershocks or restricted ground affect tactics;
-- PARTIAL by exact use: lifecycle, damage, statuses, Moves, Abilities, Items, Trainer Features.
+REDUCED: testimony collection stops, civilians leave, and only combatants remain in a static area. Oral History/Science can resume later; missing reports remain missing rather than being procedurally fabricated.
 
-### REDUCED version
+## Noncombat contract: Catalog Reconciliation Review
 
-The technician remains outside the combat snapshot. World state determines the safe access point and station condition. AutoPTU runs a static encounter on already-validated ground. The technician services the device afterward if access remains valid.
+Inputs can include automatic detections, raw station records, corrected timestamps, felt reports, quarry/mine operation logs and Pass 71 event identities.
 
-Combat victory never proves that the station data are valid; Metrology still decides that.
+Possible valid outcomes:
+- merge detections into one event;
+- split one detection into multiple events;
+- reclassify a candidate signal;
+- revise origin time/location/size estimate;
+- leave classification unresolved;
+- revise membership in an aftershock sequence.
 
-## Encounter contract: Liquefaction Street Closure
+No battle engine dependency. A battle result can never decide catalog truth.
 
-Narrative premise: post-event ground failure closes a street while responders redirect people and an independent confrontation occurs at its perimeter.
+## Mechanical guardrails
 
-### FULL intended version
-
-Dynamic soft/failed ground, route changes, civilians and possible forced repositioning would require:
-- complete movement: BLOCKING;
-- terrain/weather/hazards/zones/reactions: BLOCKING;
-- AI tactical policy: BLOCKING;
-- adapter/playback: BLOCKING;
-- full stateful damage: PARTIAL if the environment itself damages combatants.
-
-All ordinary combat categories remain at their permanent statuses.
-
-### REDUCED version
-
-Geology/seismic protocol records the ground-failure observation; Crisis closes the street; Public Works establishes the exclusion perimeter. Battle occurs on adjacent stable pavement with static geometry.
-
-No “liquefaction tile,” Slowed, Tripped, sinking, forced movement or environmental damage is invented.
-
-## Noncombat contract: Magnitude vs Damage Review
-
-Researchers, engineers, officials and residents reconcile one event’s source estimate, local shaking observations and structural reports.
-
-Possible outcomes:
-- current evidence supports a revised event estimate;
-- two local intensity assessments remain different and both valid;
-- one famous damage story predates the earthquake;
-- station timing needs correction;
-- causal attribution remains unresolved.
-
-No battle engine dependency by default. A combat transcript from an unrelated confrontation cannot determine event magnitude, fault identity or structural cause.
-
-## Encounter-wide mechanical guardrails
-
-Do not call the PTU Move `Earthquake` to simulate a regional seismic event.
-Do not create environmental damage merely because the scene is post-earthquake.
-Do not map shaking to Accuracy, Evasion, Combat Stages or Status unless an exact rule exists.
-Do not map cracks to Rough Terrain automatically.
-Do not map liquefaction to Slowed/Tripped/Stuck automatically.
-Do not map aftershocks to initiative changes.
-Do not map Whiscash behavior to prediction or causation without authored evidence.
-Do not use Groundshaper/Mold the Earth as tectonic simulation.
-Do not let Minecraft block damage, particles or camera shake write seismic truth.
+Do not use the PTU Move `Earthquake` as the event-catalog implementation.
+Do not use Groundshaper/Mold the Earth as seismic sensing or source classification.
+Do not convert felt reports into magnitude values automatically.
+Do not convert camera shake, TNT, mining blocks or entity reactions into event detections.
+Do not create falling-rock damage, knockback, Rough Terrain, Slowed, Tripped or Status effects because a scene is seismically themed.
+Do not treat Whiscash as a deterministic warning device.
