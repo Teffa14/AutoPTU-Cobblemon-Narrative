@@ -1,106 +1,84 @@
-# Research Scan — Managed Fisheries, Aquatic Harvest & Stock Stewardship — Pass 157
+# Research Scan — Fisheries Stock Assessment, Effort & Release Monitoring — Pass 157
 
-Status: RESEARCH / PROVENANCE ONLY. Not Ouros canon.
+Status: RESEARCH / PROVENANCE ONLY. Not Ouros canon. Extension research for Pass 70.
 Date: 2026-08-24
 
-## Why this gap is worth filling
+## Existing authority found during final repository audit
 
-The repository already has strong authorities for freshwater systems, lake limnology, estuaries, open-ocean ecology, migration, conservation, markets, food, supply chains and Pokémon agency. The Lake Limnology layer explicitly reserves a future `Lake -> Fisheries` handoff and says Fisheries should own harvest/access policy rather than lake physics or ecology.
+Pass 70 already established `design/fisheries-angling-aquaculture-layer.md` and its companion research/proposals. It is the Fisheries authority for fishing effort, angling events, catch observations, stock assessments, management measures, non-target interactions, aquaculture, stocking/release and festival fishing.
 
-No dedicated Fisheries authority existed in the inspected repository tree at the start of this pass.
+Pass 157 therefore does not create a second Fisheries authority.
 
-The useful design problem is therefore not "add a fishing minigame." It is to preserve the history of an aquatic resource-management system without confusing:
+This scan deepens four narrower questions that Pass 70 identified but did not model in detail:
 
-- catches with population abundance;
-- a fishing contest with long-term harvest policy;
-- a released animal with a zero-impact interaction;
-- a management closure with ecological truth;
-- a Poké Ball capture with a fishery landing;
-- Minecraft fishing loot or loaded Cobblemon with authoritative stock state.
+- how fishery-dependent catch/effort differs from independent survey evidence;
+- how stock-assessment revisions should preserve data limitations and method changes;
+- how release/non-target outcomes should be recorded without assuming zero impact or injury;
+- how seasonal/area management measures should retain their exact scope and rationale.
 
-## Public source scan
+The companion design file for this pass is an extension protocol, not a replacement for Pass 70.
 
-### 1. Pokémon — fishing as a recurring social event, not only a capture button
+## Fresh public source scan
+
+### 1. Pokémon — recurring fishing events can accumulate civic history
 
 The official Pokémon episode `Hook, Line and Stinker` uses an annual Seaking catching competition as a recurring local event with rivalry, spectators and a recognizable place in community life.
 
 Source:
 - Pokémon.com, `Hook, Line and Stinker`: https://www.pokemon.com/us/animation/seasons/4/episode-11-hook-line-and-stinker
 
+Pass 70 already researched another fishing competition, so the new lesson here is longitudinal rather than mechanical: one event can have editions, records, old champions, rule revisions and public memory without changing the underlying fishery authority.
+
 Reusable Ouros structure:
 
-`recurring aquatic event -> participants with different experience -> public rules -> observation/catch activity -> rivalry or social complication -> event record -> later editions`
+`recurring aquatic event -> edition-specific participation/rules -> catch/release records -> public result -> later edition comparison`
 
-Do not copy the Seaking contest, competitors or plot. The reusable lesson is that an aquatic-use tradition can have edition history, rule revisions and public memory independently from regional resource management.
+Do not copy the competition, characters or plot.
 
-### 2. Pokémon — fishing technique, equipment and event rules can be distinct
+### 2. PTU actual-play/community — a fishing contest can sit inside a broader public event
 
-`A Fishing Connoisseur in a Fishy Competition!` distinguishes beginner technique, rod choice, event-specific rules and the eventual handling of hooked Water-type Pokémon. The episode also makes clear that an organized event can impose rules beyond the basic act of fishing.
+A public PTU one-shot pitch set in White Harbor combines a spring festival, vendors, a bug-catching competition, fishing activity and a separate security threat. The useful pattern is that angling can be one activity inside a larger settlement event rather than a standalone minigame.
 
 Source:
-- Bulbapedia summary of `A Fishing Connoisseur in a Fishy Competition!`: https://bulbapedia.bulbagarden.net/wiki/A_Fishing_Connoisseur_in_a_Fishy_Competition%21
+- Reddit r/lfg, White Harbor PTU one-shot: https://www.reddit.com/r/lfg/comments/v2suxf
 
 Reusable Ouros structure:
 
-`general activity -> local/event rule set -> equipment choice -> encounter -> handling decision -> event outcome`
+`festival edition -> temporary fishing activity -> market/audience context -> ordinary participation -> independent incident if one actually occurs`
 
-Guardrail: event rules are not universal PTU rules.
+The battle should be separable from catch records and fishery management.
 
-### 3. PTU 1.05 — fishing already has explicit mechanics
+### 3. PTU community — fishing procedures are frequently homebrewed, so provenance matters
 
-The public PTU 1.05 Core text contains a dedicated Fishing section. It distinguishes Old, Good and Super Rods, bait/lures, periodic d20 checks, an Athletics check to reel in a hooked Pokémon, and then a possible Hand Net or Poké Ball interaction. Fishing Rods also exist as two-handed equipment.
-
-Sources:
-- Public PTU 1.05 Core, Fishing section around page 217: https://anyflip.com/tcye/paot/basic/201-250
-- Public PTU 1.05 Core, Fishing Rod gear around page 293: https://anyflip.com/qloz/xgfq/basic/251-300
-
-Project cross-check:
-- `Teffa14/AutoPTU` remains the project-designated Python rules oracle while Java is incomplete.
-- Repository search on the current Python head did not expose a dedicated fishing runtime subsystem or an authored Fisheries management system.
-- A PTR2e `old-rod.json` exists inside imported Foundry material, but that is not evidence of PTU runtime support and must not be treated as the authority for this project.
-
-Design consequence:
-
-If Ouros later executes the exact PTU Fishing procedure, that implementation must be validated against the project's pinned PTU/Caelo material and authoritative runtime. This narrative layer does not recreate those checks, rod limits, capture logic or encounter tables.
-
-### 4. PTU community — avoid treating homebrew fishing tables as core rules
-
-An old Pokémon Tabletop forum thread proposes custom d100 encounter bands and even a homebrew Fisherman class. This is useful evidence that GMs often want fishing to produce location-specific encounter structure, but the mechanics are community homebrew rather than PTU authority.
+An old Pokémon Tabletop forum discussion proposes custom d100 fishing encounter bands and even a homebrew Fisherman class. It is useful evidence that GMs often want location-specific fishing structure, but those mechanics are community homebrew rather than authoritative PTU 1.05 rules.
 
 Source:
 - Pokémon Tabletop forum, `Fishing`: https://www.tapatalk.com/groups/pokemon_tabletop/fishing-t1262.html
 
-Reusable Ouros lesson:
+Design lesson:
 
-Location-specific aquatic encounter ecology should live in authored population/habitat state. Do not copy encounter percentages or homebrew class features into Ouros.
+Never promote a public fishing table, custom class or encounter percentage into Ouros mechanics merely because it appears in a PTU community thread.
 
-### 5. PTU actual-play/community — fishing can sit inside a wider public event
+### 4. PTU 1.05 — fishing already has an explicit rules procedure
 
-A public PTU one-shot pitch set in White Harbor combines a spring festival, vendors, bug catching, fishing competition and combat security concerns. The useful pattern is layering a recreational aquatic event into a larger public-space/event system instead of creating a standalone minigame disconnected from the settlement.
+The public PTU 1.05 Core contains a Fishing section with rod categories, bait/lure use, periodic rolls and an Athletics check to reel in a hooked Pokémon. Fishing Rods also exist as two-handed equipment.
 
-Source:
-- Reddit r/lfg, PTU White Harbor one-shot: https://www.reddit.com/r/lfg/comments/v2suxf
+Sources:
+- PTU 1.05 Core, Fishing section around page 217: https://anyflip.com/tcye/paot/basic/201-250
+- PTU 1.05 Core, Fishing Rod equipment around page 293: https://anyflip.com/qloz/xgfq/basic/251-300
 
-Reusable Ouros structure:
+Project check:
+- AutoPTU Python remains the designated rules oracle while Java is incomplete.
+- Current repository search did not expose a dedicated end-to-end AutoPTU fishing runtime path that can be assumed for Minecraft.
+- A PTR2e Old Rod JSON appears in imported Foundry material, but PTR2e imported content is not evidence of the target PTU runtime contract.
 
-`festival edition -> temporary aquatic activity -> vendors/audience -> ordinary participation -> optional independent incident`
+Design consequence:
 
-The battle should be separable from the fishing activity rather than making every catch a combat encounter.
+Pass 157 records world-state fisheries evidence. It does not recreate the Core Fishing checks, generate catch tables or treat Minecraft fishing as their implementation.
 
-### 6. PTU campaign anecdote — extraction can be replaced by ecological problem-solving
+### 5. NOAA — fishery-dependent and fishery-independent data are different evidence streams
 
-A public PTU GM described players who responded to a food-web crisis by organizing fishing to feed a displaced predatory group while a poisoned forest recovered. The useful structure is not the exact solution; it is that an apparent combat problem can become a temporary resource-management problem with a follow-up obligation.
-
-Source:
-- Reddit r/AskReddit PTU GM account: https://www.reddit.com/r/AskReddit/comments/hhl1c5
-
-Reusable Ouros lesson:
-
-A temporary aquatic harvest intervention can create later consequences: pressure on another stock, monitoring requirements, altered local expectations or a need to stop the emergency measure once the original habitat recovers.
-
-### 7. NOAA Fisheries — landings and stock abundance are different evidence streams
-
-NOAA distinguishes fishery-dependent data from fishery-independent surveys. Fishery-dependent records can include effort, landings/discards, species and biological observations. Independent surveys measure abundance and biology using standardized methods outside ordinary fishing activity.
+NOAA Fisheries distinguishes fishery-dependent data such as effort, landings/discards and biological samples from fishery-independent surveys designed to estimate abundance and ecosystem/biological conditions separately from ordinary fishing activity.
 
 Sources:
 - NOAA Fisheries, `Understanding Population Assessments`: https://www.fisheries.noaa.gov/insight/understanding-population-assessments
@@ -108,59 +86,89 @@ Sources:
 
 Reusable Ouros structure:
 
-`activity records + independent surveys + biological/ecological observations -> assessment revision -> management decision`
+`activity/effort records + independent surveys + biological/ecological observations -> assessment revision -> management interpretation`
 
-Never use `catch_count` alone as `population_count`.
+A harbor ledger and a research survey may disagree without either being fraudulent or useless.
 
-### 8. NOAA Fisheries — catch per unit effort is useful but interpretation-sensitive
+### 6. NOAA — catch per unit effort needs standardization and context
 
-NOAA's 2024 CPUE good-practices summary emphasizes that catch-per-unit-effort can contribute to stock assessments but requires standardization and interpretation. Gear, spatial choices, environmental conditions, targeting and other covariates can change the index.
+A 2024 NOAA summary on catch-per-unit-effort modeling emphasizes that CPUE can contribute to stock assessments but is sensitive to fishery definition, gear, spatial behavior, environmental covariates, reporting and other choices.
 
 Source:
 - NOAA Fisheries, `Catch per Unit Effort Modelling for Stock Assessment: A Summary of Good Practices`: https://www.fisheries.noaa.gov/resource/peer-reviewed-research/catch-unit-effort-modelling-stock-assessment-summary-good-practices
 
-Reusable Ouros consequence:
+Ouros lesson:
 
-Two boats landing the same number can provide different information if one fished twice as long, used different gear or worked a different habitat. A stable catch can also conceal changing effort or concentration of a schooling population.
+`same catch != same evidence` when effort, location, gear or conditions differ.
 
-### 9. NOAA Fisheries — stock assessments can be data-limited
+A stable catch rate can also be misleading when a population aggregates strongly or fishing activity increasingly concentrates on the remaining high-density locations.
 
-NOAA uses multiple model classes depending on available evidence. Data-limited approaches provide narrower advice and do not support all the conclusions available from richer assessments.
+### 7. NOAA — data-limited assessments should remain data-limited
+
+NOAA describes multiple stock-assessment model families chosen according to available evidence. Data-limited and index-based approaches provide narrower conclusions than richer age/length structured models.
 
 Source:
 - NOAA Fisheries, `Stock Assessment Model Descriptions`: https://www.fisheries.noaa.gov/insight/stock-assessment-model-descriptions
 
 Reusable Ouros lesson:
 
-An institution should be allowed to publish `LOW_CONFIDENCE`, `DATA_LIMITED` or `NO_CURRENT_ASSESSMENT` instead of forcing the simulation to know the real stock size.
+Institutions should be allowed to publish:
 
-### 10. NOAA Fisheries — management status is not one scalar
+- `DATA_LIMITED`;
+- `LOW_CONFIDENCE`;
+- `NO_CURRENT_ASSESSMENT`;
+- `TREND_ONLY`;
+- `ASSESSMENT_REJECTED_OR_UNSUITABLE`.
 
-NOAA distinguishes population size from annual harvest rate. In its terminology, a stock can be too small and the current catch rate can be too high; these are separate determinations based on assessments and reference points.
+The simulation must not invent an exact hidden stock number merely because an NPC asks for one.
+
+### 8. NOAA — assessment status can change when evidence is reviewed
+
+NOAA's FY2025 stock-assessment report explains that assessments differ in data inputs and methods and may fail scientific review, in which case results are not used for management.
 
 Source:
-- NOAA Fisheries, 2026 fishery stock status updates: https://www.fisheries.noaa.gov/national/population-assessments/fishery-stock-status-updates
+- NOAA Fisheries, `Fish Stock Assessment Report`: https://www.fisheries.noaa.gov/national/population-assessments/fish-stock-assessment-report
 
-Reusable Ouros lesson:
+Reusable Ouros structure:
 
-Avoid `fishery_health = 72`. Maintain assessment, effort/harvest pressure, habitat state, recruitment observations and management response as separate dimensions.
+`draft assessment -> review -> accepted for current decision use | rejected/returned -> later revision`
 
-### 11. NOAA Fisheries — bycatch/non-target interactions need their own records
+A rejected assessment remains part of institutional history. It does not vanish from Chronicle.
 
-Observer programs collect information not only about target catch but also catch composition, discards, protected-species interactions and gear configuration.
+### 9. NOAA — annual harvest rate and population size are separate dimensions
+
+NOAA's 2026 stock-status updates distinguish whether annual fishing pressure is too high from whether a population is already too small.
+
+Source:
+- NOAA Fisheries, 2026 quarterly fishery stock status updates: https://www.fisheries.noaa.gov/national/population-assessments/fishery-stock-status-updates
+
+Ouros lesson:
+
+Avoid a single `fishery_health` score. Preserve at least:
+
+- abundance/trend assessment;
+- recruitment observations;
+- activity/effort pressure;
+- habitat/ecosystem context;
+- uncertainty;
+- management response.
+
+### 10. NOAA — non-target interactions need their own evidence
+
+Fishery observers collect information on target catch, catch composition, discards, protected-species interactions and gear configuration.
 
 Source:
 - NOAA Fisheries, `Using Observer Data`: https://www.fisheries.noaa.gov/national/fisheries-observers/using-observer-data
 
 Reusable Ouros structure:
 
-`harvest activity -> target interaction + non-target interaction(s) -> disposition/release -> follow-up evidence`
+`activity -> target interaction + non-target interaction(s) -> disposition -> later observation/assessment`
 
-A non-target Pokémon is not automatically a pest or hostile actor.
+A non-target Pokémon is not automatically a nuisance, pest or hostile combatant.
 
-### 12. NOAA Fisheries — release is an event, not proof of no consequence
+### 11. NOAA — release is not proof of zero effect
 
-NOAA's updated catch-and-release guidance, last updated August 4, 2026, states that releasing an animal does not itself guarantee survival. Handling, gear, air exposure, depth and other factors can affect outcomes. NOAA separately maintains discard/release mortality science because effects can be delayed.
+NOAA's catch-and-release guidance was updated August 4, 2026. It states that releasing an animal does not itself guarantee survival and that handling, gear, exposure and depth can affect outcomes. NOAA separately maintains release-mortality research because effects can be delayed.
 
 Sources:
 - NOAA Fisheries, `Catch and Release Fishing Best Practices`: https://www.fisheries.noaa.gov/national/resources-fishing/catch-and-release-fishing-best-practices
@@ -168,70 +176,93 @@ Sources:
 
 Ouros adaptation:
 
-Record `RELEASED` separately from `KNOWN_UNHARMED`. Do not invent injury, mortality or PTU damage either. Later observation can update the evidence.
+Record `RELEASED` separately from:
 
-### 13. NOAA Fisheries — closures can be narrow in time, space and purpose
+- `KNOWN_UNHARMED`;
+- `INJURED`;
+- `LATER_REOBSERVED`;
+- `OUTCOME_UNKNOWN`.
 
-A February 26, 2026 NOAA bulletin describes a seasonal closure for a mutton snapper spawning aggregation area from March 1 through June 30, with particular gear restrictions. The useful design lesson is scope: a management measure can be tied to one area, season, activity or method rather than shutting down an entire regional fishery.
+Do not invent any of those later states merely because an interaction occurred.
+
+### 12. NOAA — management controls can be narrow in time, space and method
+
+A February 26, 2026 NOAA bulletin describes a seasonal closure of a spawning aggregation area with specific temporal and gear scope.
 
 Source:
-- NOAA Fisheries, 2026 spawning aggregation closure bulletin: https://www.fisheries.noaa.gov/bulletin/reminder-seasonal-closure-mutton-snapper-spawning-aggregation-area-federal-waters-st-1
+- NOAA Fisheries, 2026 spawning-aggregation closure bulletin: https://www.fisheries.noaa.gov/bulletin/reminder-seasonal-closure-mutton-snapper-spawning-aggregation-area-federal-waters-st-1
 
-Reusable Ouros structure:
+Reusable Ouros lesson:
 
-`observed recurring concentration -> vulnerability/uncertainty assessment -> scoped seasonal/area control -> compliance/monitoring -> later review`
+A management measure should preserve:
 
-Do not import U.S. law, dates, species or gear rules into Ouros.
+- objective/rationale;
+- geographic scope;
+- temporal scope;
+- activity/method scope;
+- subject scope;
+- issuing authority;
+- evidence version;
+- review date/end condition.
 
-## Design synthesis for Ouros
+Do not import U.S. law, dates, species or gear rules.
 
-The most reusable high-level model is:
+## New design synthesis beyond Pass 70
 
-`aquatic population / management unit -> observations -> activity/effort records -> stock assessment revision -> management objective -> scoped control -> harvest/interaction records -> landing/release handoff -> monitoring -> later assessment`
+Pass 70 correctly established that fishing effort, catch and stock state are different. Pass 157 adds a more explicit evidence hierarchy:
 
-The world should preserve disagreement and uncertainty. A harbor ledger, survey transect, camera network, migration record and fisher observations may all describe the same population from different vantage points.
+`raw activity/effort -> standardized index if appropriate -> independent survey -> biological/ecosystem evidence -> assessment version -> review state -> management decision`
+
+It also adds a disposition distinction:
+
+`interaction -> release/landing/capture referral/unknown -> later evidence`
+
+and a management-scope distinction:
+
+`ecological observation -> assessment -> authored institutional decision -> scoped measure`.
+
+A spawning observation does not automatically create a closure. A closure does not prove spawning.
 
 ## Strong narrative structures
 
-### Catch is not abundance
+### Stable catches, rising effort
 
-A long-running harbor can have stable landings while effort grows, gear changes or a school concentrates closer to shore. The mystery is methodological and ecological rather than automatically criminal.
+The harbor celebrates stable landings while crews work longer or farther away. The mystery is methodological/ecological before it is criminal.
 
-### One population, several jurisdictions
+### Independent survey and harbor ledger disagree
 
-A migratory aquatic population can pass through an inland river, estuary and coastal zone. Different institutions may each have valid local data while disagreeing about whether they are managing one stock, several units or an unresolved mixture.
+Both sources can be legitimate because they observe different portions of the system with different sampling behavior.
 
-### A closure can outlive its original timing
+### A traditional closure no longer matches the biological window
 
-A traditional closed week may have been calibrated to a spawning run decades earlier. Migration/phenology shifts can make the old schedule increasingly mismatched, creating a research and governance problem without requiring an antagonist.
+Migration or phenology shifts, leaving an old management calendar increasingly mismatched with the event it was intended to protect.
 
-### Release has a history
+### A released persistent Pokémon returns years later
 
-A non-target individual can be hooked, released and later re-observed. If it has a persistent Pokémon identity, the Chronicle can connect those observations without converting the release into custody, capture or guaranteed harm.
+The Chronicle can connect the same `pokemon_entity_id` across a release and later sightings without creating custody, ownership or guaranteed survival at the original event.
 
-### Emergency harvest can create a second problem
+### Emergency harvest creates institutional inertia
 
-A temporary harvest measure used during a crisis can become socially expected or economically important. Ending it later can be harder than starting it, even when the original emergency has passed.
+A temporary crisis measure becomes socially expected. Ending it later can produce conflict even after the ecological/emergency reason disappears.
 
 ## Mechanics boundary
 
-PTU 1.05 has explicit Fishing rules. This pass does not rewrite them.
+Pass 157 does not change Pass 70's PTU/Caelo guardrails.
 
-Fisheries management is world-state logic. It must not infer:
+Do not infer:
 
 - stock abundance from PTU fishing success;
 - fishing success from Minecraft bobber events;
-- capture eligibility from fishery access;
+- capture eligibility from a fishery rule;
 - capture ownership from a landing record;
 - population removal from KO/despawn;
-- release survival from successful battle escape;
-- Water-type identity as eligibility for a fishery;
-- Schooling/Pack Mon/Swarm behavior from a narrative aggregation;
-- Swim capability as fishing, boating or handling proficiency;
-- dynamic currents, drowning, nets, restraint or line tension without exact validated mechanics.
+- release survival from a battle result;
+- Schooling/Pack Mon from narrative aggregation;
+- Swim from fishing or handling proficiency;
+- currents, drowning, lines, hooks, nets or restraint without exact validated mechanics.
 
 ## Source status
 
-Research/provenance only. None of the examples above establish Ouros canon.
+Research/provenance only. Pass 70 remains the existing Fisheries/Aquaculture authority.
 
-The complete primary Caelo corpus was not reliably available through the task's accessible project sources during this pass. Super PTU Online Helper was not exposed as an invocable capability. No output from either source has been invented.
+The complete primary Caelo corpus was not reliably available through accessible project sources in this run. Super PTU Online Helper was not exposed as an invocable capability. No output from either has been invented.
