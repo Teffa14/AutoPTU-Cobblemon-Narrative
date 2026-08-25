@@ -3,45 +3,39 @@
 Status: READ-ONLY EVIDENCE SNAPSHOT for narrative dependency planning.
 Date: 2026-08-24
 
-## New narrative authority
+## Repository authority correction
 
-Pass 158 adds `design/fungal-ecology-mycology-spore-networks-layer.md` after a repository-wide keyword audit found no existing fungal/mycology authority. It is intentionally bounded by existing Flora, Soil, Decomposition, Forest Management, Interspecies Ecology, Toxicology, Food Safety, Taxonomy and battle authorities.
+The final full-tree compare surfaced `design/decomposition-fungi-deadwood-nutrient-cycling-layer.md` from Pass 72. Pass 72 already owns fungal occurrence, root/fungal associations, decomposer activity and the foundational separation between fruiting observations and PTU mechanics.
+
+The temporary duplicate Pass 158 fungal authority was deleted. Pass 158 now adds only `design/fungal-fruiting-survey-harvest-monitoring-protocol.md`, extending Pass 72 with monitoring series, survey effort/detectability, fruiting episodes, occurrence linkage, sample provenance, spore observations and harvest records.
 
 ## Live heads inspected
 
 - AutoPTU-Java main: `3caac611a987322a70dbdc34c56d613b96dadb92`
 - AutoPTU Python main: `5ab2c175be6542b867f1676cf6848b9b15fd346f`
 
-The Java head adds a runtime-owned POST-damage Move-special bridge carrying Python `damage_dealt` through move-special context. Recent preceding slices also add PRE-damage bridges, live PRE-damage execution, mutable move-special result state, a generic move-special registry and zero-damage Status Move execution.
+The Java head adds a runtime-owned POST-damage Move-special bridge carrying Python `damage_dealt`. Recent preceding slices cover PRE-damage bridges, live PRE-damage execution, mutable move-special state, a generic move-special registry and zero-damage Status Move execution.
 
-This is meaningful progress for move-specific ordering and runtime ownership. It is not proof that all Status Moves, Spore/powder effects, Ability hooks, environmental spores, terrain, hazards or reactions exist.
+This is concrete progress for move-specific ordering. It does not prove all Spore/powder Moves, Status applications, Ability hooks, environmental spores, terrain, hazards or reactions.
 
-The Python head is a Career resilience fix guarding repeated clicks during stalled battle retries. It does not change tactical readiness.
+Python's latest change is Career resilience and does not change tactical readiness.
 
-## PTU fungal/mechanical evidence inspected
+## PTU fungal evidence inspected
 
-Read-only AutoPTU search exposes:
+Read-only AutoPTU search exposes PTU/audit Mushroom Item data and an `Effect Spore` Python hook under `auto_ptu/rules/hooks/abilities/contact_effects.py`. The project corpus also contains Spore/powder Move and status infrastructure.
 
-- PTU/audit/item records containing `Tiny Mushroom` and related mushroom items;
-- an `Effect Spore` Python hook path under `auto_ptu/rules/hooks/abilities/contact_effects.py`;
-- Spore/powder Move data and status infrastructure in the project corpus.
-
-This proves that mushrooms, Spore-family mechanics and Effect Spore are concrete PTU/runtime concepts. It does not authorize an overworld generic spore mechanic.
-
-Therefore the fungal ecology layer may reference those exact mechanics as downstream dependencies but never synthesize them from ambient scenery.
+Those are exact downstream mechanics. Pass 72/158 world state never synthesizes them from scenery.
 
 ## Permanent capability classification
 
-### VERIFIED
-
+VERIFIED:
 - targeting / footprints / range / LoS;
 - base movement legality;
 - core calculations;
 - action economy / initiative;
 - AI legal-action infrastructure.
 
-### PARTIAL
-
+PARTIAL:
 - full turn / round lifecycle;
 - full stateful damage pipeline;
 - status lifecycle;
@@ -50,118 +44,63 @@ Therefore the fungal ecology layer may reference those exact mechanics as downst
 - items;
 - Trainer Features / perks.
 
-### BLOCKING as complete families
-
+BLOCKING as complete families:
 - complete movement including push / pull / knockback / interception / forced movement;
 - terrain / weather / hazards / zones / reactions;
 - AI tactical policy;
 - Minecraft / Cobblemon / Craftics adapter and playback.
 
-The new Java POST-damage Move-special bridge does not promote any complete family.
+The POST-damage Move-special bridge does not promote a complete family.
 
-## Pass 158 encounter dependency matrix
+## Pass 158 encounter dependencies
 
 ### Fruiting Chamber Survey — FULL
 
-VERIFIED baseline:
-
-- targeting / footprints / range / LoS;
-- base movement legality;
-- core calculations;
-- action economy / initiative;
-- AI legal-action infrastructure.
+VERIFIED baseline: targeting, base movement legality, core calculations, action economy/initiative and AI legal-action infrastructure.
 
 BLOCKING:
-
-- complete movement if researchers or Pokémon must cross, withdraw, intercept or protect a moving route inside the grid;
-- terrain/weather/hazards/zones/reactions if darkness, slick substrate, cave geometry changes or an environmental spore field must alter tactical state;
+- complete movement if researchers or Pokémon must cross, withdraw or protect a moving route;
+- terrain/weather/hazards/zones/reactions if darkness, slick substrate, cave conditions or environmental spores alter tactical state;
 - AI tactical policy for `WITHDRAW`, `PROTECT_SAMPLE_ROUTE`, `CLEAR_ROUTE`, `REACH_EXIT`;
-- Minecraft/Cobblemon/Craftics adapter/playback for researchers, sample points, world-state revisions and semantic objectives.
+- adapter/playback for researchers, sample sites and world-state handoff.
 
-PARTIAL when invoked:
+PARTIAL if invoked:
+- status lifecycle for actual Sleep/Poison/Paralysis;
+- move-specific behavior for an exact Spore/powder Move;
+- abilities for Effect Spore, Illuminate or another exact Ability;
+- items for tactical protective/sampling gear;
+- Trainer Features/perks when explicitly used.
 
-- status lifecycle if an actual Sleep/Poison/Paralysis mechanic is required;
-- move-specific behavior if Spore, Sleep Powder, Poison Powder, Stun Spore or another exact Move is required;
-- abilities if Effect Spore, Illuminate or another exact Ability is required;
-- items if protective/sampling gear is represented as PTU battle Items;
-- Trainer Features/perks if an exact Feature is invoked.
-
-REDUCED version completes sampling/exposure handling in world state, removes researchers from battle and uses a static arena with no ambient spore, darkness or substrate mechanics.
+REDUCED: sampling/exposure happens in world state; researchers leave; any battle uses static safe geometry and no ambient fungal Status mechanic.
 
 ### Deadwood Plot Disturbance — FULL
 
-VERIFIED baseline remains available.
+Main blockers are complete movement, AI tactical policy and adapter/playback for non-hostile withdrawal/crowd clearing. The environmental family is needed only if an exact verified tactical terrain/hazard is authored.
 
-BLOCKING:
-
-- complete movement for non-hostile withdrawal, crowd clearing or moving objectives;
-- AI tactical policy for `WITHDRAW`, `CLEAR_ROUTE`, `PROTECT_RESEARCH_SITE`;
-- adapter/playback for visitors, plot boundaries and wildlife/world-state handoff.
-
-Environmental family is needed only when exact terrain/hazard behavior is authored and mechanically verified.
-
-REDUCED version resolves visitor and wildlife movement outside battle and opens a normal static confrontation only if a separate threat remains.
+REDUCED: visitor/wildlife movement resolves outside battle; a static conventional confrontation opens only if a separate threat remains.
 
 ### Orchard Root Association Survey
 
-No battle-engine dependency is required for the primary version.
-
-Fungal Ecology, Flora, Soil, Irrigation, IPM, Science and Metrology can preserve competing hypotheses and evidence. The result may remain unresolved. Combat cannot establish fungal causation.
+No battle dependency is required. Pass 72 fungal records, Flora, Soil, Irrigation, IPM, Science and Metrology compare evidence. Combat cannot establish causation.
 
 ### Harvest Closure Dispute
 
-No battle-engine dependency is required.
+No battle dependency is required. Monitoring, fruiting history, harvest records, Markets, Land Tenure, Public Memory and institutional authority can produce a decision or preserve uncertainty.
 
-Fungal Ecology, Land Tenure, Markets, Public Memory, Science and institutional authority can resolve or defer the decision. Weak fruiting is not population collapse; closure is not proof of collapse.
+## Fungal-specific non-inferences
 
-## Fungal-specific engine non-inferences
+Current evidence does not authorize ambient spores as `Spore`; mushroom contact as Effect Spore; visible fungi as Sleep/Poisoned/Paralysis; fruiting patches as Rough Terrain/cover; particle clouds as powder Move geometry; mycorrhizae as healing/stat bonuses; deadwood fungi as structural failure; Parasect presence as proof of root disease; market mushrooms as local abundance; wild harvest as PTU Mushroom Item acquisition; loaded mushroom blocks as population truth; block removal as eradication; or chunk reload as ecological reset.
 
-Current evidence does not authorize:
+## Why current Move-special work does not solve the FULL encounters
 
-- ambient spores as `Spore` Move;
-- touching a mushroom block as Effect Spore contact;
-- visible mushroom density as a Status zone;
-- particle clouds as powder Move geometry;
-- glowing fungi as Illuminate Ability;
-- fungal growth as Poisoned, Sleep or Paralysis;
-- fruiting patches as Rough Terrain or cover;
-- mycorrhizae as healing/stat bonuses;
-- decomposition as damage;
-- deadwood fungi as automatic structural failure;
-- Parasect presence as proof of plant/root disease;
-- Amoonguss-like growth as confirmed Amoonguss causality;
-- wild mushroom harvest as authoritative PTU Mushroom Item acquisition;
-- loaded Minecraft mushroom blocks as fungal abundance;
-- block removal as eradication;
-- chunk reload as ecological reset.
+Runtime-owned PRE/POST-damage seams do not provide survey history, fruiting state, substrate ecology, non-hostile movement policy, tactical environmental rules, objective-aware AI or Minecraft persistence. The adapter must not imitate those missing systems with custom Status or damage rules.
 
-## Why current Move-special work does not solve fungal encounters
+## PTU / Caelo boundary
 
-The live Java runtime now has bounded PRE/POST-damage Move-special seams. Pass 158 FULL encounters are primarily gated by non-hostile movement objectives, environmental-state authority, tactical AI and Minecraft playback.
+Concrete PTU Mushroom/Spore/Effect Spore evidence exists in project sources, but each exact mechanic still requires its authoritative rule/runtime contract when invoked.
 
-A Move-special seam cannot provide:
+The complete primary Caelo corpus was not reliably exposed during this pass. Super PTU Online Helper was not available as an invocable capability. No missing Caelo foraging DC, mushroom rule, spore range or fungal hazard is invented.
 
-- mycelial or substrate state;
-- fruiting history;
-- spore ecology;
-- scientific identification;
-- harvest/access governance;
-- non-hostile wildlife withdrawal policy;
-- cave/forest environmental simulation;
-- Minecraft ecological persistence.
+## Narrative consequence
 
-The adapter must not imitate those missing systems with custom Status or damage logic.
-
-## PTU / Caelo source boundary
-
-Project evidence confirms concrete PTU mushroom, Spore/powder and Effect Spore concepts, but each exact rule still requires the project rules source/runtime contract when invoked.
-
-The complete primary Caelo corpus was not reliably exposed during this pass. Super PTU Online Helper was not available as an invocable capability.
-
-No missing Caelo foraging DC, mushroom rule, toxic-environment rule, spore range, forest modifier or fungal hazard was invented.
-
-## Narrative implementation consequence
-
-Fungal worldbuilding can advance immediately through persistent fungal-system IDs, observations, fruiting episodes, samples, ecological-role assessments, harvest records and non-combat investigations.
-
-Mechanically rich fungal battles remain bounded behind exact capability families. Reduced versions preserve the same narrative premise without requiring Minecraft to duplicate PTU rules.
+Pass 72 remains the fungal/decomposition authority. Pass 158 can immediately deepen it through multi-year monitoring, detectability records, fruiting episodes, occurrence-linkage assessments, sample provenance and harvest monitoring. Mechanically rich fungal encounters stay gated behind exact capability families and retain reduced static versions.
