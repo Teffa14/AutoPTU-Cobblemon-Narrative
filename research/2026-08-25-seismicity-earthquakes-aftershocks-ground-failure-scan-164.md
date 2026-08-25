@@ -1,195 +1,154 @@
-# Seismicity, Earthquakes, Aftershocks and Ground Failure — Research Scan 164
+# Seismic Monitoring, Catalog Revisions and Aftershock Evidence — Research Scan 164
 
-Status: RESEARCH / PROVENANCE ONLY. NON-CANON. This file records external sources and reusable design lessons. It does not establish Ouros geography, event history, technology, Pokémon behavior, hazards or PTU mechanics.
+Status: RESEARCH / PROVENANCE ONLY. NON-CANON.
 
 Date researched: 2026-08-25
 
-## Deduplication and authority audit
+## Deduplication correction
 
-The current repository inventory was inspected before writing. Ouros already has authorities for geology, volcanism/geothermal unrest, slope instability, crisis/disaster response, architecture/infrastructure damage, groundwater, metrology, timekeeping and remote sensing. No dedicated seismic-event authority was found.
+Final repository comparison exposed an existing authority that the initial search did not return: Pass 71 already provides `design/seismic-faults-ground-failure-layer.md` and `proposals/2026-08-21-seismic-faults-ground-failure-seeds-71.md`.
 
-Pass 164 therefore should not create a competing geology system. The useful missing layer is a subordinate seismic monitoring and event-revision protocol that records earthquakes, local shaking, aftershock relationships and observed ground failure, then hands consequences to the existing authorities.
+Pass 71 already owns seismic regions, fault segments, seismic-event identity, observations, warning/prediction separation, shaking footprints, aftershock sequences, surface deformation, liquefaction/ground-failure state and trigger attribution.
 
-Key separation:
+Pass 164 therefore does not create another seismic or ground-failure authority. Its useful new scope is narrower: monitoring-network history, automatic versus reviewed detections, source-solution revisions, felt-report provenance, event-catalog vintages and QA links to Metrology/Timekeeping.
 
-`geologic structure / fault interpretation -> seismic event estimate -> local shaking observations -> scoped ground-failure observations -> cross-system consequences`
+The duplicate protocol drafted earlier in this run was removed and replaced by `design/seismic-event-catalog-monitoring-revision-protocol.md`.
 
-Geology owns the regional geologic interpretation. Crisis owns emergency operations. Slope Instability owns earthquake-triggered landslides/rockfall/debris-flow state. Architecture/Public Works own structural damage and repair. Groundwater owns wells/springs and subsurface-water response. Metrology owns instrument calibration. Timekeeping owns corrected timestamps. Remote Sensing owns derived aerial change products.
+## New scientific sources and lessons
 
-## Scientific sources and reusable lessons
+### Magnitude and local intensity are different evidence products
 
-### USGS — magnitude and intensity are different questions
-
-Source: U.S. Geological Survey, “Earthquake Magnitude, Energy Release, and Shaking Intensity.”
+U.S. Geological Survey, “Earthquake Magnitude, Energy Release, and Shaking Intensity.”
 https://www.usgs.gov/programs/earthquake-hazards/earthquake-magnitude-energy-release-and-shaking-intensity
 
-Reusable lesson: an earthquake can have one source-size estimate while producing many local intensity observations. Effects vary by distance, rupture geometry and local geology. Ouros should never store one global `earthquake_severity` and apply it to every settlement.
+USGS distinguishes one event-size estimate from many local intensity values. Intensity varies by place, including distance and local geology. Pass 71 already models local shaking footprints; Pass 164 adds provenance for the observations and source-solution revisions used to update those footprints.
 
-Design use:
-- preserve event/source estimates separately from local shaking observations;
-- allow two towns to experience materially different effects from the same event;
-- allow intensity maps to be revised as observations arrive without changing the original event identity.
+Design consequence: an early event solution and a later reviewed solution can disagree while referring to the same physical event. Earlier reports remain historically real because institutions may have acted on them.
 
-### USGS — observed effects are site-specific
+### Felt reports remain location-specific observations
 
-Source: U.S. Geological Survey, “The Modified Mercalli Intensity Scale.”
+U.S. Geological Survey, “The Modified Mercalli Intensity Scale.”
 https://www.usgs.gov/programs/earthquake-hazards/modified-mercalli-intensity-scale
 
-Reusable lesson: felt/effect-based intensity is a local observation/assessment, not the same property as magnitude. Ouros may use its own setting-appropriate qualitative vocabulary unless canon explicitly adopts a numerical scale.
+Felt/effect observations are useful local evidence, but Ouros should not import Modified Mercalli as canon automatically. The reusable structure is location-specific observation → derived assessment, with method and uncertainty retained.
 
-Do not import the Modified Mercalli scale as Ouros canon merely because it was useful research.
+### Site conditions affect shaking and observed damage
 
-### USGS — site conditions matter
+U.S. Geological Survey:
+- https://www.usgs.gov/faqs/how-do-earthquakes-affect-buildings
+- https://earthquake.usgs.gov/research/eqproc/grdshaking.php
 
-Sources:
-- U.S. Geological Survey, “How do earthquakes affect buildings?”
-  https://www.usgs.gov/faqs/how-do-earthquakes-affect-buildings
-- U.S. Geological Survey, “Earthquake Processes and Effects — Ground Shaking.”
-  https://earthquake.usgs.gov/research/eqproc/grdshaking.php
+Local geology, soil and structure characteristics affect outcomes. Pass 164 should therefore never use damage reports as a direct magnitude calculator. Architecture/Public Works remain authoritative for structural condition.
 
-Reusable lesson: local shaking and damage depend on source characteristics, distance, soil/geology and the structure itself. This is useful for Chronicle because one earthquake can expose different vulnerabilities without requiring separate causes.
+### Liquefaction requires specific conditions
 
-Guardrail: a building that suffers more damage than a nearby building does not prove corruption, sabotage or a stronger local earthquake. Architecture must assess its own condition.
+U.S. Geological Survey:
+- https://www.usgs.gov/faqs/what-liquefaction
+- https://www.usgs.gov/programs/earthquake-hazards/what-are-effects-earthquakes
 
-### USGS — liquefaction is conditional, not synonymous with wet ground
+Liquefaction occurs in susceptible loose, water-saturated sediments during strong shaking. Pass 71 already owns liquefaction/ground failure. Pass 164 only contributes event/source/observation provenance to that assessment.
 
-Sources:
-- U.S. Geological Survey, “What is liquefaction?”
-  https://www.usgs.gov/faqs/what-liquefaction
-- U.S. Geological Survey, “What are the Effects of Earthquakes?”
-  https://www.usgs.gov/programs/earthquake-hazards/what-are-effects-earthquakes
+This reinforces a guardrail: `wet ground`, `sand`, `riverbank` or `high groundwater` alone never creates liquefaction state.
 
-Reusable lesson: liquefaction requires susceptible loose/water-saturated sediment plus strong shaking. It can produce settlement, lateral spreading and other ground failures.
+### After-event sequences need review, not simple timestamp grouping
 
-Ouros design rule: `wet ground`, `riverbank`, `filled land` or `high groundwater` alone never creates liquefaction. A post-event sand boil or lateral-spread observation can open an assessment; it cannot be inferred from biome labels or Minecraft blocks.
+U.S. Geological Survey:
+- https://earthquake.usgs.gov/research/eqproc/posteqmotions.php
+- https://www.usgs.gov/publications/loma-prieta-california-earthquake-october-17-1989-aftershocks-and-postseismic-effects
 
-### USGS — after-event activity has its own history
+Large earthquakes can be followed by many later events and postseismic effects. Pass 71 already owns the aftershock sequence object. Pass 164 adds the review history that decides whether a candidate event is included, rejected or left unresolved.
 
-Sources:
-- U.S. Geological Survey, “Earthquake Processes and Effects — Post-Earthquake Motions.”
-  https://earthquake.usgs.gov/research/eqproc/posteqmotions.php
-- U.S. Geological Survey, Loma Prieta aftershocks and postseismic effects.
-  https://www.usgs.gov/publications/loma-prieta-california-earthquake-october-17-1989-aftershocks-and-postseismic-effects
+Temporal order alone is insufficient evidence for sequence membership.
 
-Reusable lesson: a major event can be followed by many later earthquakes and other post-event deformation. Those later observations matter because already-damaged infrastructure and disrupted services may face renewed risk.
+### ShakeMap illustrates derived spatial products
 
-Ouros should store aftershock association as an assessment. A later nearby tremor is not automatically an aftershock merely because it occurred after the first event.
-
-### USGS — shaking maps are derived products
-
-Source: U.S. Geological Survey, ShakeMap.
+U.S. Geological Survey, ShakeMap.
 https://earthquake.usgs.gov/data/shakemap/
 
-Reusable lesson: near-real-time shaking maps combine observations/models into a spatial product used for response and later analysis. That fits Ouros well if the setting has sufficient instrumentation, but the product must keep its method/revision provenance. It is not raw world truth.
+ShakeMap combines observations and models into near-real-time ground-motion/intensity products. Ouros can reuse the architecture only if its canon supports comparable instrumentation. Any such product must preserve input observations, processing revision and uncertainty. It remains a derived product, not raw world truth.
 
-## Pokémon sources and reusable structures
+## Pokémon and narrative sources
 
-### Pokémon Mystery Dungeon: Rescue Team DX — disasters can sustain an institution and recurring rescue loop
+### Pokémon Mystery Dungeon: Rescue Team DX
 
-Sources:
-- The Pokémon Company International, Pokémon Mystery Dungeon: Rescue Team DX.
-  https://www.pokemon.com/us/pokemon-video-games/pokemon-mystery-dungeon-rescue-team-dx/
-- Official game site, world overview.
-  https://mysterydungeon.pokemon.com/en-us/world/
+Official Pokémon sources:
+- https://www.pokemon.com/us/pokemon-video-games/pokemon-mystery-dungeon-rescue-team-dx/
+- https://mysterydungeon.pokemon.com/en-us/world/
 
-The official premise states that natural disasters are occurring across the land and causing problems, while rescue requests create recurring work for rescue teams.
+The official premise uses widespread natural disasters to generate recurring rescue needs and a rescue-team institution.
 
-Reusable structure for Ouros:
-`physical event -> immediate local needs -> response institution -> recovery/research -> later callbacks`
+Reusable structure:
+`physical event -> immediate local need -> recurring response work -> later recovery/research`
 
-Do not copy its cosmological mystery, characters, dungeon plots or disaster cause. The useful lesson is that disaster response can be recurring civic work rather than one apocalyptic quest.
+Ouros should not copy the game’s cosmological mystery, characters or dungeon plots. The useful design lesson is that disaster response can generate institutional continuity without every event becoming the campaign’s central antagonist.
 
-### Whiscash — visible Pokémon behavior is not reliable earthquake attribution
+### Whiscash as an anti-attribution precedent
 
-Secondary Pokédex compilation used to compare multiple official game entries:
+Secondary Pokédex compilation used to compare official game entries:
 https://bulbapedia.bulbagarden.net/wiki/Whiscash_(Pok%C3%A9mon)
 
-Especially useful is the Legends: Arceus entry summarized there: Whiscash creates local shaking to startle prey, and people historically mistook that behavior for the cause of earthquakes. Other game entries also associate the species with tremors or earthquake prediction folklore.
+Especially useful is the Legends: Arceus entry summarized there: Whiscash creates local shaking to startle prey, and people historically mistook that behavior for the cause of earthquakes. Other official entries associate the species with tremors or earthquake prediction folklore.
 
 Reusable Ouros pattern:
-`unusual Pokémon behavior -> public causal claim -> instrument/geology evidence -> possibly corrected interpretation`
+`Pokémon behavior observation -> local belief/claim -> instrument/geology comparison -> revised or unresolved interpretation`
 
 Guardrails:
 - Whiscash presence does not prove a tectonic event.
 - Whiscash absence does not rule one out.
-- species lore does not create a regional earthquake-warning system;
-- a Pokémon can create local tremors without being the source of a regional seismic event;
-- any authored predictive behavior needs explicit canon and evidence.
+- local tremor behavior is not automatically the source of a regional seismic event.
+- one apparent precursor does not establish species-wide prediction.
 
-This is particularly compatible with Ouros’ existing anti-scapegoat design patterns.
+### PTU community warning about improvised disaster mechanics
 
-## PTU and project mechanics cross-check
-
-Project source search confirms that `Earthquake` exists as a concrete Move concept in available material. A project source summary describes it as a damaging Ground Move rather than a general environmental-event system.
-
-Therefore:
-- environmental earthquake state must never call the battle Move by name as an implementation shortcut;
-- an earthquake does not inherit the Move’s range, targeting, damage, Frequency or special interactions;
-- a Pokémon using the Move does not automatically create a persistent regional seismic event;
-- a persistent regional event does not prove a Pokémon used the Move.
-
-Available AutoPTU Python evidence also contains `Groundshaper`/`Mold the Earth` battle behavior. That is another exact mechanic and does not grant geologic authority, fault manipulation, earthquake prediction or regional ground deformation.
-
-No reliable complete Caelo source defining earthquake hazards, seismic damage, structural collapse, liquefaction, aftershocks or environmental tremor mechanics was recovered in this run. Super PTU Online Helper was not exposed as an invocable capability.
-
-## PTU community / campaign design lesson
-
-A public PTU GM report describes an earthquake exposing a cave and the GM then improvising unstable-roof consequences during exploration. This is useful mainly as a warning: it is narratively effective to let a disaster reveal previously inaccessible space, but improvised falling-rock damage can quickly become an unverified subsystem.
-
-Source:
+Public PTU GM report:
 https://www.reddit.com/r/PokemonTabletop/comments/onnt2p/
 
-Ouros adaptation:
-- an event may revise a cave entrance, roadcut or ruin access in world state;
-- Slope Instability/Geology decides whether instability exists;
-- a battle inside that site uses static reduced geometry until falling debris/collapse rules are actually verified;
-- do not invent damage dice because “earthquake cave” sounds dangerous.
+The report describes an earthquake exposing a cave and then uses improvised unstable-roof consequences. The reusable narrative structure is strong: a physical event can alter access and expose a new location. The mechanical lesson is the opposite: do not invent falling-rock damage or collapse rules merely because the scene implies instability.
 
-## Fan-game structural reference
+Pass 164 encounters therefore keep dynamic collapse/debris in FULL versions behind the exact engine capability families and provide REDUCED static versions.
 
-Pokémon Prism’s public premise begins with an earthquake separating the protagonist from home and placing them in a new region. This is useful only as a high-level transition pattern: a physical event can alter access and personal geography without needing to remain the central antagonist for the entire story.
+## PTU/Caelo cross-check
 
-Reference overview:
-https://en.wikipedia.org/wiki/Pok%C3%A9mon_Prism
+Project file search confirms that `Earthquake` exists as a concrete Move concept in available source material. That is a battle mechanic, not an environmental-seismic subsystem.
 
-Ouros should not copy its protagonist, regions, league route or plot.
+Available AutoPTU Python evidence also contains Groundshaper/Mold the Earth behavior. Those are exact battle mechanics. Neither grants regional fault manipulation, earthquake prediction, liquefaction, ground-failure authority or environmental-event simulation.
 
-## Original Ouros design directions derived from the research
+No reliable complete Caelo source defining earthquake hazards, environmental shaking, collapse, falling debris, liquefaction or aftershock mechanics was recovered in this run. Super PTU Online Helper was not exposed as an invocable capability.
 
-1. A single event should accumulate several revisions: initial automatic detection, felt reports, instrument review, geologic interpretation and later historical reanalysis.
-2. The same event can produce different local stories without contradiction.
-3. Damage is downstream evidence, not a magnitude meter.
-4. Post-event sequences should create repeated small operational decisions rather than endlessly escalating spectacle.
-5. A later aftershock can matter because of prior damage or disrupted services even when it is much less dramatic than the first event.
-6. Ground failure should be typed and handed off. Liquefaction, landslide, settlement and surface rupture are not interchangeable.
-7. Monitoring outages and bad clocks can create uncertainty that Metrology/Timekeeping later resolve.
-8. A quarry blast, mine operation, Pokémon-generated tremor or machinery event can become a competing signal hypothesis without automatically becoming deception.
-9. A quiet monitoring year is valuable Chronicle evidence.
-10. Earthquake history can alter maps, route planning, archives, memorials, building practice and public memory for decades.
+## New design directions that extend Pass 71
 
-## Explicit non-canon / no-inference rules
+1. Preserve `AUTOMATIC_EVENT_DETECTION` separately from reviewed Pass 71 `SEISMIC_EVENT` identity.
+2. Allow automatic detections to be merged, split, rejected or reclassified without deleting raw station records.
+3. Preserve versioned source solutions for origin time, location/depth and optional size estimate.
+4. Keep old catalog entries because they document what institutions and residents knew at the time.
+5. Treat felt reports as local observations with provenance, language/privacy and timing uncertainty.
+6. Let Metrology and Timekeeping correct station data through derived revisions instead of rewriting raw records.
+7. Preserve monitoring gaps as uncertainty, not conspiracy hooks by default.
+8. Add explicit review history for membership in Pass 71 aftershock sequences.
+9. Allow station relocations and network revisions to complicate long-term comparisons.
+10. Treat a quiet year of instruments as useful Chronicle evidence.
 
-Do not infer a fault from a crack in Minecraft terrain.
-Do not infer an earthquake from block destruction.
-Do not infer magnitude from damage.
-Do not infer intensity at one settlement from another settlement’s experience.
-Do not infer liquefaction from wet ground, sand, river proximity or groundwater alone.
-Do not infer landslide state inside this protocol; hand it to Slope Instability.
-Do not infer structural safety from a low local shaking assessment; hand condition to Architecture/Public Works.
-Do not infer earthquake cause from Whiscash or any Ground-type Pokémon.
-Do not infer prediction capability from unusual Pokémon behavior unless authored and verified.
-Do not map environmental earthquakes to the PTU Move `Earthquake`.
-Do not map `Groundshaper`, `Mold the Earth`, Ground typing or Ground Moves to tectonic authority.
-Do not invent falling-rock damage, knockback, Tripped, Rough Terrain, Accuracy penalties or Status effects from shaking.
+## No-inference rules added by Pass 164
 
-## Open questions for canon
+Automatic detection is not automatically a confirmed earthquake.
+Catalog correction is not a second physical event.
+A rejected detection is not evidence of institutional wrongdoing.
+A felt report is not a magnitude estimate.
+Station silence is not absence of shaking.
+Station uptime is not proof that every processed estimate is correct.
+A later event is not automatically an aftershock.
+Whiscash behavior is not a seismometer.
+The PTU Move `Earthquake` is not an environmental-event template.
+Groundshaper/Mold the Earth is not tectonics.
+Minecraft block destruction, vibration, TNT or camera shake never writes the event catalog.
 
-- Does Ouros have known active faults before the player arrives?
-- Which regions possess instrumental seismic monitoring, and how advanced is it?
-- What historical earthquakes are already part of public memory?
-- Which event data are public, restricted or uncertain?
-- Does the setting use numerical magnitude/intensity language, or qualitative regional terminology?
-- Which settlements or infrastructures were designed around known seismic history?
-- Are any Pokémon behaviors authored as seismic precursors, local tremor sources or folklore, and how reliable are those claims?
-- How much event catalog revision should occur offline?
-- What Caelo rules, if any, govern environmental shaking, collapse, falling debris or ground failure?
+## Open canon questions
+
+- Does Ouros have automatic seismic detection or only reviewed institutional catalogs?
+- Which regions have monitoring networks and what technology level do they use?
+- Does canon use numerical magnitude/intensity systems or qualitative terminology?
+- What historical station/catalog records predate the players?
+- Which records are public, restricted or uncertain?
+- Can player-built instruments join an institutional network after validation?
+- Are any Pokémon behaviors institutionally monitored as possible precursors, and how uncertain are those claims?
+- What Caelo mechanics, if any, govern environmental shaking, collapse or ground-failure consequences?
