@@ -1,66 +1,68 @@
-# Pokémon Orientation, Homing & Navigation Cues Layer
+# Pokémon Orientation, Homing & Multimodal Navigation Cues Layer
 
 Status: PROPOSED SYSTEMS DESIGN / NON-CANON
 Pass: 177
 Date: 2026-08-26
 
+## Authority correction
+
+Pass 81, `geomagnetism-magnetic-navigation-interference-layer.md`, already owns magnetic-field state, magnetic navigation profiles, anomalies, interference and Pokémon magnetic-behavior observations. Pass 177 does not duplicate that authority.
+
+This layer owns the higher-order biological question: how an observed Pokémon appears to orient toward a goal or return to a familiar site while potentially combining visual, olfactory, celestial, acoustic, social, route-memory and Pass 81 magnetic context.
+
 ## Purpose
 
-This layer owns evidence-backed biological orientation and homing state for persistent Pokémon, populations and collectives. It records how an observed subject appears to determine direction or return toward a goal under defined conditions.
+The layer records evidence-backed orientation and homing assessments for persistent Pokémon, populations and collectives. It preserves the difference between an observed heading, a successful return, the goal being pursued and the mechanism hypothesized to have guided that movement.
 
-It does not own route geometry, migration episodes, home ranges, scent fields, astronomical state, signs, tracking, Minecraft pathfinding or PTU movement mechanics.
+It does not own route geometry, migration episodes, home ranges, magnetic fields, scent fields, astronomical state, wayfinding signs, tracking, Minecraft pathfinding or PTU movement mechanics.
 
 ## Authority boundary
 
 Use this chain:
 
-`goal/context -> available cue environment -> observation or authorized displacement -> orientation response -> route/outcome observation -> cue-use assessment -> revision -> downstream handoff`
+`goal/context -> cue-state references -> observation or authorized displacement -> orientation response -> route/outcome observation -> multimodal cue-use assessment -> revision -> downstream handoff`
 
 Existing authorities remain authoritative:
 
+- Geomagnetism Pass 81 owns all magnetic field/anomaly/interference state and magnetic-specific navigation profiles/observations.
 - Pokémon Agency owns persistent individual identity, agency, custody, partnership and release.
-- Wildlife Migration owns migration patterns, annual episodes, corridors and stopovers.
+- Wildlife Migration owns migration patterns, episodes, corridors and stopovers.
 - Pokémon Spatial Ecology owns home ranges, core-use, site fidelity and territoriality.
-- Wayfinding owns human-authored guidance, route descriptions, markers, junctions and actor route knowledge.
+- Wayfinding owns human-authored guidance, markers, junctions and actor route knowledge.
 - Olfactory Landscapes owns odor sources, fields and scent observations.
 - Light/Astronomy owns lightscape and celestial observations.
-- Geology/Metrology owns physical and measured environmental state relevant to any magnetic-anomaly hypothesis.
+- Passive Acoustics/Soundscapes owns acoustic detections and sound fields.
 - Telemetry owns tags, receivers, fixes and movement segments.
-- Field Signs, Photography, Passive Acoustics and Community Science own their evidence records.
-- Research Ethics owns authorization for handling, experimental displacement or intrusive tests.
-- PTU/AutoPTU owns Capabilities, Abilities, Skills, movement and battle resolution.
+- Research Ethics owns handling, experimental displacement and intrusive testing authorization.
+- PTU/AutoPTU owns Skills, Capabilities, Abilities, movement and battle resolution.
 
-This layer consumes references from those systems. It cannot rewrite them.
+Pass 177 may correlate records from these systems. It cannot rewrite them.
 
 ## Core distinctions
 
 `ORIENTATION != NAVIGATION`
 
-`COMPASS CUE != POSITIONAL MAP`
+`COMPASS INFORMATION != POSITIONAL MAP`
 
 `HOMING OUTCOME != PROVEN HOMING MECHANISM`
 
 `RETURN != SITE FIDELITY`
 
-`SITE FIDELITY != ABILITY TO RETURN AFTER DISPLACEMENT`
+`SITE FIDELITY != HOMING AFTER DISPLACEMENT`
 
 `MIGRATION ROUTE != NAVIGATIONAL CUE`
 
 `LANDMARK USE != HUMAN WAYFINDING KNOWLEDGE`
 
-`SCENT DETECTION != STRAIGHT-LINE PATH TO SOURCE`
+`SCENT DETECTION != STRAIGHT-LINE PATH`
 
-`MAGNETIC LORE != MAGNETORECEPTION`
+`PASS_81_MAGNETIC_OBSERVATION != MAGNETIC_HOMING_PROOF`
 
-`MAGNET PULL != HOMING`
+`MAGNET PULL != MAGNETORECEPTION`
 
 `MINECRAFT PATHFINDING != BIOLOGICAL ORIENTATION EVIDENCE`
 
-## Primary entities
-
-### ORIENTATION_PROFILE
-
-Persistent analytical container for one subject or authored population under a bounded life/history context.
+## ORIENTATION_PROFILE
 
 ```yaml
 orientation_profile:
@@ -75,18 +77,16 @@ orientation_profile:
   spatial_use_profile_refs: []
   known_goal_refs: []
   cue_use_assessment_refs: []
-  homing_trial_refs: []
   natural_return_event_refs: []
+  homing_trial_refs: []
   cue_conflict_case_refs: []
-  orientation_history_refs: []
+  baseline_revision_refs: []
   canon_status: proposed
 ```
 
-An orientation profile is not a stat or Capability.
+An orientation profile is an analytical container, never a stat or Capability.
 
-### NAVIGATION_GOAL_CONTEXT
-
-Stores what the observed movement appears directed toward, without assuming motive.
+## NAVIGATION_GOAL_CONTEXT
 
 ```yaml
 navigation_goal_context:
@@ -104,24 +104,11 @@ navigation_goal_context:
   confidence: null
 ```
 
-Candidate descriptive goal types:
+Candidate descriptive goal types include HOME_OR_CORE_SITE, NATAL_SITE, NEST_OR_DEN, STOPOVER, MIGRATION_DESTINATION, COLLECTIVE_LOCATION, RESOURCE_SITE, RELEASE_SITE_RETURN and UNKNOWN.
 
-- HOME_OR_CORE_SITE
-- NATAL_SITE
-- NEST_OR_DEN
-- STOPOVER
-- MIGRATION_DESTINATION
-- COLLECTIVE_LOCATION
-- RESOURCE_SITE
-- RELEASE_SITE_RETURN
-- TRAINER_OR_FORMER_PARTNER_LOCATION
-- UNKNOWN
+A goal classification does not create motive, attachment, ownership or partnership.
 
-A goal classification does not create attachment, ownership or motive.
-
-### ORIENTATION_OBSERVATION
-
-Stores what the subject actually did.
+## ORIENTATION_OBSERVATION
 
 ```yaml
 orientation_observation:
@@ -135,7 +122,7 @@ orientation_observation:
   movement_segment_refs: []
   pause_or_search_behavior_refs: []
   arrival_or_nonarrival_ref: null
-  environmental_context_refs: []
+  cue_environment_snapshot_ref: null
   observation_method_ref: null
   effort_or_coverage_ref: null
   observer_refs: []
@@ -143,11 +130,11 @@ orientation_observation:
   confidence: null
 ```
 
-A successful arrival records the outcome only.
+Arrival proves arrival only.
 
-### CUE_ENVIRONMENT_SNAPSHOT
+## CUE_ENVIRONMENT_SNAPSHOT
 
-References the cue conditions plausibly available during an observation.
+This object is a bundle of references to existing authorities, not a second environmental model.
 
 ```yaml
 cue_environment_snapshot:
@@ -160,27 +147,26 @@ cue_environment_snapshot:
   olfactory_field_refs: []
   wind_context_refs: []
   acoustic_context_refs: []
-  magnetic_measurement_or_geology_refs: []
-  route_guidance_refs: []
+  pass81_magnetic_field_or_anomaly_refs: []
+  wayfinding_asset_refs: []
   weather_refs: []
   infrastructure_refs: []
   obscuration_refs: []
   uncertainty_refs: []
 ```
 
-This object does not claim the Pokémon perceived or used every listed cue.
+Presence in the snapshot does not prove perception or use by the Pokémon.
 
-### CUE_USE_ASSESSMENT
-
-A reviewed claim about which information may have contributed to orientation.
+## MULTIMODAL_CUE_USE_ASSESSMENT
 
 ```yaml
-cue_use_assessment:
+multimodal_cue_use_assessment:
   assessment_id: null
   orientation_profile_id: null
   temporal_scope_ref: null
   goal_context_refs: []
-  candidate_cue_types: []
+  candidate_cue_refs: []
+  pass81_magnetic_assessment_refs: []
   supporting_observation_refs: []
   contradictory_observation_refs: []
   controlled_test_refs: []
@@ -190,27 +176,11 @@ cue_use_assessment:
   supersedes_assessment_id: null
 ```
 
-Candidate cue tags are descriptive only:
+Candidate non-authoritative cue tags may include VISUAL_LANDMARK, CELESTIAL, LIGHT_DIRECTION, OLFACTORY, WIND_ASSOCIATED, ACOUSTIC, ROUTE_MEMORY, SOCIAL_FOLLOWING, PATH_INTEGRATION_HYPOTHESIS, PASS81_MAGNETIC_CONTEXT and MULTIMODAL.
 
-- VISUAL_LANDMARK
-- CELESTIAL
-- LIGHT_DIRECTION
-- OLFACTORY
-- WIND_ASSOCIATED
-- ACOUSTIC
-- MAGNETIC_COMPASS_HYPOTHESIS
-- MAGNETIC_MAP_HYPOTHESIS
-- PATH_INTEGRATION_HYPOTHESIS
-- SOCIAL_FOLLOWING
-- ROUTE_MEMORY
-- MULTIMODAL
-- UNKNOWN
+Any detailed magnetic claim must point to Pass 81 rather than being authored here.
 
-`MAGNETIC_COMPASS_HYPOTHESIS` and `MAGNETIC_MAP_HYPOTHESIS` must remain separate.
-
-### NATURAL_RETURN_EVENT
-
-Records an unmanipulated return observation.
+## NATURAL_RETURN_EVENT
 
 ```yaml
 natural_return_event:
@@ -228,11 +198,11 @@ natural_return_event:
   mechanism_assessment_ref: null
 ```
 
-A return can support site fidelity or homing questions but does not identify the mechanism by itself.
+A natural return may support Spatial Ecology or Rehabilitation handoffs. It does not establish the route or cue mechanism.
 
-### HOMING_TRIAL
+## HOMING_TRIAL
 
-Experimental or management-linked displacement evidence. This entity requires Research Ethics and any required Care/Conservation authorization.
+Experimental displacement evidence is allowed only after Research Ethics and any required Care/Conservation authorization.
 
 ```yaml
 homing_trial:
@@ -245,6 +215,7 @@ homing_trial:
   familiar_goal_ref: null
   displacement_band: null
   cue_manipulation_refs: []
+  pass81_magnetic_context_refs: []
   release_condition_refs: []
   observation_refs: []
   telemetry_refs: []
@@ -253,23 +224,11 @@ homing_trial:
   followup_refs: []
 ```
 
-Candidate outcomes:
+Candidate outcomes include GOAL_REACHED, ORIENTED_GOALWARD_NOT_CONFIRMED_ARRIVAL, SEARCH_BEHAVIOR_OBSERVED, ALTERNATIVE_GOAL_REACHED, RETURNED_TO_RELEASE_SITE, WITHDREW_FROM_TRIAL, MONITORING_LOST, NOT_RESOLVED and UNKNOWN.
 
-- GOAL_REACHED
-- ORIENTED_GOALWARD_NOT_CONFIRMED_ARRIVAL
-- SEARCH_BEHAVIOR_OBSERVED
-- ALTERNATIVE_GOAL_REACHED
-- RETURNED_TO_RELEASE_SITE
-- WITHDREW_FROM_TRIAL
-- MONITORING_LOST
-- NOT_RESOLVED
-- UNKNOWN
+Do not generate displacement experiments merely to create quest content.
 
-Do not create experimental displacement casually for quest content.
-
-### CUE_CONFLICT_CASE
-
-Used when available evidence suggests two or more guidance systems disagree or one expected cue was disrupted.
+## CUE_CONFLICT_CASE
 
 ```yaml
 cue_conflict_case:
@@ -280,26 +239,18 @@ cue_conflict_case:
   expected_baseline_ref: null
   changed_cue_refs: []
   unchanged_cue_refs: []
+  pass81_magnetic_context_refs: []
   behavior_change_refs: []
   candidate_explanation_refs: []
   current_assessment: UNRESOLVED
   confidence: null
 ```
 
-Examples may include:
+Possible contexts include landmark removal, artificial night lighting, altered odor plumes, changed acoustic conditions, a Pass 81 magnetic anomaly/interference incident, route obstruction, snow, fire or vegetation growth.
 
-- familiar landmark removed during redevelopment;
-- artificial night lighting near a migration corridor;
-- odor plume changed by wind or water flow;
-- magnetic anomaly hypothesis near geology or infrastructure;
-- route obstruction causing search behavior while the cue system remains intact;
-- altered visibility after fire, snow or vegetation growth.
+None automatically creates Confused, Accuracy penalties, Fatigue, Slowed or forced movement.
 
-No case automatically creates Confused, Accuracy penalties, Fatigue or forced movement.
-
-### ORIENTATION_BASELINE_REVISION
-
-Versioned summary of repeated behavior under comparable conditions.
+## ORIENTATION_BASELINE_REVISION
 
 ```yaml
 orientation_baseline_revision:
@@ -307,7 +258,7 @@ orientation_baseline_revision:
   orientation_profile_id: null
   valid_observation_window: null
   goal_context_refs: []
-  typical_initial_heading_band: null
+  typical_heading_band: null
   typical_search_pattern_tags: []
   typical_cue_context_refs: []
   sample_size_band: null
@@ -316,148 +267,71 @@ orientation_baseline_revision:
   supersedes_revision_id: null
 ```
 
-The baseline is descriptive. A deviation is not automatically impairment.
+A deviation from baseline is evidence, not a diagnosis.
 
-## Multimodal navigation
+## Multimodal pattern
 
-Ouros should prefer combinations over magical single-cue certainty.
+A useful abstract sequence is:
 
-A common research structure can be represented as:
+`coarse positional/orientation information -> approach -> local cue encounter -> search/localization -> arrival`
 
-`broad positional cue -> coarse orientation -> local cue encountered -> search/localization -> arrival`
+One population might use a Pass 81 magnetic context during broad travel and an olfactory or visual context near its goal. Another may rely on route memory and landmarks. Another may remain completely unresolved.
 
-Possible authored examples:
+The generator must never assign these mechanisms from Type, Pokédex category or narrative convenience.
 
-- magnetic hypothesis for broad heading plus familiar odor near a river mouth;
-- celestial heading at night plus landmark localization near a roost;
-- route memory through a valley plus acoustic contact near a collective;
-- visual landmark chain in an urban district plus scent at the final block.
+## Integration rules
 
-The generator must never assign one of these combinations to a species because it “sounds plausible.” It needs authored species/population evidence or Chronicle observations.
+Wildlife Migration remains valid even when mechanism is unknown. A detour does not prove orientation failure.
 
-## Learning and life history
+Spatial Ecology owns repeated use of places. Repeated return can support site fidelity while homing mechanism remains unknown.
 
-Orientation can interact with Social Learning, Cognition, Aging, Migration and Juvenile Dispersal without duplicating them.
+Olfactory Landscapes owns the odor field. Pass 177 cannot draw a direct route from odor source to animal.
 
-Allowed questions:
+Wayfinding owns signs and human guidance. A Pokémon using a physical landmark does not inherit the written route instructions associated with it.
 
-- did an inexperienced individual improve after repeated trips?
-- does a juvenile follow an experienced collective during early travel?
-- does an older individual continue to use a landmark removed years later?
-- does a released former partner retain a route learned during captivity?
-- did a learned route persist after infrastructure changed?
+Pass 81 owns magnetic observations, local anomalies, corrections and magnetic-specific navigation profiles. Pass 177 only uses those records as one possible component of a wider cue assessment.
 
-Not allowed as automatic conclusions:
+Social Learning owns transmission. Following an experienced Pokémon once does not prove teaching or cultural navigation.
 
-- adult = expert navigator;
-- juvenile = poor navigator;
-- group movement = teaching;
-- repeated path = cultural tradition;
-- former partnership = guaranteed homing to Trainer;
-- return = memory of a specific route.
+## Minecraft boundary
 
-## Integration with Migration
+Minecraft/Cobblemon may render movement and environmental state but cannot decide what cue a Pokémon used.
 
-Migration owns where and when the regional movement occurred.
+Do not infer orientation from shortest-path choice, entity facing direction, pathfinding nodes, chunk loading, spawn/despawn, vanilla home-position logic, client compass direction or minimap pins.
 
-Orientation may explain only a reviewed behavioral hypothesis about how movement was guided.
+Authority remains:
 
-A migration episode can remain fully valid when cue mechanism is unknown.
+`world/ecology evidence -> reviewed orientation intent/assessment -> presentation`
 
-A detour may result from weather, habitat, infrastructure, disturbance, resource distribution or orientation error. Do not choose among these without evidence.
+never the reverse.
 
-## Integration with Spatial Ecology
+## PTU / AutoPTU guardrails
 
-Spatial Ecology owns home range and site fidelity.
+Pass 177 authors no new battle or overworld mechanics.
 
-Orientation owns the process of directed return or heading selection.
-
-An individual can show high site fidelity because it repeatedly returns, yet the exact mechanism can remain unknown.
-
-An excursion outside a known home range is not a homing trial unless there was a controlled or authorized displacement context.
-
-## Integration with Olfactory Landscapes
-
-Olfactory Landscapes owns source and odor-field state. Orientation can reference detections and field snapshots.
-
-Do not derive a route from a smell source by drawing a straight line. Wind, turbulence, current and intermittent detections matter.
-
-## Integration with Wayfinding
-
-Wayfinding records human guidance and actor route knowledge. A Pokémon may observe a landmark that also appears on a trail map, but the biological navigation assessment does not inherit the human route description.
-
-A sign pointing north is not evidence a Pokémon used the sign.
-
-## Minecraft projection
-
-Minecraft/Cobblemon may render current positions, movements, landmarks, lights, weather, signs and environmental assets. It is not the authority for orientation.
-
-Never infer cue use from:
-
-- pathfinding nodes;
-- shortest-path selection;
-- entity facing direction unless an authored observation contract explicitly records it;
-- chunk load/unload;
-- spawn/despawn;
-- navigation AI failures;
-- client compass direction;
-- minimap pins;
-- vanilla mob home-position logic.
-
-The direction of authority is:
-
-`authoritative world/ecology state -> presentation/AI intent -> Minecraft playback`
-
-not
-
-`Minecraft movement -> scientific truth`.
-
-## PTU / mechanical guardrails
-
-This layer authors no new battle or overworld mechanics.
-
-Explicit prohibitions:
-
-- `Magnet Pull` does not grant magnetic navigation.
+- `Magnet Pull` does not grant navigation.
 - Rock/Steel/Electric Type does not grant magnetoreception.
-- Probopass being the Compass Pokémon does not grant a universal compass mechanic.
+- Probopass flavor does not create compass accuracy.
+- Pass 81 magnetic anomalies do not modify Pokémon mechanically without an exact PTU/Caelo contract.
 - battle LoS does not provide landmark navigation.
 - base movement legality does not prove a route is known.
-- Tracker does not automatically identify homing mechanisms.
-- Telepathy does not automatically share maps.
+- Tracker does not reveal a homing mechanism automatically.
+- Telepathy does not share maps automatically.
 - Perception does not create perfect orientation.
-- Survival does not receive a new navigation DC here.
-- a known home range does not grant Accuracy, Initiative, Evasion, Speed or capture bonuses.
-- cue conflict does not create Confused, Slowed, Tripped, Suppressed or Fatigue.
-- magnetic anomalies do not modify Steel-types, Electric-types or Items without an exact PTU/Caelo rule.
+- Survival receives no new navigation DC here.
+- familiar territory grants no Accuracy, Evasion, Initiative, Speed or capture modifier.
+- cue conflict creates no Status.
 
-## Battle handoff
+## Battle handoff and capability dependencies
 
-Orientation should normally resolve as world state before or after battle.
+Orientation normally resolves outside combat.
 
-A FULL mechanically rich encounter may need complete movement when actors must cross, pursue, withdraw, intercept or redirect; `terrain/weather/hazards/zones/reactions` when dynamic environmental cues or barriers have tactical effects; AI tactical policy for non-KO goals such as `HOME`, `SEARCH`, `FOLLOW_CUE`, `WITHDRAW`, `REJOIN_GROUP` or `REACH_LANDMARK`; and Minecraft/Cobblemon/Craftics adapter/playback.
+A FULL encounter with moving wildlife, escorts, crossing, withdrawal, pursuit or interception needs complete movement. If environmental cues/barriers change tactical legality it also needs `terrain/weather/hazards/zones/reactions`. Non-KO behaviors such as `HOME`, `SEARCH`, `FOLLOW_CUE`, `WITHDRAW`, `REJOIN_GROUP` or `REACH_LANDMARK` need AI tactical policy. Minecraft/Cobblemon/Craftics adapter/playback remains required for faithful overworld handoff.
 
-A REDUCED version resolves navigation, search and ecological movement outside the grid, freezes a static legal arena, and lets AutoPTU resolve only a discrete confrontation. The narrative premise remains intact.
+A REDUCED version resolves orientation and ecological movement in world state, freezes a static legal arena, and gives AutoPTU only the discrete confrontation.
 
-## Long-term Chronicle value
+## Canon questions
 
-The system is most useful when evidence changes over years.
+Ouros must eventually decide which species/populations have authored orientation behaviors, whether any Pass 81 magnetic phenomena are behaviorally relevant, which institutions study navigation, whether displacement research is acceptable, which natal/release/den locations remain private, how much state advances offline and whether Caelo changes any relevant Survival, Perception, Tracker or movement rules.
 
-A familiar route can become less reliable after a landmark disappears. A cue hypothesis can be weakened by a displacement observation. A population can begin using a new corridor while keeping the same navigational mechanism. A city can reduce light pollution and later observe a different rate of disorientation without proving causality from a single season.
-
-Old assessments remain historically queryable.
-
-## Canon questions still open
-
-Ouros must eventually define:
-
-- which species or local populations have authored orientation behavior;
-- whether any magnetic-sense phenomenon is actually known in-setting;
-- what institutions study animal navigation;
-- whether displacement experiments are culturally/ethically acceptable and under what restrictions;
-- what navigation observations predate the player;
-- how much orientation state advances offline;
-- how sensitive natal sites, release sites and den locations are handled;
-- whether any Caelo-specific rules alter navigation, Survival, Perception, Tracker or magnetic phenomena.
-
-Until those decisions are reviewed, every orientation profile and cue mechanism remains proposed or evidence-backed only, never mechanically inferred.
+Until reviewed, all cue mechanisms remain proposed or evidence-backed hypotheses, not mechanics or canon facts.
