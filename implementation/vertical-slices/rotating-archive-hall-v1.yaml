@@ -1,0 +1,497 @@
+schema_version: ouros.scene.v1
+content_status: PROPOSED_IMPLEMENTATION
+canon_status: NON_CANON
+pass: 184
+
+slice:
+  slice_id: rotating_archive_hall_v1
+  title: Rotating Archive Hall — persistent reduced executable slice
+  source_refs:
+    - design/puzzles-dungeons-challenge-state-layer.md#encounter-contract--rotating-archive-hall
+    - design/ouros-runtime-scene-world-execution-contract.md
+    - design/encounter-implementation-contracts.md
+    - research/2026-08-26-executable-puzzle-mechanism-runtime-scan-184.md
+  purpose:
+    - prove_server_owned_mechanism_state
+    - prove_multiplayer_revision_validation
+    - prove_idempotent_block_presentation
+    - prove_clue_state_separate_from_mechanism_state
+    - prove_safe_reset
+    - prove_restart_reconstruction
+    - prove_solved_shortcut_persistence
+    - prove_optional_static_autoptu_handoff_after_freeze
+  out_of_scope:
+    - moving_platforms_during_battle
+    - forced_movement
+    - crushing_damage
+    - dynamic_hazard_tiles
+    - redstone_as_authority
+    - automatic_skill_checks
+    - universal_move_or_capability_bypass
+
+runtime_dependencies:
+  autoptu:
+    targeting_footprints_range_los: VERIFIED
+    base_movement_legality: VERIFIED
+    complete_movement_push_pull_knockback_interception_forced: BLOCKING_NOT_USED_BY_REDUCED_SLICE
+    core_calculations: VERIFIED
+    action_economy_initiative: VERIFIED
+    full_turn_round_lifecycle: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_STARTS
+    full_stateful_damage_pipeline: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_STARTS
+    status_lifecycle: PARTIAL_NOT_REQUIRED_BY_BASE_PUZZLE
+    terrain_weather_hazards_zones_reactions: BLOCKING_NOT_USED_BY_REDUCED_SLICE
+    move_specific_behavior: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_MOVES
+    abilities: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_ABILITIES
+    items: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_ITEMS
+    trainer_features_perks: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_FEATURES
+    ai_legal_action_infrastructure: VERIFIED
+    ai_tactical_policy: BLOCKING_NOT_REQUIRED_BY_BASE_PUZZLE
+    minecraft_cobblemon_craftics_adapter_playback: BLOCKING_PROTOTYPE_TARGET
+
+challenge_definition:
+  challenge_definition_id: challenge.rotating_archive_hall
+  definition_revision: 1
+  authority_ref: puzzles_dungeons_challenge_state
+  multiplayer_mode: GLOBAL_SERIALIZED
+  reset_policy: SAFE_AUTHORED_RESET
+  fail_forward_policy: NO_IRREVERSIBLE_FAILURE_IN_V1
+  solved_persistence: PER_WORLD
+  battle_handoff_policy: ONLY_FROM_FROZEN_SOLVED_CONFIGURATION
+
+mechanism:
+  mechanism_id: mechanism.archive_hall.rings
+  state_revision_initial: 0
+  state_authority: SERVER_PERSISTENT_CHALLENGE_STATE
+  presentation_authority: ADAPTER_ONLY
+  minecraft_block_state_is_authoritative: false
+  redstone_state_is_authoritative: false
+
+  logical_state:
+    ring_outer:
+      allowed: [NORTH, EAST, SOUTH, WEST]
+      initial: NORTH
+    ring_middle:
+      allowed: [NORTH, EAST, SOUTH, WEST]
+      initial: EAST
+    ring_inner:
+      allowed: [NORTH, EAST, SOUTH, WEST]
+      initial: SOUTH
+    central_passage:
+      allowed: [SEALED, OPEN]
+      initial: SEALED
+    shortcut:
+      allowed: [LOCKED, UNLOCKED]
+      initial: LOCKED
+    mechanism_mode:
+      allowed: [ACTIVE, FROZEN_FOR_BATTLE, SOLVED, RECOVERING]
+      initial: ACTIVE
+
+  solved_predicate:
+    all:
+      - ring_outer == EAST
+      - ring_middle == SOUTH
+      - ring_inner == WEST
+
+  solved_effects:
+    authoritative_writes:
+      - set central_passage = OPEN
+      - set shortcut = UNLOCKED
+      - set mechanism_mode = SOLVED
+      - append challenge_completion_record exactly_once
+    presentation_effects:
+      - render central passage open
+      - render shortcut unlocked
+      - render solved indicator
+
+controls:
+  outer_control:
+    control_id: control.archive.outer
+    request_kind: ACTIVATE
+    rotates: ring_outer
+    operation: ROTATE_CLOCKWISE_90
+    legal_when:
+      - mechanism_mode == ACTIVE
+      - challenge_not_terminally_suspended
+  middle_control:
+    control_id: control.archive.middle
+    request_kind: ACTIVATE
+    rotates: ring_middle
+    operation: ROTATE_CLOCKWISE_90
+    legal_when:
+      - mechanism_mode == ACTIVE
+      - challenge_not_terminally_suspended
+  inner_control:
+    control_id: control.archive.inner
+    request_kind: ACTIVATE
+    rotates: ring_inner
+    operation: ROTATE_CLOCKWISE_90
+    legal_when:
+      - mechanism_mode == ACTIVE
+      - challenge_not_terminally_suspended
+  reset_control:
+    control_id: control.archive.reset
+    request_kind: ACTIVATE
+    operation: RESET_TO_AUTHORED_BASELINE
+    legal_when:
+      - mechanism_mode == ACTIVE
+      - central_passage == SEALED
+    reset_does_not_restore:
+      - pokemon_hp
+      - trainer_ap
+      - move_frequency
+      - item_inventory
+      - battle_state
+      - chronicle_records
+      - observed_clues
+
+interaction_contract:
+  request_fields:
+    - scene_instance_id
+    - challenge_instance_id
+    - mechanism_id
+    - control_id
+    - observed_mechanism_revision
+    - actor_ref
+    - client_request_id
+  validation_order:
+    - authenticate_actor
+    - load_authoritative_challenge_instance
+    - compare_observed_revision
+    - validate_current_mode
+    - validate_control_legality
+    - allocate_stable_operation_id
+    - commit_mechanism_transition
+    - increment_mechanism_revision
+    - evaluate_solved_predicate
+    - enqueue_presentation_commands
+    - return_authoritative_snapshot
+  stale_revision_policy:
+    action: REJECT_WITH_CURRENT_SNAPSHOT
+    automatic_rebase: false
+    reason: player must see current shared state before choosing again
+  duplicate_request_policy:
+    key: client_request_id
+    action: RETURN_PRIOR_COMMITTED_RESULT
+    rerun_transition: false
+
+clues:
+  clue_state_authority: PUZZLES_DUNGEONS_CHALLENGE_STATE
+  mechanism_state_is_clue_state: false
+  entries:
+    - clue_id: clue.archive.entry_mosaic
+      acquisition: INSPECT_AUTHORED_OBJECT
+      persistent_when_observed: true
+      payload_role: reveals one relationship between ring symbols
+    - clue_id: clue.archive.catalog_margin
+      acquisition: INSPECT_AUTHORED_RECORD
+      persistent_when_observed: true
+      payload_role: reveals one ordering constraint
+    - clue_id: clue.archive.worn_floor
+      acquisition: OBSERVE_AUTHORED_WORLD_SIGN
+      persistent_when_observed: true
+      payload_role: suggests a prior common orientation without proving solution
+  critical_revelation_policy:
+    minimum_independent_routes: 2
+    external_guide_required: false
+    missing_one_clue_must_not_softlock: true
+
+world_zones:
+  hall_interaction_zone:
+    zone_id: zone.archive_hall.interaction
+    geometry_ref: authored_location_geometry.archive_hall.interaction.v1
+    battle_semantics: NONE
+  central_passage_zone:
+    zone_id: zone.archive_hall.central_passage
+    geometry_ref: authored_location_geometry.archive_hall.central_passage.v1
+    traversal_authority: CHALLENGE_STATE
+    open_when: central_passage == OPEN
+  static_battle_arena:
+    zone_id: zone.archive_hall.battle_safe
+    geometry_ref: authored_location_geometry.archive_hall.battle_safe.v1
+    battle_semantics: EXPLICIT_STATIC_ARENA_ONLY
+
+presentation_contract:
+  projection:
+    - logical ring orientation -> authored block/model transform
+    - central_passage state -> authored door/wall presentation
+    - shortcut state -> authored shortcut presentation
+    - mechanism_mode -> interaction enablement
+  operation_key_template: "{challenge_instance_id}:{mechanism_revision}:{presentation_component}:v1"
+  retry_policy: IDEMPOTENT_RETRY
+  acknowledgement_required: true
+  presentation_failure_policy:
+    authoritative_state_rollback: false
+    recovery: REPROJECT_FROM_CURRENT_LOGICAL_STATE
+  external_block_edit_policy:
+    detect_if_possible: true
+    authoritative_import: NEVER
+    recovery: RESTORE_AUTHORED_PRESENTATION_FROM_LOGICAL_STATE
+
+scene_flow:
+  initial_node: node.enter_hall
+  nodes:
+    - node_id: node.enter_hall
+      on_enter:
+        - load_or_create_challenge_instance
+        - project_current_mechanism_state
+        - expose_known_clues_for_actor
+      transitions:
+        - when: mechanism_mode == SOLVED
+          to: node.solved_access
+        - when: mechanism_mode == ACTIVE
+          to: node.explore
+
+    - node_id: node.explore
+      interaction_offers:
+        - INSPECT clue.archive.entry_mosaic
+        - INSPECT clue.archive.catalog_margin
+        - OBSERVE clue.archive.worn_floor
+        - ACTIVATE control.archive.outer
+        - ACTIVATE control.archive.middle
+        - ACTIVATE control.archive.inner
+        - ACTIVATE control.archive.reset
+        - WITHDRAW scene.current
+      transitions:
+        - when: solved_predicate_committed
+          to: node.commit_solution
+        - when: player_withdraws
+          to: node.pause_for_return
+
+    - node_id: node.commit_solution
+      on_enter_authoritative_writes:
+        - open central passage
+        - unlock persistent shortcut
+        - record solution route actually used
+      on_enter_presentation:
+        - reproject all rings from committed state
+        - open central passage
+        - expose shortcut
+      transitions:
+        - when: optional_hostile_world_fact_absent
+          to: node.solved_access
+        - when: optional_hostile_world_fact_present
+          to: node.offer_battle
+
+    - node_id: node.offer_battle
+      interaction_offers:
+        - START_BATTLE encounter.archive_hall.optional_hostile
+        - WITHDRAW scene.current
+      transitions:
+        - when: start_battle_accepted
+          to: node.freeze_for_battle
+        - when: player_withdraws
+          to: node.solved_access
+
+    - node_id: node.freeze_for_battle
+      on_enter_authoritative_writes:
+        - set mechanism_mode = FROZEN_FOR_BATTLE
+        - freeze static arena transform revision
+        - disable ring controls
+      transitions:
+        - when: freeze_commit_acknowledged
+          to: node.request_battle
+
+    - node_id: node.request_battle
+      on_enter_effect:
+        effect_type: REQUEST_BATTLE
+        operation_key_template: "{challenge_instance_id}:battle:optional:v1"
+        battle_request_ref: battle_request.archive_hall.optional
+        duplicate_policy: RETURN_EXISTING_BATTLE_SESSION
+      transitions:
+        - when: battle_session_acknowledged
+          to: node.await_battle_result
+        - when: recoverable_request_failure
+          to: node.battle_request_recovery
+
+    - node_id: node.await_battle_result
+      accepted_trigger: BATTLE_RESULT
+      result_ingestion:
+        accept_fields_only:
+          - battle_session_id
+          - completion_state
+          - winner_side_if_defined
+          - surviving_combatant_refs
+          - authoritative_battle_event_refs
+        ignore_fields_not_declared: true
+        duplicate_result_policy: EXACTLY_ONCE_BY_BATTLE_SESSION_ID
+      transitions:
+        - when: accepted_result_committed
+          to: node.after_battle
+
+    - node_id: node.after_battle
+      on_enter_authoritative_writes:
+        - set mechanism_mode = SOLVED
+        - append battle_handoff_outcome_ref exactly_once
+      transitions:
+        - always: node.solved_access
+
+    - node_id: node.battle_request_recovery
+      recovery:
+        - query battle session by stable operation key
+        - if session exists bind it and continue
+        - if no session exists permit idempotent retry
+      transitions:
+        - when: recovered_or_retried
+          to: node.await_battle_result
+
+    - node_id: node.pause_for_return
+      persistence:
+        mechanism_state: KEEP
+        clue_state: KEEP
+        shortcut_state: KEEP
+      reentry: node.enter_hall
+
+    - node_id: node.solved_access
+      interaction_offers:
+        - TRAVERSE central_passage
+        - TRAVERSE persistent_shortcut
+        - INSPECT solved_mechanism
+      controls_enabled: false
+      terminal_for_puzzle: true
+
+battle_request:
+  battle_request_id: battle_request.archive_hall.optional
+  create_only_when:
+    - mechanism_mode == FROZEN_FOR_BATTLE
+    - central_passage == OPEN
+    - static_battle_arena_transform_frozen
+    - independent_hostile_world_fact_present
+  world_facts_allowed_into_battle:
+    - stable arena geometry revision
+    - persistent combatant identity refs
+    - legal starting transforms
+  forbidden_inferences:
+    - puzzle_solution_grants_combat_bonus
+    - ring_orientation_changes_accuracy
+    - walls_rotate_during_reduced_battle
+    - redstone_state_changes_battle_result
+    - solving_puzzle_restores_resources
+
+recovery_contract:
+  server_restart:
+    - load authoritative challenge instance
+    - load mechanism revision and logical state
+    - reconstruct scene node from committed state
+    - reproject presentation with idempotent commands
+    - never replay authoritative transition solely because presentation ack is missing
+  chunk_reload:
+    - reproject current logical state
+    - do not reset orientations
+    - do not create new challenge instance
+  adapter_disconnect:
+    - keep logical state
+    - mark presentation acknowledgement pending
+    - replay presentation after reconnect
+  invalid_world_presentation:
+    - restore from logical state
+    - record technical repair event if needed
+    - do not create Chronicle lore from corruption
+
+acceptance_tests:
+  - test_id: puzzle_001_single_control_commit
+    given: mechanism revision 4, outer NORTH
+    when: one valid outer-control request observes revision 4
+    expect:
+      - outer becomes EAST
+      - mechanism revision becomes 5
+      - exactly one transition record
+      - presentation command emitted once logically
+
+  - test_id: puzzle_002_duplicate_client_request
+    given: request X already committed
+    when: request X is delivered again
+    expect:
+      - no second rotation
+      - same prior result returned
+      - no duplicate Chronicle event
+
+  - test_id: puzzle_003_two_players_same_revision
+    given: players A and B both observed revision 8
+    when: A commits outer control first and B sends middle control against revision 8
+    expect:
+      - A transition commits
+      - revision advances to 9
+      - B receives stale-revision rejection plus revision 9 snapshot
+      - B request is not silently rebased
+
+  - test_id: puzzle_004_restart_after_commit_before_render
+    given: logical transition committed and revision advanced, presentation not acknowledged
+    when: server restarts
+    expect:
+      - committed orientation remains
+      - adapter reprojects committed state
+      - transition does not execute twice
+
+  - test_id: puzzle_005_external_block_tamper
+    given: logical central passage is SEALED
+    when: Minecraft blocks are externally changed to look open
+    expect:
+      - traversal remains illegal by challenge authority
+      - presentation is repaired toward SEALED
+      - challenge does not become solved
+
+  - test_id: puzzle_006_safe_reset
+    given: unsolved orientations and previously observed clues
+    when: valid reset commits
+    expect:
+      - orientations return to authored baseline
+      - clues remain observed
+      - HP/AP/items/frequencies unchanged
+      - revision advances once
+
+  - test_id: puzzle_007_solution_unlocks_shortcut
+    given: two prior rings correct
+    when: final legal rotation satisfies solved predicate
+    expect:
+      - passage OPEN
+      - shortcut UNLOCKED
+      - mechanism SOLVED
+      - completion record exactly once
+
+  - test_id: puzzle_008_return_after_completion
+    given: challenge solved in a prior session
+    when: player returns after chunk unload or server restart
+    expect:
+      - solved state persists
+      - shortcut remains unlocked
+      - controls remain disabled
+      - no mandatory replay of the original puzzle
+
+  - test_id: puzzle_009_optional_battle_exactly_once
+    given: solved challenge plus independent hostile world fact
+    when: battle start request is retried after network failure
+    expect:
+      - one battle session for stable operation key
+      - no duplicate combatants or rewards
+
+  - test_id: puzzle_010_duplicate_battle_result
+    given: battle result already ingested
+    when: same battle result arrives again
+    expect:
+      - no duplicate aftermath
+      - no duplicate Chronicle write
+      - mechanism remains SOLVED
+
+full_version_future_upgrade:
+  premise_change_required: false
+  additional_required_capabilities:
+    complete_movement_push_pull_knockback_interception_forced: BLOCKING
+    terrain_weather_hazards_zones_reactions: BLOCKING
+    ai_tactical_policy: BLOCKING_IF_NPCS_OR_HOSTILES_HAVE_NON_KO_OBJECTIVES
+    minecraft_cobblemon_craftics_adapter_playback: BLOCKING
+  possible_future_mechanics:
+    - ring sections rotate during battle
+    - routes open and close between turns
+    - actors withdraw across changing paths
+    - authored reaction windows around mechanism movement
+  prohibition:
+    - do not approximate these through vanilla pistons, knockback, pathfinding or damage until authoritative capability exists
+
+canon_questions:
+  - Does an archive hall like this exist in Ouros?
+  - Which institution built or currently maintains it?
+  - Is its original purpose a challenge, infrastructure, archive security or something later reinterpreted as a puzzle?
+  - What clue content and historical meaning are approved canon?
+  - Is the optional hostile encounter ever canon for this location?
+
+Nothing in this slice answers those questions. The implementation contract can be reused with different canon-approved content later.
