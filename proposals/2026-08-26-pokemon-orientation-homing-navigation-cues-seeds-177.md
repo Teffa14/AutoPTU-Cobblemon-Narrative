@@ -1,194 +1,121 @@
-# Ouros Pokémon Orientation, Homing & Navigation Cues — Seeds 177
+# Ouros Pokémon Orientation, Homing & Multimodal Navigation Cues — Seeds 177
 
 Status: NON-CANON PROPOSALS
 Date: 2026-08-26
 Pass: 177
 
-All concepts below are original Ouros candidates derived from the research structures in Pass 177. None establish a species-wide capability, mechanical navigation rule, settlement, institution, Pokémon population or event as canon.
+Authority note: Pass 81 remains authoritative for magnetic-field state, anomalies, interference, magnetic navigation profiles and Pokémon magnetic-behavior observations. These candidates use Pass 177 only for higher-order multimodal orientation/homing assessments and reference Pass 81 whenever magnetism is involved.
+
+None of the following establishes a species-wide capability, mechanical navigation rule, institution, population or event as canon.
 
 ## 30 candidate seeds
 
-### 1. The Landmark That Was Demolished
-A persistent wild Pokémon has used the same route into an urban roost for years. Redevelopment removes a tower visible from several blocks away. The Pokémon still reaches the district but begins making longer search loops near the final approach. The question is whether the tower was a local cue, whether another change happened simultaneously, or whether the apparent effect is an observation artifact.
+1. The Landmark That Was Demolished — redevelopment removes a tower beside a long-used roost approach. A persistent Pokémon still reaches the district but begins making longer local search loops.
 
-### 2. North, but Not Home
-A local population consistently departs a basin on a similar compass heading during one seasonal movement. Researchers initially describe this as “homing,” but later evidence shows only directional orientation has been demonstrated. The destination mechanism remains unknown.
+2. North, but Not Home — a population departs a basin on a stable compass heading. Researchers later correct public language from “homing” to “directional orientation observed; destination mechanism unknown.”
 
-### 3. The River Smells Different
-A water-treatment change, flood or industrial cleanup alters the odor profile near a river mouth. Returning Pokémon still reach the coast but show a changed search pattern near the final branch network. Olfactory Landscapes owns the changed odor field; Orientation owns only the behavioral comparison.
+3. The River Smells Different — flood recovery or treatment changes alter an odor landscape near a river mouth. Broad return remains normal while final localization becomes less direct.
 
-### 4. One Return, Big Headline
-A released former partner is photographed months later near its former home. Public media describes a dramatic “journey back to its Trainer.” The actual evidence only proves presence near a familiar area. Pokémon Agency, Spatial Ecology and Orientation keep partnership, site fidelity and homing mechanism separate.
+4. One Return, Big Headline — a released former partner is photographed near its old home months later. Media calls it a journey back to its Trainer; the evidence only proves presence near a familiar site.
 
-### 5. The Darker Route Works Better
-A city reduces unnecessary night lighting along one corridor. In later seasons, fewer observed detours occur during nocturnal movement. The association is interesting but remains a multi-year hypothesis requiring comparable observation effort.
+5. The Darker Route Works Better — a city reduces unnecessary night lighting and later observes fewer route deviations. The relationship remains a multi-year hypothesis rather than a causal verdict.
 
-### 6. Three Cues, Three Weather Conditions
-The same recurring individual is observed returning successfully in clear weather, heavy fog and strong wind, but its route differs among conditions. The research question becomes cue weighting rather than whether the Pokémon “knows the way.”
+6. Three Cues, Three Weather Conditions — the same individual returns in clear weather, fog and strong wind using visibly different approach patterns.
 
-### 7. The New Bridge Became a Landmark
-A major bridge alters the skyline. Several years later, observers suspect some local Flying Pokémon use it during final approach to roosts. The bridge may have become a learned visual cue without changing the regional migration corridor.
+7. The New Bridge Became a Landmark — a bridge changes the skyline and may become part of a learned final approach without changing the regional migration corridor.
 
-### 8. The Familiar Valley After Fire
-A wildfire removes vegetation that previously framed several major visual features. Movement still occurs through the valley, but route precision changes for one known individual. The old baseline remains valid for the pre-fire landscape.
+8. The Familiar Valley After Fire — wildfire removes visual structure from a known route. Movement continues, but one individual becomes less precise in the final section.
 
-### 9. The Compass Pokémon Study
-A university proposes a careful study of a local Nosepass/Probopass population after repeated north-oriented observations. The study can test orientation behavior, but the species’ category name and magnetic lore do not count as the result.
+9. The Compass Pokémon Study — a university studies a local Nosepass/Probopass population. Pass 81 owns all magnetic measurements and magnetic-behavior observations; Pass 177 compares those records with visual, olfactory and route-memory evidence.
 
-### 10. The Magnetic-Anomaly Rumor
-Travelers blame a strange local geology for Pokémon becoming “lost.” Metrology/Geology finds a real physical anomaly, but Orientation evidence remains weak. The anomaly can be real while the behavioral claim remains unresolved.
+10. The Magnetic-Anomaly Rumor — residents blame a Pass 81 magnetic anomaly for navigation failures. The anomaly may be real while the behavioral explanation remains unresolved.
 
-### 11. The Route Learned Before the Road
-An old persistent Pokémon follows a line across a district that predates the modern street grid. Archival maps reveal that the route closely matches a former creek or footpath. The correlation may reflect old landmarks, scent, habit or coincidence.
+11. The Route Learned Before the Road — an old persistent Pokémon follows a line that predates the modern street grid. Archived maps reveal a former creek or path along the same alignment.
 
-### 12. The Juvenile Follows, Then Doesn't
-A juvenile initially travels with an experienced group, then later completes part of the route independently. Social Learning can investigate whether knowledge transfer occurred; Orientation records only the developing performance and available cues.
+12. The Juvenile Follows, Then Does Not — a young Pokémon initially travels with experienced individuals and later completes part of the journey alone. Social Learning decides whether transmission is supported.
 
-### 13. The Expert Took the Long Way
-An individual with years of successful returns takes a long detour after a temporary construction closure. The deviation becomes evidence that route familiarity does not imply perfect replanning around novel obstacles.
+13. The Expert Took the Long Way — a veteran individual makes a major detour around new construction, showing that long experience does not imply perfect replanning.
 
-### 14. The Search Spiral
-After an authorized release, a monitored Pokémon moves in repeated expanding loops before choosing a stable heading. The shape is preserved as behavior rather than interpreted automatically as confusion, panic or failed homing.
+14. The Search Spiral — after an authorized release, a Pokémon makes expanding loops before choosing a stable heading. The shape is recorded without labeling it panic, confusion or failure.
 
-### 15. The Beacon That Was Never Used
-A community installs a visible landmark intended to help a recurring Pokémon movement event. The route later improves, but observations never demonstrate use of the beacon. The intervention can remain culturally meaningful without receiving causal credit.
+15. The Beacon That Was Never Used — a community installs a visible marker intended to help a recurring movement event. Later improvement does not prove the Pokémon used it.
 
-### 16. The Odor Plume Broke at the Windbreak
-New tree growth changes wind structure near a familiar site. Olfactory observations become intermittent. A Pokémon’s local search becomes less direct while broad arrival remains normal.
+16. The Odor Plume Broke at the Windbreak — new vegetation changes local airflow and scent continuity. Broad arrival stays normal while final search becomes intermittent.
 
-### 17. The Same Goal, Different Cue
-Two individuals reach the same roost from the same release area. One appears strongly landmark-associated; the other’s observations remain compatible with odor or route memory. Population behavior is not collapsed into one mechanism.
+17. The Same Goal, Different Cue — two individuals reach the same roost but observations support different cue combinations.
 
-### 18. The Wrong Home
-A displaced Pokémon returns reliably to a former seasonal site rather than the location researchers expected. The “failure” reveals that the assumed goal was wrong.
+18. The Wrong Home — a displaced Pokémon returns reliably to a former seasonal site rather than the location researchers assumed was its goal.
 
-### 19. The Former Partner Does Not Return
-A released Pokémon with years of Trainer history establishes a stable range elsewhere and never returns to the old household. This is a valid outcome and does not imply forgotten bonds, low Loyalty or failed rehabilitation.
+19. The Former Partner Does Not Return — a released Pokémon with years of Trainer history establishes a stable range elsewhere. No return is treated as a valid outcome, not a relationship judgment.
 
-### 20. The First Trip After Evolution
-A persistent individual completes a familiar journey after Evolution but uses different pauses or approach routes because its body and movement options changed. Evolution authority owns the mechanical change; Orientation records only the observed route behavior.
+20. The First Trip After Evolution — a known Pokémon completes a familiar journey after Evolution using new pauses or approach geometry. Evolution owns mechanics; Pass 177 stores only the behavior.
 
-### 21. Two Good Maps, One Bad Night
-Visual conditions favor one route model while olfactory conditions favor another. The Pokémon chooses a path that works poorly that night. Cue conflict can produce an interesting investigation without a Status effect.
+21. Two Good Maps, One Bad Night — visual context supports one route while olfactory context supports another. The resulting poor path becomes a cue-conflict case without creating a Status.
 
-### 22. The Mine That Distorts the Study
-Researchers suspect a magnetic cue near an old mine. Later they learn that the strongest behavioral change correlates with new lighting and vehicle traffic instead. The initial magnetic hypothesis remains part of the research history.
+22. The Mine Study — researchers compare orientation changes near an old mine. Pass 81 supplies magnetic context while Light, Technology, Traffic and Geology remain competing explanations.
 
-### 23. The Return Seen Only on Camera
-A camera trap documents a familiar individual at a site after a long observation gap. There is no route telemetry. The system records a return observation but leaves the path and cue mechanism unknown.
+23. The Return Seen Only on Camera — a camera trap documents a familiar individual at a site after a long gap. The path and mechanism remain unknown.
 
-### 24. The Group Arrived Without Its Usual Guide
-A recurring collective reaches a stopover after a well-known older individual fails to appear that season. This weakens the simple claim that the group depends on one navigator, but does not prove how the others oriented.
+24. The Group Arrived Without Its Usual Guide — a collective reaches a stopover despite the absence of a famous older individual, weakening a simplistic “single navigator” story.
 
-### 25. The Restored Wetland Changed the Final Approach
-Conservation restores a wetland. The regional corridor remains stable, but the last kilometers of movement change over several seasons. Resource distribution, odor, visual cues and site value are all competing explanations.
+25. The Restored Wetland Changed the Final Approach — a regional corridor stays stable while the final kilometers shift after habitat restoration.
 
-### 26. The Old Route Still Works Backwards
-An individual reaches Site B from Site A reliably, but a later displacement from B does not produce the reverse path. The asymmetry becomes evidence against treating a learned route as a bidirectional map.
+26. The Old Route Works Only One Way — an individual reliably travels A→B but a later displacement from B does not reproduce B→A, undermining assumptions of a fully bidirectional learned map.
 
-### 27. The Guidebook Borrowed the Pokémon Story
-A public trail guide claims a local species “always follows the stars.” Archives reveal the phrase originated from a century-old local story, not a study. The tradition can remain valuable while the biological claim is reclassified.
+27. The Guidebook Borrowed the Pokémon Story — a trail guide claims a species “always follows the stars.” Archives reveal the phrase came from folklore rather than research.
 
-### 28. The Observation Station Moved
-A monitoring tower is relocated. Apparent headings shift because the observational geometry changed, not because Pokémon behavior did. Metrology and Photography help reconcile the series.
+28. The Observation Station Moved — apparent heading changes disappear when analysts correct for a relocated monitoring station.
 
-### 29. The Homing Trial That Was Cancelled
-A proposed displacement experiment meets scientific criteria but fails Research Ethics review because the welfare risk is unnecessary. Researchers instead use natural returns, historic telemetry and passive observation. The cancelled experiment still becomes part of institutional history.
+29. The Homing Trial That Was Cancelled — a proposed displacement experiment is rejected on welfare grounds. Researchers use natural returns and historic telemetry instead.
 
-### 30. Nothing Happened at Compass Ridge
-A full season of monitoring finds ordinary arrivals, no cue conflicts and no remarkable navigation failures. Years later it becomes the clean baseline against which a genuinely unusual season can be compared.
+30. Nothing Happened at Compass Ridge — a complete season records ordinary arrivals and no notable cue conflict. Years later it becomes the clean comparison baseline.
 
-## Long-form arc: Five Returns to Meridian Roost
+## Long arc: Five Returns to Meridian Roost
 
-Year one establishes an individual’s repeated return to a city roost with no claim about mechanism. Year two loses part of the visual skyline to redevelopment and records longer local search behavior. Year three introduces improved passive-acoustic and photographic coverage, revealing that some apparent absences were monitoring gaps. Year four reduces night lighting along a corridor and observes a different approach pattern without declaring causality. Year five compares all evidence and concludes that the Pokémon probably uses multiple cues whose importance changes by context.
+A recurring individual returns to the same urban roost across five years. Redevelopment removes a landmark; better monitoring reveals earlier coverage gaps; light policy changes alter the nightscape; a storm changes odor and wind context. The final institutional conclusion can be that several cues probably contribute under different conditions, with no single omniscient mechanism.
 
-The payoff is institutional knowledge rather than a supernatural reveal. The city learns that preserving a single landmark is not equivalent to preserving a navigational system.
+## Long arc: The Salmon Road of Ouros
 
-## Long-form arc: The Salmon Road of Ouros
+A freshwater population repeatedly returns toward a spawning reach. Local tradition says the Pokémon “remember the river.” Over several seasons researchers distinguish regional orientation from final stream localization. Floods alter branches, cleanup changes odor conditions, and a restored tributary begins receiving arrivals. Freshwater, Olfactory Landscapes, Migration, Fisheries and Pass 177 each retain separate authority.
 
-A freshwater population returns toward a recurring spawning reach. Early local tradition attributes the return to “remembering the river.” Over several seasons researchers distinguish coarse regional orientation from final stream localization. Floods alter branch geometry, pollution cleanup changes odor conditions, and a restored tributary begins receiving arrivals again.
+## Long arc: The Compass Question
 
-The arc can connect Freshwater, Olfactory Landscapes, Migration, Fisheries, Conservation and Public Memory. It never requires a universal species mechanic and should remain authored to one population unless canon expands it.
+A regional program studies Nosepass and Probopass across several geological settings. Pass 81 owns field measurements, anomalies and magnetic-behavior observations. Pass 177 compares those records with landmarks, route outcomes and alternative cues. One site supports a stable directional pattern, another remains inconsistent, and a third suggests infrastructure interference. The arc can end with a precise but incomplete scientific answer rather than confirmation of the popular myth.
 
-## Long-form arc: The Compass Question
+## Encounter: Disoriented Night Crossing
 
-A regional research program follows Nosepass and Probopass behavior across multiple geological settings. Public belief starts far ahead of the evidence because the species is already culturally associated with compasses. Researchers document facing direction, environmental context, magnetic measurements, landmark availability and infrastructure changes.
+Narrative premise: a nocturnal movement event intersects a brightly lit transport corridor. Observers report looping and aborted crossings.
 
-One site supports a stable north-orientation pattern. Another produces inconsistent results. A third suggests external interference from nearby infrastructure. The final outcome can remain nuanced: magnetic interaction may be real while sophisticated map-based homing remains unproven.
+FULL version: wildlife can `CROSS`, `WITHDRAW`, `REJOIN_GROUP` or `SEARCH`; responders clear lanes without treating all Pokémon as enemies. Dynamic barriers or lighting may change routes.
 
-This arc intentionally rewards a result that is more precise than the original myth rather than simply confirming or debunking it.
+FULL capability classification: targeting/footprints/range/LoS VERIFIED; base movement legality VERIFIED; complete movement BLOCKING; core calculations VERIFIED; action economy/initiative VERIFIED; full turn/round lifecycle PARTIAL; full stateful damage PARTIAL; status lifecycle PARTIAL when exact statuses are invoked; terrain/weather/hazards/zones/reactions BLOCKING if environmental state has tactical effects; move-specific behavior PARTIAL; abilities PARTIAL; items PARTIAL; Trainer Features/perks PARTIAL; AI legal-action infrastructure VERIFIED; AI tactical policy BLOCKING; Minecraft/Cobblemon/Craftics adapter/playback BLOCKING.
 
-## Encounter contract: Disoriented Night Crossing
+REDUCED version: transport staff close the corridor through world state, ecological crossing occurs outside the battle grid, and AutoPTU receives a static arena only if a separate confrontation remains. No Confused Status or light-based Accuracy penalty is invented.
 
-Narrative premise: a nocturnal movement event intersects a brightly lit transport corridor. Observers report repeated looping and aborted crossings. The goal is to protect movement and public safety while preserving evidence about what happened.
+## Encounter: Homing Trial Site Emergency
 
-FULL version: civilians, vehicles and Pokémon occupy a changing tactical space. Some Pokémon attempt `CROSS`, `WITHDRAW`, `REJOIN_GROUP` or `SEARCH`; responders try to clear lanes without treating wildlife as enemies. Lighting or barriers may change which routes are viable. The battle, if one occurs, remains separate from the ecological conclusion.
+Narrative premise: an already-authorized observational release is interrupted by an unrelated safety problem.
 
-Capability dependencies for FULL:
+FULL version: researchers withdraw while the subject has a non-hostile escape/return objective. The subject must not become an enemy merely because it appears on the tactical map.
 
-- targeting/footprints/range/LoS: VERIFIED for ordinary battle targeting; does not model navigational visibility.
-- base movement legality: VERIFIED for current ported movement primitives.
-- complete movement including push/pull/knockback/interception/forced movement: BLOCKING for dynamic crossing, interception and repositioning.
-- core calculations: VERIFIED.
-- action economy/initiative: VERIFIED.
-- full turn/round lifecycle: PARTIAL.
-- full stateful damage pipeline: PARTIAL.
-- status lifecycle: PARTIAL if exact Status effects occur.
-- terrain/weather/hazards/zones/reactions: BLOCKING if lighting, traffic barriers or environment have tactical effects.
-- move-specific behavior: PARTIAL.
-- abilities: PARTIAL.
-- items: PARTIAL.
-- Trainer Features/perks: PARTIAL.
-- AI legal-action infrastructure: VERIFIED.
-- AI tactical policy: BLOCKING for non-KO goals such as crossing, retreat and rejoining.
-- Minecraft/Cobblemon/Craftics adapter/playback: BLOCKING.
+FULL dependencies: targeting VERIFIED; base movement VERIFIED; complete movement BLOCKING; calculations VERIFIED; action economy VERIFIED; lifecycle PARTIAL; damage PARTIAL; status PARTIAL; environmental family BLOCKING if unstable terrain/equipment changes legality; move-specific behavior/abilities/items/Trainer Features PARTIAL when used; AI legal actions VERIFIED; AI tactical policy BLOCKING; adapter/playback BLOCKING.
 
-REDUCED version: transport staff close the lane through world state. The Pokémon movement is resolved outside the grid. If a discrete confrontation remains, AutoPTU receives a static arena with only real combatants. Afterward the observation series records interruption, altered coverage and whether crossing resumed. No Confused Status or light-based Accuracy penalty is invented.
+REDUCED version: the trial is formally aborted first, researchers and subject move to safe world-state positions, and a static battle resolves the unrelated threat. The trial outcome remains `WITHDREW_FROM_TRIAL` or `NOT_RESOLVED` regardless of battle result.
 
-## Encounter contract: Homing Trial Site Emergency
+## Encounter: Landmark Loss at the Roost
 
-Narrative premise: an already-authorized observational release is underway when unrelated wild Pokémon or infrastructure failure creates a safety problem near the release site. The research team must stop the trial without losing provenance.
+Narrative premise: demolition removes a long-standing visual landmark while a construction-site incident creates an independent confrontation.
 
-FULL version: researchers withdraw, the released subject has a non-hostile escape/return objective, and combatants may occupy routes around equipment. The subject must never be treated as an enemy merely because it is on the battle map.
+FULL version requires dynamic search/withdrawal behavior and potentially changing access. Targeting/base movement/calculations/action economy/AI legal actions are VERIFIED; complete movement, tactical policy and adapter/playback are BLOCKING; lifecycle/damage/status/move behavior/abilities/items/Trainer Features remain PARTIAL; environmental family is BLOCKING if construction hazards or moving barriers have tactical effects.
 
-Capability dependencies for FULL:
+REDUCED version: construction halts and workers leave before combat. Orientation observations occur outside the grid; a separate static encounter may follow. Successful arrival does not prove landmark use.
 
-- targeting/footprints/range/LoS: VERIFIED.
-- base movement legality: VERIFIED.
-- complete movement: BLOCKING for withdrawal, interception and subject movement.
-- core calculations: VERIFIED.
-- action economy/initiative: VERIFIED.
-- full lifecycle: PARTIAL.
-- damage: PARTIAL.
-- status lifecycle: PARTIAL.
-- terrain/weather/hazards/zones/reactions: BLOCKING if damaged equipment or unstable terrain matters tactically.
-- move-specific behavior, abilities, items, Trainer Features/perks: PARTIAL when invoked.
-- AI legal-action infrastructure: VERIFIED.
-- AI tactical policy: BLOCKING for `WITHDRAW`, `PROTECT_RESEARCHER`, `AVOID_COMBAT` and `REACH_SAFE_SITE`.
-- adapter/playback: BLOCKING.
+## Encounter: The Wrong Home
 
-REDUCED version: the trial is formally aborted first. Researchers and the subject are moved to safe world-state positions, preserving the final complete observation. A static battle can then resolve the unrelated threat. The trial outcome becomes `WITHDREW_FROM_TRIAL` or `NOT_RESOLVED`; the battle result cannot overwrite it.
+This is primarily non-combat. Players reconstruct the assumed goal, compare Spatial Ecology, Migration, Rehabilitation, Telemetry and Pass 177 records, and may discover that the original research question was wrong. Any independent battle is resolved normally and cannot alter the orientation assessment.
 
-## Encounter contract: Landmark Loss at the Roost
+## Guardrails
 
-Narrative premise: demolition removed a long-standing landmark near a roost. A familiar Pokémon now spends longer searching near the destination while a construction site creates an independent safety conflict.
+Pass 81 remains the only magnetic-field/navigation-context authority. These proposals do not create magnetic regions, anomaly state, compass corrections or instrument effects.
 
-FULL version: the Pokémon can search, approach, abort or reach alternate landmarks while construction workers evacuate. If the environment itself changes routes during combat, dynamic movement and environmental families are required.
-
-Capability dependencies: targeting VERIFIED; base movement VERIFIED; complete movement BLOCKING; core calculations VERIFIED; action economy VERIFIED; lifecycle PARTIAL; damage PARTIAL; status PARTIAL when used; terrain/weather/hazards/zones/reactions BLOCKING for dynamic construction hazards; move-specific behavior/abilities/items/Trainer Features PARTIAL; AI legal actions VERIFIED; AI tactical policy BLOCKING; adapter/playback BLOCKING.
-
-REDUCED version: construction halts and workers leave first. Orientation behavior is observed before or after a separate static confrontation. The landmark-loss hypothesis remains a research claim even if the Pokémon reaches the roost.
-
-## Encounter contract: The Wrong Home
-
-Narrative premise: after a natural displacement caused by weather, a persistent Pokémon reaches a familiar seasonal site rather than the destination observers predicted.
-
-This encounter is primarily non-combat. The useful gameplay is reconstructing the predicted goal, comparing historical observations, checking Migration/Spatial Ecology state and revising the goal context.
-
-If a battle independently occurs at the site, use an ordinary static encounter. Winning has no effect on the orientation assessment.
-
-## Originality and canon guardrails
-
-These candidates do not copy the characters, plots or dialogue of the cited Pokémon material, PTU campaigns or scientific examples. They reuse abstract structures: multimodal navigation, learned cues, cue conflicts, displacement evidence, local return, uncertainty and changing landscapes.
-
-No candidate is canon-approved. No species gains homing, magnetoreception, compass behavior, route memory, a navigation stat or any battle bonus through this file.
+No concept grants homing, magnetoreception, route memory, a navigation stat, Accuracy, Evasion, Initiative, Speed, capture modifiers, Magnet Pull overworld behavior, automatic pathfinding or species-wide orientation mechanics.
