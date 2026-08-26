@@ -1,0 +1,468 @@
+schema_version: ouros.scene.v1
+content_status: PROPOSED_IMPLEMENTATION
+canon_status: NON_CANON
+pass: 182
+
+slice:
+  slice_id: cedar_meadow_alarm_network_v1
+  title: Alarm Network at Cedar Meadow — reduced executable slice
+  source_refs:
+    - design/pokemon-vigilance-alarm-signals-antipredator-behavior-layer.md#encounter-contract--alarm-network-at-cedar-meadow
+    - design/ouros-runtime-scene-world-execution-contract.md
+    - design/encounter-implementation-contracts.md
+  purpose:
+    - prove_persistent_wild_pokemon_binding
+    - prove_server_owned_world_zone_trigger
+    - prove_scene_state_transition
+    - prove_observation_writeback
+    - prove_explicit_world_state_withdrawal
+    - prove_optional_static_autoptu_handoff
+    - prove_restart_and_duplicate_delivery_safety
+  out_of_scope:
+    - emergent_alarm_call_ai
+    - tactical_group_withdrawal
+    - shelter_seeking_battle_ai
+    - dynamic_noise_zones
+    - forced_movement
+    - environmental_status
+    - minecraft_aggro_as_threat_truth
+    - minecraft_pathfinding_as_ecological_truth
+    - automatic_species_identification
+
+runtime_dependencies:
+  autoptu:
+    targeting_footprints_range_los: VERIFIED
+    base_movement_legality: VERIFIED
+    complete_movement_forced_interception: BLOCKING_NOT_USED_BY_REDUCED_SLICE
+    core_calculations: VERIFIED
+    action_economy_initiative: VERIFIED
+    full_turn_round_lifecycle: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_STARTS
+    full_stateful_damage_pipeline: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_STARTS
+    status_lifecycle: PARTIAL_NOT_REQUIRED_BY_BASE_SCENE
+    terrain_weather_hazards_zones_reactions: BLOCKING_NOT_USED_BY_REDUCED_SLICE
+    move_specific_behavior: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_MOVES
+    abilities: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_ABILITIES
+    items: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_ITEMS
+    trainer_features_perks: PARTIAL_ONLY_IF_OPTIONAL_BATTLE_USES_SUPPORTED_FEATURES
+    ai_legal_action_infrastructure: VERIFIED
+    ai_tactical_policy: BLOCKING_NOT_USED_FOR_ECOLOGICAL_ACTORS
+    minecraft_cobblemon_craftics_adapter_playback: BLOCKING_PROTOTYPE_TARGET
+  cobblemon_runtime:
+    pokemon_entity_binding: SOURCE_EVIDENCE_PROTOTYPE_REQUIRED
+    entity_lifecycle_hooks: SOURCE_EVIDENCE_PROTOTYPE_REQUIRED
+    entity_callback_interaction: SOURCE_EVIDENCE_PROTOTYPE_REQUIRED
+    dialogue_ui: SOURCE_EVIDENCE_PROTOTYPE_REQUIRED
+    custom_ouros_id_persistence: PROTOTYPE_REQUIRED
+  craftics:
+    scene_actor_playback: UNKNOWN_PROTOTYPE_REQUIRED
+    battle_playback: UNKNOWN_PROTOTYPE_REQUIRED
+
+world_process_definition:
+  process_definition_id: process.cedar_meadow_alarm_monitoring
+  definition_revision: 1
+  owning_system_ref: pokemon_vigilance_alarm_behavior
+  offline_policy: ADVANCE_BY_WORLD_SERVICE
+  allowed_states:
+    - DORMANT
+    - MONITORING_WINDOW_OPEN
+    - OBSERVATION_PENDING
+    - ALARM_EPISODE_AUTHORIZED
+    - WITHDRAWAL_COMMITTED
+    - OPTIONAL_COMPLICATION_PENDING
+    - COMPLETE
+
+binding_requirements:
+  lookout_pokemon:
+    slot_id: actor.lookout_pokemon
+    actor_kind: POKEMON
+    selection_rule: AUTHORED_PERSISTENT_ACTOR_REF_ONLY
+    species_constraint: NONE_IN_RUNTIME_CONTRACT
+    may_be_unmaterialized: true
+    required_for_scene_entry: true
+    minecraft_spawn_does_not_create_identity: true
+  background_wildlife:
+    slot_id: collective.background_wildlife
+    actor_kind: WORLD_STATE_COLLECTIVE
+    materialize_individual_entities: false
+    reason: >-
+      The reduced slice records response and withdrawal as world state. It does not
+      ask Minecraft AI to simulate a mixed-species evacuation.
+  field_researcher:
+    slot_id: actor.field_researcher
+    actor_kind: NPC
+    required_for_scene_entry: false
+    may_be_unmaterialized: true
+  optional_hostile_side:
+    slot_id: encounter.optional_hostile_side
+    actor_kind: AUTOPTU_COMBATANT_SET
+    required_for_scene_entry: false
+    source_rule: MUST_BE_CREATED_BY_AN_INDEPENDENT_AUTHORIZED_WORLD_FACT
+
+zones:
+  observation_zone:
+    zone_id: zone.cedar_meadow.observation
+    geometry_ref: authored_location_geometry.cedar_meadow.observation.v1
+    trigger_roles:
+      - PLAYER_ENTER_ZONE
+      - PLAYER_EXIT_ZONE
+    battle_semantics: NONE
+  lookout_presentation_zone:
+    zone_id: zone.cedar_meadow.lookout_presentation
+    geometry_ref: authored_location_geometry.cedar_meadow.lookout.v1
+    trigger_roles:
+      - MATERIALIZATION_TARGET
+    battle_semantics: NONE
+  static_battle_arena:
+    zone_id: zone.cedar_meadow.static_battle_arena
+    geometry_ref: authored_location_geometry.cedar_meadow.battle_safe.v1
+    trigger_roles:
+      - OPTIONAL_BATTLE_PRESENTATION
+    battle_semantics: USE_EXPLICIT_ARENA_TRANSFORM_ONLY
+
+entry_predicates:
+  - predicate_id: pred.monitoring_window_open
+    fact_ref: world_process.cedar_meadow_alarm_monitoring.current_state
+    operator: EQUALS
+    value: MONITORING_WINDOW_OPEN
+  - predicate_id: pred.lookout_actor_exists
+    fact_ref: actor_binding.lookout_pokemon.persistent_actor_ref
+    operator: IS_PRESENT
+  - predicate_id: pred.no_active_shared_instance
+    fact_ref: scene_index.cedar_meadow_alarm_network.active_global_instance
+    operator: IS_EMPTY
+
+scene_definition:
+  scene_definition_id: scene.cedar_meadow_alarm_network
+  revision: 1
+  multiplayer_mode: GLOBAL_SERIALIZED
+  initial_node_id: node.materialize_baseline
+  terminal_node_ids:
+    - node.complete_no_battle
+    - node.complete_after_battle
+    - node.suspended_recovery
+
+  nodes:
+    - node_id: node.materialize_baseline
+      on_enter_effects:
+        - effect_id: effect.bind_lookout
+          effect_type: MATERIALIZE_ACTOR
+          target_ref: actor.lookout_pokemon
+          operation_key_template: "{scene_instance_id}:materialize:lookout:v1"
+          retry_policy: IDEMPOTENT_RETRY
+        - effect_id: effect.set_baseline_pose
+          effect_type: SET_PRESENTATION_STATE
+          target_ref: actor.lookout_pokemon
+          payload_ref: presentation.lookout.baseline_watch
+          operation_key_template: "{scene_instance_id}:presentation:baseline:v1"
+          retry_policy: IDEMPOTENT_RETRY
+      transitions:
+        - transition_id: trans.materialized_to_observe
+          when: adapter_binding_confirmed(actor.lookout_pokemon)
+          to: node.baseline_observation
+        - transition_id: trans.materialization_failure
+          when: materialization_terminal_error(actor.lookout_pokemon)
+          to: node.suspended_recovery
+
+    - node_id: node.baseline_observation
+      interaction_offers:
+        - offer_id: offer.observe_lookout
+          request_kind: OBSERVE
+          target_ref: actor.lookout_pokemon
+          legal_if:
+            - player_inside(zone.cedar_meadow.observation)
+          accepted_transition_ref: trans.observe_committed
+        - offer_id: offer.leave_before_event
+          request_kind: WITHDRAW
+          target_ref: scene.current
+          accepted_transition_ref: trans.leave_without_observation
+      transitions:
+        - transition_id: trans.observe_committed
+          precommit_writes:
+            - write_id: write.baseline_observation
+              authority: pokemon_vigilance_alarm_behavior
+              record_type: VIGILANCE_EPISODE_OBSERVATION
+              payload:
+                actor_ref: actor.lookout_pokemon
+                observed_state: ROUTINE_WATCH
+                source: PLAYER_OBSERVATION
+                inference_limits:
+                  - DOES_NOT_ESTABLISH_SENTINEL_ROLE
+                  - DOES_NOT_ESTABLISH_THREAT
+                  - DOES_NOT_GRANT_MECHANICAL_BONUS
+          to: node.await_authorized_alarm
+        - transition_id: trans.leave_without_observation
+          to: node.complete_no_battle
+
+    - node_id: node.await_authorized_alarm
+      accepted_triggers:
+        - trigger_id: trigger.authorized_alarm_event
+          trigger_type: WORLD_STATE_CHANGED
+          source_ref: world_fact.authorized_alarm_event_ref
+          required_value: PRESENT
+      on_trigger_effects:
+        - effect_id: effect.play_alarm_presentation
+          effect_type: SET_PRESENTATION_STATE
+          target_ref: actor.lookout_pokemon
+          payload_ref: presentation.lookout.alarm_signal
+          operation_key_template: "{scene_instance_id}:presentation:alarm:v1"
+          retry_policy: IDEMPOTENT_RETRY
+      transitions:
+        - transition_id: trans.alarm_presented
+          when: world_fact.authorized_alarm_event_ref_is_present
+          precommit_writes:
+            - write_id: write.alarm_signal_observation
+              authority: pokemon_vigilance_alarm_behavior
+              record_type: ALARM_SIGNAL_EVENT_OBSERVATION
+              payload:
+                emitter_ref: actor.lookout_pokemon
+                trigger_ref: world_fact.authorized_alarm_event_ref
+                signal_function: OBSERVED_OR_AUTHORED_FOR_THIS_EPISODE
+                threat_truth: NOT_INFERRED_BY_SCENE
+          to: node.commit_wildlife_response
+
+    - node_id: node.commit_wildlife_response
+      on_enter_writes:
+        - write_id: write.background_response
+          authority: pokemon_vigilance_alarm_behavior
+          record_type: ANTIPREDATOR_RESPONSE_EVENT
+          payload:
+            collective_ref: collective.background_wildlife
+            response: WITHDRAW
+            execution_mode: WORLD_STATE_REDUCED_SLICE
+            tactical_movement_resolved: false
+            inference_limits:
+              - DOES_NOT_PROVE_SIGNAL_RECEPTION_FOR_EVERY_INDIVIDUAL
+              - DOES_NOT_PROVE_THREAT_IDENTITY
+      on_enter_effects:
+        - effect_id: effect.departure_presentation
+          effect_type: SET_PRESENTATION_STATE
+          target_ref: collective.background_wildlife
+          payload_ref: presentation.background_wildlife.withdrawal_summary
+          operation_key_template: "{scene_instance_id}:presentation:wildlife_departure:v1"
+          retry_policy: IDEMPOTENT_RETRY
+      transitions:
+        - transition_id: trans.withdrawal_committed
+          when: authoritative_write_committed(write.background_response)
+          to: node.evaluate_optional_complication
+
+    - node_id: node.evaluate_optional_complication
+      transitions:
+        - transition_id: trans.no_complication
+          when: independent_authorized_hostile_encounter_ref_is_absent
+          to: node.complete_no_battle
+        - transition_id: trans.complication_exists
+          when: independent_authorized_hostile_encounter_ref_is_present
+          to: node.prepare_static_battle
+
+    - node_id: node.prepare_static_battle
+      preconditions:
+        - background_wildlife_withdrawal_already_committed
+        - noncombatant_researchers_outside_battle_arena_or_explicitly_not_combatants
+        - static_battle_arena_snapshot_valid
+        - autoptu_battle_spec_can_be_built_without_blocking_capability_family
+      on_enter_effects:
+        - effect_id: effect.request_static_battle
+          effect_type: REQUEST_BATTLE
+          target_ref: autoptu
+          operation_key_template: "{scene_instance_id}:battle:static:v1"
+          payload:
+            battle_contract_ref: encounter_contract.cedar_meadow.optional_hostile_static_v1
+            participant_actor_refs:
+              - player_party_authoritative_refs
+              - encounter.optional_hostile_side
+            arena_snapshot_ref: zone.cedar_meadow.static_battle_arena
+            excluded_world_facts:
+              - alarm_as_status
+              - noise_as_accuracy_modifier
+              - shelter_as_custom_zone
+              - background_wildlife_as_combatants
+              - ecological_withdrawal_as_tactical_objective
+            expected_result_fields:
+              - battle_completed
+              - winner_side
+      transitions:
+        - transition_id: trans.battle_result_received
+          when: authoritative_battle_result_received(effect.request_static_battle)
+          to: node.ingest_battle_result
+        - transition_id: trans.battle_unavailable
+          when: battle_request_rejected_for_capability_or_runtime_reason
+          to: node.suspended_recovery
+
+    - node_id: node.ingest_battle_result
+      accepted_triggers:
+        - trigger_id: trigger.autoptu_result
+          trigger_type: BATTLE_RESULT
+          source_ref: effect.request_static_battle
+      precommit_writes:
+        - write_id: write.battle_aftermath_link
+          authority: encounter_history
+          record_type: BATTLE_HANDOFF_OUTCOME_LINK
+          payload:
+            accepted_fields:
+              - battle_completed
+              - winner_side
+            forbidden_inferences:
+              - ALARM_WAS_CORRECT
+              - THREAT_WAS_PREDATOR
+              - TERRITORY_CLEARED
+              - WILDLIFE_SAFE_FOREVER
+      transitions:
+        - transition_id: trans.result_committed
+          when: authoritative_write_committed(write.battle_aftermath_link)
+          to: node.complete_after_battle
+
+    - node_id: node.complete_no_battle
+      on_enter_writes:
+        - write_id: write.chronicle_no_battle
+          authority: chronicle
+          record_type: SCENE_COMPLETION
+          exactly_once: true
+          payload:
+            scene_ref: scene.cedar_meadow_alarm_network
+            outcome: OBSERVATION_AND_WITHDRAWAL_COMPLETED
+            battle_occurred: false
+
+    - node_id: node.complete_after_battle
+      on_enter_writes:
+        - write_id: write.chronicle_after_battle
+          authority: chronicle
+          record_type: SCENE_COMPLETION
+          exactly_once: true
+          payload:
+            scene_ref: scene.cedar_meadow_alarm_network
+            outcome: OBSERVATION_WITHDRAWAL_AND_INDEPENDENT_BATTLE_COMPLETED
+            battle_occurred: true
+
+    - node_id: node.suspended_recovery
+      recovery_policy_ref: recovery.cedar_meadow.v1
+      player_facing_rule: DO_NOT_FABRICATE_IN_WORLD_FAILURE
+
+recovery:
+  recovery_policy_id: recovery.cedar_meadow.v1
+  persist_fields:
+    - scene_instance_id
+    - current_node_id
+    - scene_revision
+    - participant_bindings
+    - accepted_client_request_ids
+    - applied_operation_ids
+    - pending_effect_ids
+    - active_battle_handoff_id
+    - committed_write_ids
+  restart_behavior:
+    - reload_committed_scene_state
+    - reconcile_actor_entity_bindings
+    - replay_only_unacknowledged_idempotent_presentation_effects
+    - never_repeat_committed_world_writes
+    - never_issue_second_battle_for_same_handoff_id
+    - resume_from_committed_node
+  disconnect_behavior:
+    - preserve_global_scene_instance
+    - dematerialization_does_not_delete_persistent_actor
+    - reoffer_only_interactions_legal_at_current_revision
+
+adapter_commands:
+  required_command_types:
+    - MATERIALIZE_ACTOR
+    - SET_PRESENTATION_STATE
+    - REQUEST_BATTLE
+  optional_command_types:
+    - SET_DIALOGUE_NODE
+    - DEMATERIALIZE_ACTOR
+  forbidden_adapter_decisions:
+    - infer_alarm_from_cobblemon_cry
+    - infer_threat_from_minecraft_aggro
+    - infer_withdrawal_from_pathfinding
+    - infer_scene_completion_from_entity_position
+    - infer_pokemon_identity_from_runtime_uuid_alone
+    - infer_battle_result_from_vanilla_death
+
+acceptance_tests:
+  - test_id: normal_observation_no_battle
+    given:
+      - monitoring_window_open
+      - lookout_actor_bound_or_materializable
+      - no_independent_hostile_encounter
+    expect:
+      - scene_completes
+      - one_baseline_observation_write
+      - one_alarm_observation_write_if_alarm_trigger_occurs
+      - one_background_withdrawal_write
+      - zero_battle_requests
+      - one_chronicle_completion
+
+  - test_id: duplicate_player_observe_request
+    action:
+      - deliver_same_client_request_id_twice
+    expect:
+      - observation_write_exactly_once
+      - scene_revision_advances_once
+
+  - test_id: chunk_unload_after_actor_binding
+    action:
+      - unload_lookout_chunk
+      - reload_lookout_chunk
+    expect:
+      - persistent_actor_identity_unchanged
+      - minecraft_entity_binding_may_change
+      - no_duplicate_vigilance_episode_created
+
+  - test_id: restart_after_withdrawal_commit_before_animation_ack
+    action:
+      - commit_background_withdrawal
+      - stop_server_before_adapter_ack
+      - restart_server
+    expect:
+      - withdrawal_world_state_not_rewritten
+      - presentation_may_retry_with_same_operation_id
+      - scene_resumes_after_committed_withdrawal
+
+  - test_id: optional_static_battle
+    given:
+      - independent_authorized_hostile_encounter_exists
+      - reduced_static_battle_contract_is_buildable
+    expect:
+      - background_wildlife_withdrawal_committed_before_battle
+      - one_battle_handoff_request
+      - no_ecological_actor_requires_tactical_withdraw_ai
+      - accepted_battle_result_fields_are_limited_to_declared_contract
+
+  - test_id: duplicate_battle_result_delivery
+    action:
+      - deliver_same_authoritative_handoff_result_twice
+    expect:
+      - battle_aftermath_link_written_once
+      - chronicle_completion_written_once
+
+  - test_id: battle_adapter_unavailable
+    given:
+      - independent_hostile_encounter_exists
+      - minecraft_adapter_cannot_start_battle
+    expect:
+      - scene_enters_suspended_recovery
+      - no_fake_victory
+      - no_alarm_truth_inference
+      - committed_wildlife_withdrawal_remains_committed
+
+  - test_id: stale_multiplayer_interaction
+    action:
+      - player_a_advances_scene_revision
+      - player_b_submits_offer_from_prior_revision
+    expect:
+      - stale_request_rejected_or_rebased_by_server
+      - no_duplicate_world_write
+
+promotion_gate:
+  prototype_is_successful_only_if:
+    - persistent_actor_id_survives_entity_unload_reload
+    - scene_transition_is_server_authoritative
+    - duplicate_requests_are_idempotent
+    - world_state_commit_survives_restart
+    - optional_battle_is_requested_once
+    - autoptu_result_is_ingested_once
+    - no_blocking_tactical_family_is_reimplemented_in_adapter
+  does_not_promote:
+    - complete_movement
+    - terrain_weather_hazards_zones_reactions
+    - ai_tactical_policy
+    - full_minecraft_cobblemon_craftics_adapter_playback
