@@ -141,7 +141,7 @@ Do not copy project prices, items, NPCs, maps or quest sequence.
 ### “Off The Rails!” — community PTU adventure
 
 Source: r/PokemonTabletop public post
-https://www.reddit.com/r/PokemonTabletop/comments/1i18jmb/off_the_rails_a_pokemon_tabletop_united_adventure/
+https://www.reddit.com/r/PokemonTabletop/comments/1e08i69
 
 Classification: PTU community narrative inspiration, not rules authority.
 
