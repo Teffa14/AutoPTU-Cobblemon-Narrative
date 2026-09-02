@@ -9,6 +9,7 @@ This directory registers the Kairos PTU material used as a comparative source fo
 
 - Wiki: https://kairosptu.wiki.gg
 - Public source folder supplied by project owner: https://drive.google.com/drive/folders/1hj-xdwlW1OXXJzZAh0vpKNX5L_5RKdmT
+- Current Drive inventory captured in: `sources/kairos/DRIVE_FOLDER_INVENTORY.md`
 
 ## User-supplied source files
 
@@ -18,8 +19,11 @@ This directory registers the Kairos PTU material used as a comparative source fo
 - SHA-256 of the supplied file: `b636541fe7fa76fb50e8bab9d8aac655b2f4b6d9f84f9f3db7eae4df5bd67340`
 - Supplied file size: 16,436,548 bytes (local upload snapshot)
 - Internal cover/version text observed in the supplied PDF: `Version 2.06.25`.
+- Public Drive file with the same title: https://drive.google.com/file/d/1ux8e-4zyTK-P4Ls_IQ0O27yrrhlbhvAy/view?usp=drivesdk
+- Drive metadata size observed on 2026-09-02: 16,403,856 bytes.
+- The supplied upload and current Drive object must **not** be assumed byte-identical because their observed sizes differ. Treat them as separate source snapshots until a direct hash comparison proves equivalence.
 - Nature: Kairos homebrew PTU core compilation. The document explicitly says it includes PTU Core/Errata material plus Kairos homebrew changes.
-- High-value comparison areas: character creation, Skills/Edges/Features, Trainer Classes, Pokemon management, capture, Loyalty, breeding, fishing, mounts, tactical combat, hazards, terrain/weather, injury/death/rest, Contests, League design, encounter design, bosses, items, shops/services and GM guidance.
+- High-value comparison areas: character creation, Skills/Edges/Features, Trainer Classes, Pokémon management, capture, Loyalty, breeding, fishing, mounts, tactical combat, hazards, terrain/weather, injury/death/rest, Contests, League design, encounter design, bosses, items, shops/services and GM guidance.
 
 Version labels must not be silently reconciled. When a rule is cited, record the supplied filename, the internal version text if relevant, and the page/section used.
 
@@ -31,7 +35,7 @@ Version labels must not be silently reconciled. When a rule is cited, record the
 - Nature: living-world onboarding/operations document.
 - High-value comparison areas: open-ended progression, quest/session structure, downtime, hunting, crafting/training/side work, real estate, prestige/post-cap play, regional exploration and concurrent player stories.
 
-An extracted text snapshot is stored beside this manifest for repository-side search. The PDF remains the visual/source authority for tables, layout and any text extraction ambiguity.
+A repository-side source index is stored in `sources/kairos/KAIROS_SOURCE_INDEX.md`. The PDF remains the visual/source authority for tables, layout and any extraction ambiguity.
 
 ## Source use policy
 
