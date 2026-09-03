@@ -1,0 +1,115 @@
+{
+  "fixture_id": "marea-sendero-autoptu-handoff-v1",
+  "pass": 242,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "canon_policy": {
+    "may_reference_existing_canon": true,
+    "creates_new_canon": false,
+    "ecology_authority": "OUROS",
+    "battle_authority": "AUTOPTU",
+    "presentation_authority": "MINECRAFT_COBBLEMON"
+  },
+  "population_ref": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+  "persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+  "mechanical_profile_ref": "ouros.vertical_slice.ptu_1_05.fletchling_v1",
+  "location_ref": "MAREA:SENDERO_DEL_VIDRIO:LOWER_SHELF",
+  "purpose": "Validate that ecological behavior remains in overworld until a reviewed structured mechanical question requires AutoPTU, then freeze participants and return only narrow semantic results.",
+  "windows": [
+    {
+      "id": "W0_VISIBLE_NOT_BATTLE",
+      "input": {"actor_visible": true, "distance_blocks": 9, "wild_intent": "FORAGE", "player_intent": "OBSERVE"},
+      "expect": {"decision": "STAY_OVERWORLD", "battle_spec_created": false, "population_mutations": 0}
+    },
+    {
+      "id": "W1_WARNING_NOT_BATTLE",
+      "input": {"wild_intent": "WARN", "presentation": "alarm_call_and_short_reposition", "player_intent": "HOLD_POSITION"},
+      "expect": {"decision": "STAY_OVERWORLD", "battle_spec_created": false, "minecraft_animation_authoritative": false}
+    },
+    {
+      "id": "W2_UNOPPOSED_FLEE",
+      "input": {"wild_intent": "FLEE", "player_intent": "DO_NOT_PURSUE", "route_open": true},
+      "expect": {"decision": "STAY_OVERWORLD", "battle_spec_created": false, "ecology_may_record_avoidance": true, "demographic_emigration": false}
+    },
+    {
+      "id": "W3_PLAYER_BACKS_AWAY",
+      "input": {"wild_intent": "GUARD", "player_intent": "BACK_AWAY", "structured_attack_requested": false},
+      "expect": {"decision": "STAY_OVERWORLD", "battle_spec_created": false, "guard_intent_does_not_equal_hostile_combat": true}
+    },
+    {
+      "id": "W4_DIRECT_STRUCTURED_ENGAGEMENT",
+      "input": {"wild_intent": "ENGAGE", "player_intent": "DEPLOY_POKEMON_AND_FIGHT", "requested_mechanical_question": "attack_target_range_damage"},
+      "expect": {"decision": "OPEN_AUTOPTU", "manifest_required": true, "battle_spec_created_only_after_manifest_freeze": true}
+    },
+    {
+      "id": "W5_MANIFEST_FREEZE",
+      "input": {
+        "manifest": [
+          {"persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0", "mechanical_profile_ref": "ouros.vertical_slice.ptu_1_05.fletchling_v1", "side": "WILD", "entry_reason": "DIRECT_HOSTILE_ENGAGEMENT"},
+          {"persistent_actor_ref": "FIXTURE_PLAYER_ACTIVE_POKEMON", "mechanical_profile_ref": "FIXTURE_PLAYER_PROFILE", "side": "PLAYER", "entry_reason": "PLAYER_STRUCTURED_ENGAGEMENT"}
+        ],
+        "nearby_projection_actor": "FIXTURE_NEARBY_NONCOMBATANT_FLETCHLING"
+      },
+      "expect": {"combatant_count": 2, "nearby_actor_enrolled": false, "nearby_actor_remains_ecology_state": true}
+    },
+    {
+      "id": "W6_WORLD_FACT_MAPPING",
+      "input": {"minecraft_weather": "RAIN", "block_geometry_observed": true, "weather_tactical_mapping_enabled": false, "geometry_mapping_reviewed": true},
+      "expect": {"tactical_weather": null, "rain_remains_presentational": true, "reviewed_geometry_may_enter_battle_spec": true}
+    },
+    {
+      "id": "W7_UNSUPPORTED_TACTICAL_PURSUIT",
+      "input": {"requested_mechanical_question": "interception_and_forced_movement_pursuit", "required_capabilities": ["complete_movement", "ai_tactical_policy"], "capability_state": {"complete_movement": "PARTIAL", "ai_tactical_policy": "BLOCKING"}},
+      "expect": {"decision": "USE_REDUCED_VERSION", "cobblemon_may_not_resolve_missing_rules": true, "reduced_version": "overworld_escape_then_observation_consequence"}
+    },
+    {
+      "id": "W8_BATTLE_OWNS_TACTICAL_STATE",
+      "input": {"battle_active": true, "minecraft_reports_vanilla_damage": true, "minecraft_reports_entity_motion": true},
+      "expect": {"ouros_accepts_vanilla_damage_as_hp_change": false, "ouros_accepts_entity_motion_as_tactical_position": false, "autoptu_remains_authoritative": true}
+    },
+    {
+      "id": "W9_NONCOMBATANT_EVENT_CONTINUES",
+      "input": {"battle_active": true, "remote_ecology_tick": true, "remote_tick_mutates_active_battle": false},
+      "expect": {"remote_ecology_tick_allowed": true, "active_battle_spec_changed": false}
+    },
+    {
+      "id": "W10_TACTICAL_KO_RETURN",
+      "input": {"autoptu_result": {"objective_results": ["TACTICAL_KO_CONFIRMED"], "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"}},
+      "expect": {"ecological_death": false, "population_reduced": false, "encounter_history_may_update": true, "condition_writeback_requires_verified_contract": true}
+    },
+    {
+      "id": "W11_WITHDRAWAL_RETURN",
+      "input": {"autoptu_result": {"objective_results": ["TACTICAL_WITHDRAWAL_FORCED"]}, "world_route_exists": true},
+      "expect": {"automatic_emigration": false, "ouros_may_evaluate_local_displacement": true, "ecology_event_auto_resolved": false}
+    },
+    {
+      "id": "W12_RENDERER_ENTITY_MISSING_AFTER_BATTLE",
+      "input": {"battle_complete": true, "minecraft_entity_exists": false, "persistent_actor_exists": true},
+      "expect": {"persistent_actor_deleted": false, "projection_reconstruction_required": true, "possible_projection_decisions": ["REMATERIALIZE", "SUSPEND_PROJECTION", "RELOCATE_PROJECTION"]}
+    },
+    {
+      "id": "W13_EVENT_REEVALUATION_AFTER_RESULT",
+      "input": {"source_event_ref": "ouros.event.sendero.forage_window_compression.v1", "battle_complete": true, "semantic_result_received": true},
+      "expect": {"event_resolved_directly_by_battle": false, "event_re_evaluation_required": true, "persistent_consequence_derived_from_post_battle_state": true}
+    },
+    {
+      "id": "W14_CAPTURE_WRITEBACK_GATED",
+      "input": {"capture_animation_seen": true, "capture_mechanic_semantic_result_verified": false},
+      "expect": {"capture_removal_emitted": false, "population_reduced": false, "presentation_cannot_author_capture": true}
+    }
+  ],
+  "regression_invariants": [
+    "visibility proximity warning and ordinary flight do not create battle automatically",
+    "Ouros opens AutoPTU only for a reviewed structured mechanical question",
+    "combatants are frozen explicitly before BattleSpec creation",
+    "nearby spawned entities never join implicitly",
+    "unmapped world weather terrain and physics remain presentation-only",
+    "unsupported rich mechanics use a reduced version or block",
+    "Minecraft cannot mutate active tactical state",
+    "AutoPTU returns narrow semantic results",
+    "KO is not ecological death",
+    "withdrawal is not automatic emigration",
+    "battle victory does not resolve an ecology event directly",
+    "renderer loss does not delete persistent actors",
+    "capture changes abundance only after verified capture authority plus demographic writeback"
+  ]
+}
