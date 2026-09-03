@@ -1,0 +1,387 @@
+{
+  "fixture_id": "ouros.marea.sendero.spawn_reconciliation.pass239.v1",
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "site_id": "ouros.marea.sendero_vidrio",
+  "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+  "species_id": "fletchling",
+  "canon_persistent_member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+  "external_associated_member_id": "ouros.marea.npc.pia_min.partner.redline",
+  "authority": {
+    "population_truth": "OUROS",
+    "member_identity": "OUROS",
+    "lease_truth": "OUROS",
+    "battle_truth": "AUTOPTU_WHEN_EXPLICIT_HANDOFF",
+    "presentation": "MINECRAFT_COBBLEMON",
+    "minecraft_entity_uuid_is_canonical_identity": false
+  },
+  "starting_state": {
+    "population_total": 12,
+    "known_persistent_member_ids": [
+      "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+    ],
+    "unresolved_member_pool_count": 11,
+    "active_leases": [],
+    "population_total_is_canon": false
+  },
+  "invariants": {
+    "population_total_equals_known_plus_unresolved": true,
+    "lease_creation_changes_population_total": false,
+    "lease_release_changes_population_total": false,
+    "despawn_changes_population_total": false,
+    "chunk_unload_changes_population_total": false,
+    "server_restart_changes_population_total": false,
+    "identity_promotion_changes_population_total": false,
+    "one_persistent_member_has_at_most_one_active_lease": true,
+    "one_unresolved_slot_has_at_most_one_active_lease": true,
+    "one_entity_uuid_has_at_most_one_active_lease": true,
+    "battle_engagement_locks_source_slot": true,
+    "battle_ko_alone_does_not_remove_member": true,
+    "capture_requires_semantic_result_and_demographic_event": true,
+    "external_associated_member_cannot_consume_wild_population_slot": true
+  },
+  "windows": [
+    {
+      "id": "A_BASELINE",
+      "tick": 0,
+      "input_events": [],
+      "expected": {
+        "population_total": 12,
+        "known_persistent_count": 1,
+        "unresolved_pool_count": 11,
+        "active_lease_count": 0
+      }
+    },
+    {
+      "id": "B_RESERVE_CANON_MEMBER",
+      "tick": 100,
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE",
+          "lease_id": "lease.persist.001",
+          "lease_class": "PERSISTENT_MEMBER_LEASE",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+        },
+        {
+          "event_type": "LEASE_MATERIALIZE",
+          "lease_id": "lease.persist.001",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000000101"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "active_lease_count": 1,
+        "member_active_lease_count": 1,
+        "lease_state": "MATERIALIZED"
+      },
+      "assertions": [
+        "reservation_precedes_materialization",
+        "population_unchanged"
+      ]
+    },
+    {
+      "id": "C_DUPLICATE_CANON_MEMBER_REJECTED",
+      "tick": 150,
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE_ATTEMPT",
+          "lease_id": "lease.persist.duplicate",
+          "lease_class": "PERSISTENT_MEMBER_LEASE",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+        }
+      ],
+      "expected": {
+        "result": "REJECT_DUPLICATE_SOURCE_LOCK",
+        "population_total": 12,
+        "active_lease_count": 1
+      }
+    },
+    {
+      "id": "D_UNRESOLVED_POOL_LEASE",
+      "tick": 200,
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE",
+          "lease_id": "lease.pool.001",
+          "lease_class": "UNRESOLVED_POOL_LEASE",
+          "unresolved_slot_token": "sendero.fletchling.slot.001"
+        },
+        {
+          "event_type": "LEASE_MATERIALIZE",
+          "lease_id": "lease.pool.001",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000000201"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "known_persistent_count": 1,
+        "unresolved_pool_count": 11,
+        "active_lease_count": 2,
+        "active_unresolved_lease_count": 1
+      },
+      "assertions": [
+        "unresolved_lease_consumes_existing_slot_without_count_delta"
+      ]
+    },
+    {
+      "id": "E_DESPAWN_RELEASE_NO_DEMOGRAPHIC_WRITE",
+      "tick": 300,
+      "input_events": [
+        {
+          "event_type": "MINECRAFT_ENTITY_DESPAWN",
+          "lease_id": "lease.pool.001",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000000201"
+        },
+        {
+          "event_type": "LEASE_RELEASE",
+          "lease_id": "lease.pool.001",
+          "reason": "PRESENTATION_DESPAWN"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "unresolved_pool_count": 11,
+        "active_lease_count": 1,
+        "demographic_event_count": 0
+      }
+    },
+    {
+      "id": "F_IDENTITY_PROMOTION_CONSERVES_TOTAL",
+      "tick": 500,
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE",
+          "lease_id": "lease.pool.002",
+          "lease_class": "UNRESOLVED_POOL_LEASE",
+          "unresolved_slot_token": "sendero.fletchling.slot.002"
+        },
+        {
+          "event_type": "LEASE_MATERIALIZE",
+          "lease_id": "lease.pool.002",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000000202"
+        },
+        {
+          "event_type": "IDENTITY_PROMOTION",
+          "lease_id": "lease.pool.002",
+          "new_member_id": "fixture.sendero.fletchling.research-tag-01",
+          "reason": "REPEATED_RESEARCH_IDENTIFICATION"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "known_persistent_count": 2,
+        "unresolved_pool_count": 10,
+        "lease_source_member_id": "fixture.sendero.fletchling.research-tag-01"
+      },
+      "assertions": [
+        "promotion_is_atomic",
+        "promotion_is_not_recruitment"
+      ]
+    },
+    {
+      "id": "G_CHUNK_UNLOAD_SUSPENDS_ONLY",
+      "tick": 700,
+      "input_events": [
+        {
+          "event_type": "CHUNK_UNLOAD",
+          "lease_id": "lease.persist.001"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "lease_state": "SUSPENDED",
+        "minecraft_entity_uuid": null,
+        "member_exists": true
+      }
+    },
+    {
+      "id": "H_REMATERIALIZE_AFTER_UNLOAD",
+      "tick": 900,
+      "input_events": [
+        {
+          "event_type": "LEASE_REMATERIALIZE",
+          "lease_id": "lease.persist.001",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000000102"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "lease_state": "MATERIALIZED",
+        "member_id_unchanged": true,
+        "entity_uuid_changed": true
+      },
+      "assertions": [
+        "minecraft_uuid_is_correlation_not_identity"
+      ]
+    },
+    {
+      "id": "I_BATTLE_LOCK_PREVENTS_RESPAWN",
+      "tick": 1100,
+      "input_events": [
+        {
+          "event_type": "STRUCTURED_BATTLE_HANDOFF",
+          "lease_id": "lease.persist.001",
+          "battle_id": "fixture.battle.sendero.001"
+        },
+        {
+          "event_type": "LEASE_RESERVE_ATTEMPT",
+          "lease_id": "lease.persist.concurrent",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+        }
+      ],
+      "expected": {
+        "lease_state": "ENGAGED",
+        "second_lease_result": "REJECT_DUPLICATE_SOURCE_LOCK",
+        "population_total": 12
+      }
+    },
+    {
+      "id": "J_KO_ONLY_RETURNS_MEMBER",
+      "tick": 1300,
+      "input_events": [
+        {
+          "event_type": "AUTOPTU_SEMANTIC_RESULT",
+          "battle_id": "fixture.battle.sendero.001",
+          "result_type": "KO_ONLY",
+          "capture_confirmed": false,
+          "removal_confirmed": false
+        },
+        {
+          "event_type": "LEASE_RELEASE",
+          "lease_id": "lease.persist.001",
+          "reason": "RETURN_TO_ECOLOGY"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "member_exists": true,
+        "capture_removal_event_count": 0
+      }
+    },
+    {
+      "id": "K_CAPTURE_REQUIRES_SEMANTIC_CONFIRMATION",
+      "tick": 1500,
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE",
+          "lease_id": "lease.capture.001",
+          "lease_class": "PERSISTENT_MEMBER_LEASE",
+          "member_id": "fixture.sendero.fletchling.research-tag-01"
+        },
+        {
+          "event_type": "STRUCTURED_BATTLE_HANDOFF",
+          "lease_id": "lease.capture.001",
+          "battle_id": "fixture.battle.sendero.capture.001"
+        },
+        {
+          "event_type": "AUTOPTU_SEMANTIC_RESULT",
+          "battle_id": "fixture.battle.sendero.capture.001",
+          "result_type": "CAPTURE_CONFIRMED",
+          "capture_confirmed": true,
+          "removal_confirmed": true
+        },
+        {
+          "demographic_event_id": "fixture.demo.capture.001",
+          "event_type": "CAPTURE_REMOVAL",
+          "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+          "member_ids_if_resolved": [
+            "fixture.sendero.fletchling.research-tag-01"
+          ],
+          "count": 1,
+          "related_battle_id": "fixture.battle.sendero.capture.001"
+        }
+      ],
+      "expected": {
+        "population_total": 11,
+        "known_persistent_count": 1,
+        "unresolved_pool_count": 10,
+        "capture_removal_event_count": 1
+      },
+      "assertions": [
+        "lease_or_entity_disappearance_alone_would_not_remove_member",
+        "semantic_result_and_demographic_event_are_both_present"
+      ]
+    },
+    {
+      "id": "L_STALE_UUID_REPAIR",
+      "tick": 1800,
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE",
+          "lease_id": "lease.pool.stale",
+          "lease_class": "UNRESOLVED_POOL_LEASE",
+          "unresolved_slot_token": "sendero.fletchling.slot.003"
+        },
+        {
+          "event_type": "LEASE_MATERIALIZE",
+          "lease_id": "lease.pool.stale",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000000203"
+        },
+        {
+          "event_type": "ENTITY_CORRELATION_MISMATCH",
+          "lease_id": "lease.pool.stale",
+          "reason": "ENTITY_UUID_MISSING_OR_REUSED"
+        }
+      ],
+      "expected": {
+        "population_total": 11,
+        "lease_state": "INVALIDATED_WITH_AUDIT",
+        "canonical_source_preserved": true,
+        "demographic_event_count_delta": 0
+      }
+    },
+    {
+      "id": "M_SERVER_RESTART_RECONCILIATION",
+      "tick": 2000,
+      "input_events": [
+        {
+          "event_type": "SERVER_RESTART"
+        },
+        {
+          "event_type": "LEASE_INDEX_RECONCILE"
+        }
+      ],
+      "expected": {
+        "population_total": 11,
+        "canonical_population_record_exists": true,
+        "duplicate_source_leases": 0,
+        "missing_entity_implies_demographic_loss": false
+      }
+    },
+    {
+      "id": "N_EXTERNAL_REDLINE_CANNOT_CONSUME_WILD_SLOT",
+      "tick": 2200,
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE_ATTEMPT",
+          "lease_id": "lease.external.redline",
+          "lease_class": "EXTERNAL_ASSOCIATED_LEASE",
+          "member_id": "ouros.marea.npc.pia_min.partner.redline",
+          "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1"
+        }
+      ],
+      "expected": {
+        "result": "REJECT_EXTERNAL_MEMBER_AS_WILD_SLOT",
+        "population_total": 11
+      }
+    }
+  ],
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  }
+}
