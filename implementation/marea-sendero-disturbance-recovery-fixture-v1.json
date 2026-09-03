@@ -1,0 +1,247 @@
+{
+  "fixture_id": "ouros.marea.sendero.disturbance_recovery.pass237.v1",
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "site_id": "ouros.marea.sendero_vidrio",
+  "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+  "scenario_is_canon": false,
+  "scenario": {
+    "disturbance_type": "storm_runoff_debris_pulse",
+    "description": "A bounded test disturbance alters cover, route access and substrate around the Sendero lower shelf. It is a deterministic validation scenario, not a declaration that this event occurred in canon.",
+    "demographic_event_included": false,
+    "battle_event_included": false
+  },
+  "authority": {
+    "ecology_truth": "OUROS",
+    "population_truth": "OUROS",
+    "battle_truth": "AUTOPTU_WHEN_EXPLICIT_HANDOFF",
+    "presentation": "MINECRAFT_COBBLEMON",
+    "minecraft_block_or_entity_state_is_canon": false
+  },
+  "reference_condition": {
+    "reference_id": "ouros.marea.sendero.lower_shelf.reference.pass237.v1",
+    "population_count_is_external_to_this_fixture": true,
+    "cover_availability": 0.78,
+    "forage_access": 0.70,
+    "route_accessibility": 0.92,
+    "substrate_integrity": 0.88,
+    "water_or_air_quality": 0.95,
+    "temporary_resource_pulse": 0.00
+  },
+  "state_schema": {
+    "stage": [
+      "STABLE",
+      "IMPACT",
+      "ACUTE_AFTERSHOCK",
+      "EARLY_SUCCESSION",
+      "RECOVERING",
+      "TRANSIENT_REORGANIZATION",
+      "RECOVERED",
+      "PERSISTENT_REORGANIZATION"
+    ],
+    "surviving_structure_legacy": "number_0_to_1",
+    "surviving_resource_legacy": "number_0_to_1",
+    "surviving_population_legacy": "number_0_to_1",
+    "cover_availability": "number_0_to_1",
+    "forage_access": "number_0_to_1",
+    "route_accessibility": "number_0_to_1",
+    "substrate_integrity": "number_0_to_1",
+    "water_or_air_quality": "number_0_to_1",
+    "temporary_resource_pulse": "number_0_to_1",
+    "recovery_momentum": "number_0_to_1",
+    "reorganization_pressure": "number_0_to_1",
+    "repeat_disturbance_pressure": "number_0_to_1",
+    "last_disturbance_tick": "long_or_null",
+    "transition_evidence": "array_of_reason_codes"
+  },
+  "invariants": {
+    "disturbance_without_demographic_event_must_not_change_population_count": true,
+    "chunk_unload_must_not_reset_stage": true,
+    "server_restart_must_not_reset_legacies": true,
+    "generic_spawn_is_not_recolonization": true,
+    "despawn_is_not_emigration_or_death": true,
+    "elapsed_time_alone_cannot_declare_recovered": true,
+    "temporary_resource_gain_can_coexist_with_other_resource_loss": true,
+    "repeat_disturbance_reads_current_state_not_original_reference": true,
+    "no_auto_battle": true
+  },
+  "windows": [
+    {
+      "id": "A_REFERENCE_STABLE",
+      "tick": 0,
+      "input_events": [],
+      "expected": {
+        "stage": "STABLE",
+        "cover_availability": 0.78,
+        "forage_access": 0.70,
+        "route_accessibility": 0.92,
+        "substrate_integrity": 0.88,
+        "temporary_resource_pulse": 0.00,
+        "reorganization_pressure_max": 0.10
+      },
+      "assertions": [
+        "population_identity_unchanged",
+        "population_count_unchanged",
+        "no_auto_battle"
+      ]
+    },
+    {
+      "id": "B_PRIMARY_IMPACT",
+      "tick": 1000,
+      "input_events": [
+        {
+          "event_id": "storm_runoff_001",
+          "source_type": "WEATHER_DERIVED_WORLD_EVENT",
+          "structure_loss": 0.32,
+          "resource_loss": 0.18,
+          "substrate_damage": 0.28,
+          "route_obstruction": 0.45,
+          "shelter_loss": 0.30,
+          "mortality_pressure": 0.20,
+          "displacement_pressure": 0.35,
+          "source_persists_after_impact": false
+        }
+      ],
+      "expected": {
+        "stage": "IMPACT",
+        "cover_availability_max": 0.60,
+        "route_accessibility_max": 0.60,
+        "substrate_integrity_max": 0.70,
+        "surviving_structure_legacy_min": 0.40,
+        "surviving_population_legacy_min": 0.01
+      },
+      "assertions": [
+        "population_count_unchanged_without_demographic_transition",
+        "mortality_pressure_does_not_remove_members_by_itself",
+        "minecraft_block_damage_not_used_as_canonical_impact",
+        "no_auto_battle"
+      ]
+    },
+    {
+      "id": "C_EARLY_SUCCESSION_RESOURCE_PULSE",
+      "tick": 5000,
+      "input_events": [
+        {
+          "event_id": "recovery_evaluation_001",
+          "source_type": "OUROS_ECOLOGY_TICK",
+          "primary_disturbance_source_active": false,
+          "stable_weather_window": true,
+          "route_partially_passable": true
+        }
+      ],
+      "expected": {
+        "stage_one_of": ["ACUTE_AFTERSHOCK", "EARLY_SUCCESSION"],
+        "temporary_resource_pulse_min": 0.15,
+        "cover_availability_below_reference": true,
+        "route_accessibility_below_reference": true
+      },
+      "assertions": [
+        "temporary_resource_gain_coexists_with_cover_loss",
+        "no_species_authorized_by_resource_pulse",
+        "population_count_unchanged_without_demographic_transition",
+        "chunk_reload_preserves_stage_and_legacies"
+      ]
+    },
+    {
+      "id": "D_TIME_WITHOUT_REQUIRED_EVIDENCE",
+      "tick": 25000,
+      "input_events": [
+        {
+          "event_id": "time_advance_only",
+          "source_type": "CLOCK",
+          "new_recovery_evidence": false
+        }
+      ],
+      "expected": {
+        "stage_not": "RECOVERED"
+      },
+      "assertions": [
+        "elapsed_time_alone_does_not_complete_recovery",
+        "reference_condition_not_silently_restored"
+      ]
+    },
+    {
+      "id": "E_PARTIAL_RECOVERY",
+      "tick": 40000,
+      "input_events": [
+        {
+          "event_id": "recovery_evaluation_002",
+          "source_type": "OUROS_ECOLOGY_TICK",
+          "cover_regrowth_observed": true,
+          "route_connectivity_improved": true,
+          "substrate_stabilization_observed": true,
+          "required_observation_window_satisfied": false
+        }
+      ],
+      "expected": {
+        "stage_one_of": ["EARLY_SUCCESSION", "RECOVERING", "TRANSIENT_REORGANIZATION"],
+        "recovery_momentum_min": 0.30,
+        "stage_not": "RECOVERED"
+      },
+      "assertions": [
+        "improvement_does_not_require_original_snapshot_equality",
+        "population_abundance_not_refilled_by_habitat_recovery"
+      ]
+    },
+    {
+      "id": "F_REPEAT_DISTURBANCE",
+      "tick": 42000,
+      "input_events": [
+        {
+          "event_id": "storm_runoff_002",
+          "source_type": "WEATHER_DERIVED_WORLD_EVENT",
+          "structure_loss": 0.20,
+          "resource_loss": 0.12,
+          "substrate_damage": 0.30,
+          "route_obstruction": 0.30,
+          "shelter_loss": 0.16,
+          "mortality_pressure": 0.10,
+          "displacement_pressure": 0.22,
+          "source_persists_after_impact": false
+        }
+      ],
+      "expected": {
+        "stage_one_of": ["IMPACT", "ACUTE_AFTERSHOCK", "TRANSIENT_REORGANIZATION"],
+        "repeat_disturbance_pressure_min": 0.20,
+        "reorganization_pressure_greater_than_window_E": true
+      },
+      "assertions": [
+        "second_event_reads_window_E_state",
+        "original_reference_not_used_as_second_event_start_state",
+        "population_count_unchanged_without_demographic_transition"
+      ]
+    }
+  ],
+  "projection_expectations": {
+    "allowed": [
+      "route_warning_presentation",
+      "authored_debris_presentation",
+      "cover_change_presentation",
+      "temporary_resource_point_presentation",
+      "persistent_population_visibility_eligibility_change"
+    ],
+    "forbidden_as_authority": [
+      "minecraft_block_restoration_declares_recovered",
+      "generic_spawn_declares_recolonization",
+      "despawn_declares_emigration",
+      "vanilla_damage_declares_ecological_mortality"
+    ]
+  },
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  }
+}
