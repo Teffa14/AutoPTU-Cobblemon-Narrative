@@ -263,6 +263,11 @@
       "tick": 1500,
       "input_events": [
         {
+          "event_type": "LEASE_RELEASE",
+          "lease_id": "lease.pool.002",
+          "reason": "RESEARCH_SESSION_COMPLETE"
+        },
+        {
           "event_type": "LEASE_RESERVE",
           "lease_id": "lease.capture.001",
           "lease_class": "PERSISTENT_MEMBER_LEASE",
