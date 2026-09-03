@@ -1,0 +1,273 @@
+{
+  "fixture_id": "marea-sendero-ecology-world-event-v1",
+  "pass": 241,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "canon_policy": {
+    "may_reference_existing_canon": true,
+    "creates_new_canon": false,
+    "ecology_authority": "OUROS",
+    "battle_authority": "AUTOPTU",
+    "presentation_authority": "MINECRAFT_COBBLEMON"
+  },
+  "definition_ref": "ouros.event.sendero.forage_window_compression.v1",
+  "location_refs": [
+    "MAREA:SENDERO_DEL_VIDRIO:LOWER_SHELF",
+    "MAREA:SENDERO_DEL_VIDRIO:SEASONAL_CROSSING"
+  ],
+  "population_ref": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+  "purpose": "Validate that an ecology-driven event opens from persistent pressures, exposes symptoms through observation, accepts reversible interventions, conserves population truth and resolves only after ecological state satisfies clear conditions.",
+  "test_parameters": {
+    "open_resource_window_remaining_max": 0.30,
+    "open_activity_pressure_min": 0.65,
+    "open_human_overlap_pressure_min": 0.60,
+    "clear_disturbance_pressure_max": 0.35,
+    "clear_required_consecutive_evaluations": 2,
+    "minimum_active_evaluations": 2
+  },
+  "hidden_baseline": {
+    "population_total": "USE_EXISTING_CANON_AT_RUNTIME",
+    "resource_window_remaining": 0.80,
+    "activity_pressure": 0.30,
+    "human_overlap_pressure": 0.25,
+    "disturbance_pressure": 0.20,
+    "event_state": "CLOSED"
+  },
+  "windows": [
+    {
+      "id": "W0_BASELINE",
+      "input": {
+        "resource_window_remaining": 0.80,
+        "activity_pressure": 0.30,
+        "human_overlap_pressure": 0.25,
+        "disturbance_pressure": 0.20
+      },
+      "expect": {
+        "event_open": false,
+        "population_mutations": 0,
+        "observable_alert_required": false
+      }
+    },
+    {
+      "id": "W1_RESOURCE_WINDOW_COMPRESSES",
+      "input": {
+        "resource_window_remaining": 0.25,
+        "activity_pressure": 0.70,
+        "human_overlap_pressure": 0.45,
+        "disturbance_pressure": 0.30
+      },
+      "expect": {
+        "event_open": false,
+        "reason": "human overlap condition not yet met",
+        "population_mutations": 0
+      }
+    },
+    {
+      "id": "W2_OVERLAP_CROSSES_TRIGGER",
+      "input": {
+        "resource_window_remaining": 0.25,
+        "activity_pressure": 0.72,
+        "human_overlap_pressure": 0.68,
+        "disturbance_pressure": 0.48
+      },
+      "expect": {
+        "event_open": true,
+        "phase": "FORMING",
+        "population_mutations": 0,
+        "allowed_observable_symptoms": [
+          "narrower_activity_window",
+          "higher_visible_concentration_probability",
+          "route_overlap",
+          "resource_use_evidence"
+        ],
+        "forbidden_inferences": [
+          "population_growth",
+          "outbreak_births",
+          "hidden_event_cause_revealed_to_all_npcs"
+        ]
+      }
+    },
+    {
+      "id": "W3_EVENT_ACTIVE_WITH_IMPERFECT_KNOWLEDGE",
+      "input": {
+        "evaluation_advance": 1,
+        "observations": [
+          {
+            "observer": "FIXTURE_FIELD_OBSERVER",
+            "modality": "DIRECT_VISUAL",
+            "visible_count": 2,
+            "claim": "unusual Fletchling concentration near lower shelf"
+          },
+          {
+            "observer": "FIXTURE_ROUTE_USER",
+            "modality": "FIRSTHAND_TESTIMONY",
+            "claim": "more birds than usual near crossing"
+          }
+        ]
+      },
+      "expect": {
+        "phase": "ACTIVE",
+        "world_event_truth_visible_directly": false,
+        "npc_claims_may_be_incomplete": true,
+        "population_mutations": 0
+      }
+    },
+    {
+      "id": "W4_DUPLICATE_RUMOR_DOES_NOT_ESCALATE_EVENT",
+      "input": {
+        "reports": [
+          {"source_chain": ["SOURCE_A", "NPC_1"], "claim": "massive outbreak"},
+          {"source_chain": ["SOURCE_A", "NPC_2"], "claim": "massive outbreak"}
+        ]
+      },
+      "expect": {
+        "event_pressure_changed_by_rumor": false,
+        "independent_sources": 1,
+        "population_growth_inferred": false
+      }
+    },
+    {
+      "id": "W5_NO_INTERVENTION_ESCALATION",
+      "input": {
+        "resource_window_remaining": 0.18,
+        "human_overlap_pressure": 0.76,
+        "disturbance_pressure": 0.72,
+        "interventions": []
+      },
+      "expect": {
+        "phase": "ESCALATING",
+        "possible_world_consequences": [
+          "greater_avoidance_pressure",
+          "route_use_shift",
+          "reduced_observation_reliability_due_to_displacement"
+        ],
+        "demographic_event_automatic": false
+      }
+    },
+    {
+      "id": "W6_TEMPORARY_TRAFFIC_REDUCTION",
+      "input": {
+        "intervention": {
+          "action_type": "REDUCE_TRAFFIC",
+          "authorized": true,
+          "world_mutations": {
+            "human_overlap_pressure_delta": -0.30,
+            "disturbance_pressure_delta": -0.25
+          }
+        }
+      },
+      "expect": {
+        "quest_flag_directly_resolves_event": false,
+        "intervention_logged": true,
+        "phase_may_change_only_after_re_evaluation": true
+      }
+    },
+    {
+      "id": "W7_FIRST_CLEAR_EVALUATION",
+      "input": {
+        "resource_window_remaining": 0.12,
+        "activity_pressure": 0.66,
+        "human_overlap_pressure": 0.38,
+        "disturbance_pressure": 0.32
+      },
+      "expect": {
+        "phase": "STABILIZING",
+        "event_resolved": false,
+        "clear_counter": 1,
+        "population_mutations": 0
+      }
+    },
+    {
+      "id": "W8_HYSTERESIS_PREVENTS_FLICKER",
+      "input": {
+        "resource_window_remaining": 0.10,
+        "activity_pressure": 0.64,
+        "human_overlap_pressure": 0.43,
+        "disturbance_pressure": 0.39
+      },
+      "expect": {
+        "event_resolved": false,
+        "clear_counter_reset": true,
+        "new_event_instance_created": false
+      }
+    },
+    {
+      "id": "W9_CLEAR_SEQUENCE_RESTARTS",
+      "input": {
+        "resource_window_remaining": 0.08,
+        "activity_pressure": 0.58,
+        "human_overlap_pressure": 0.34,
+        "disturbance_pressure": 0.29
+      },
+      "expect": {
+        "phase": "STABILIZING",
+        "clear_counter": 1,
+        "event_resolved": false
+      }
+    },
+    {
+      "id": "W10_SECOND_CLEAR_EVALUATION",
+      "input": {
+        "resource_window_remaining": 0.05,
+        "activity_pressure": 0.50,
+        "human_overlap_pressure": 0.30,
+        "disturbance_pressure": 0.27
+      },
+      "expect": {
+        "phase": "RESOLVED",
+        "event_resolved": true,
+        "clear_counter": 2,
+        "historical_driver_snapshot_retained": true,
+        "intervention_history_retained": true
+      }
+    },
+    {
+      "id": "W11_RESOLUTION_DOES_NOT_RESET_ECOLOGY",
+      "input": {
+        "event_state": "RESOLVED"
+      },
+      "expect": {
+        "resource_window_forced_to_baseline": false,
+        "disturbance_forced_to_baseline": false,
+        "population_forced_to_baseline": false,
+        "post_event_state_is_current_ecology_state": true
+      }
+    },
+    {
+      "id": "W12_MINECRAFT_ENTITY_COUNT_SPIKES",
+      "input": {
+        "projection_visible_actor_count": 4,
+        "projection_reason": "event activity weighting"
+      },
+      "expect": {
+        "population_total_changes": false,
+        "new_demographic_members_created": 0,
+        "each_visible_actor_requires_valid_projection_lease": true
+      }
+    },
+    {
+      "id": "W13_OPTIONAL_AUTOPTU_HANDOFF",
+      "input": {
+        "structured_conflict_requested": true,
+        "combatants_explicitly_selected": true
+      },
+      "expect": {
+        "autoptu_handoff_required": true,
+        "event_engine_may_not_resolve_tactical_legality": true,
+        "post_battle_ecology_requires_semantic_result": true,
+        "ko_is_not_ecological_death": true
+      }
+    }
+  ],
+  "regression_invariants": [
+    "world event opens from persistent ecology conditions, not quest acceptance",
+    "event knowledge may lag event truth",
+    "visible concentration never implies population growth",
+    "rumor cannot change ecological pressure",
+    "intervention changes explicit world variables rather than selecting an ending",
+    "clear conditions use hysteresis and minimum duration",
+    "resolution does not restore baseline values automatically",
+    "population changes require Pass 238 demographic events",
+    "projection actors require Pass 239 leases",
+    "tactical legality and outcomes require explicit AutoPTU handoff"
+  ]
+}
