@@ -1,0 +1,115 @@
+{
+  "fixture_id": "ouros.marea.sendero.human_disturbance.pass236.v1",
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+  "site_id": "ouros.marea.sendero_vidrio",
+  "authority": {
+    "population_truth": "OUROS",
+    "battle_truth": "AUTOPTU_WHEN_EXPLICIT_HANDOFF",
+    "presentation": "MINECRAFT_COBBLEMON",
+    "minecraft_entity_state_is_canon": false
+  },
+  "invariants": {
+    "population_size_must_not_change_from_exposure_only": true,
+    "chunk_unload_must_not_reset_memory": true,
+    "despawn_is_not_emigration": true,
+    "despawn_is_not_death": true,
+    "proximity_does_not_auto_start_battle": true,
+    "tolerance_does_not_imply_low_welfare_cost": true
+  },
+  "state_schema": {
+    "human_tolerance_baseline": "number_0_to_1",
+    "harmless_exposure_memory": "number_0_to_1",
+    "harmful_exposure_memory": "number_0_to_1",
+    "resource_subsidy_affinity": "number_0_to_1",
+    "vigilance_pressure": "number_0_to_1",
+    "avoidance_pressure": "number_0_to_1",
+    "activity_shift_pressure": "number_0_to_1",
+    "welfare_cost": "number_0_to_1",
+    "capture_conflict_pressure": "number_0_to_1",
+    "last_exposure_tick": "long_or_null",
+    "last_harmful_tick": "long_or_null"
+  },
+  "windows": [
+    {
+      "id": "A_BASELINE",
+      "inputs": {
+        "foot_traffic": 0.1,
+        "pursuit_or_harassment": 0.0,
+        "capture_pressure": 0.0,
+        "battle_pressure": 0.0,
+        "deliberate_feeding": 0.0
+      },
+      "assertions": [
+        "population_identity_unchanged",
+        "population_size_unchanged",
+        "no_auto_battle"
+      ]
+    },
+    {
+      "id": "B_HARMLESS_EXPOSURE",
+      "inputs": {
+        "foot_traffic": 0.65,
+        "pursuit_or_harassment": 0.0,
+        "capture_pressure": 0.0,
+        "battle_pressure": 0.0,
+        "deliberate_feeding": 0.0
+      },
+      "assertions": [
+        "harmless_exposure_memory_non_decreasing",
+        "canonical_battle_state_untouched",
+        "population_size_unchanged",
+        "no_auto_battle"
+      ]
+    },
+    {
+      "id": "C_HARMFUL_PURSUIT",
+      "inputs": {
+        "foot_traffic": 0.65,
+        "pursuit_or_harassment": 0.8,
+        "capture_pressure": 0.35,
+        "battle_pressure": 0.0,
+        "deliberate_feeding": 0.0
+      },
+      "assertions": [
+        "harmful_exposure_memory_increases",
+        "avoidance_or_activity_shift_pressure_increases",
+        "minecraft_damage_not_used",
+        "population_size_unchanged_without_demographic_event"
+      ]
+    },
+    {
+      "id": "D_RECOVERY",
+      "inputs": {
+        "foot_traffic": 0.05,
+        "pursuit_or_harassment": 0.0,
+        "capture_pressure": 0.0,
+        "battle_pressure": 0.0,
+        "deliberate_feeding": 0.0
+      },
+      "assertions": [
+        "short_term_pressure_decays",
+        "memory_does_not_instantly_reset",
+        "chunk_reload_preserves_state"
+      ]
+    }
+  ],
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  }
+}
