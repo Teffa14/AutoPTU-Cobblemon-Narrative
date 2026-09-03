@@ -150,8 +150,9 @@ For each candidate stack/version/configuration:
 6. visually inspect coastlines, mountains, rivers and biome transitions;
 7. verify Cobblemon tag coverage across representative biomes;
 8. test structure generation conflicts;
-9. freeze one seed/config only after country/region capacity review;
-10. record the world identity and checksums.
+9. run the Pokémon popularity accessibility audit for the proposed player spawn and early-region biome portfolio;
+10. freeze one seed/config only after country/region capacity and early-species accessibility review;
+11. record the world identity and checksums.
 
 ## Pregeneration and indexing
 
@@ -169,6 +170,7 @@ river/water map
 structure index
 coordinate grid
 worldgen version manifest
+Pokémon popularity accessibility report
 ```
 
 These outputs become implementation evidence for later placement work.
@@ -191,6 +193,63 @@ Placement must use physical geography:
 - transport corridors.
 
 Political borders may cross biomes. Biome borders must not be distorted merely to match political borders unless an explicit authored worldgen modification is approved.
+
+## Player spawn and Pokémon popularity accessibility
+
+The initial player spawn is a global world-design decision, not merely the default Minecraft spawn point.
+
+The world should make a meaningful share of highly popular ordinary Pokémon discoverable within the early travel network, while preserving native Cobblemon habitat compatibility and Ouros ecology.
+
+Popularity is therefore an accessibility pressure used when choosing the player-spawn region and nearby biome portfolio. It is not a permission to force species into invalid habitats.
+
+The current provenance baseline is documented in `research/2026-09-03-pokemon-popularity-spawn-accessibility-source-230.md`.
+
+Required authority order:
+
+```text
+Minecraft/worldgen biome facts
+-> Cobblemon native spawn envelope
+-> Ouros ecology/population plausibility
+-> progression and safety gates
+-> popularity accessibility preference
+-> player route and encounter placement
+```
+
+For every high-priority species, the seed evaluation should record:
+
+```yaml
+species_id: null
+popularity_rank: null
+popularity_source: null
+native_spawn_detail_ids: []
+required_biome_tags: []
+nearest_compatible_habitat_distance_blocks: null
+earliest_route_stage: null
+generic_early_spawn_allowed: null
+block_reason: null
+```
+
+The player-spawn region should preferentially sit near a diverse set of large, coherent biome families capable of supporting popular species through their native spawn definitions.
+
+Examples of acceptable design responses:
+
+- put a forest/temperate corridor within early travel distance for popular forest species;
+- place coast, river or lake access near the initial travel network for popular aquatic species;
+- expose caves, night routes or other special contexts through early exploration while retaining their actual conditions;
+- make compatible adjacent regions reachable through authored roads, ferries or trails rather than moving every popular species into one biome.
+
+Popularity must not override:
+
+- native biome/context/time/weather/light requirements;
+- legendary or mythical progression gates;
+- boss/story encounter policy;
+- local population/ecology contradictions;
+- persistent-individual uniqueness;
+- reviewed rarity/bucket balance.
+
+A highly ranked legendary can be geographically foreshadowed or made narratively relevant near the early world without becoming an ordinary local generic spawn.
+
+The worldgen benchmark should penalize seeds/configurations where many high-priority ordinary Pokémon have compatible habitat somewhere in the world but almost all of those habitats sit at extreme early-game travel distances.
 
 ## Existing Marea migration gate
 
@@ -247,10 +306,13 @@ The future worldgen toolchain needs at minimum:
 - continent/landmass area analysis;
 - image/map export for review;
 - coordinate registry generation;
+- Cobblemon native-spawn indexing;
+- popularity-ranking import and provenance tracking;
+- spawn-to-habitat distance analysis from proposed player spawn;
 - regression check that the same stack/seed regenerates equivalent geography.
 
 ## Immediate project priority
 
 Until the global substrate is selected and generated, world-map work outranks further local spawn tuning.
 
-The next technical milestone is not another Marea habitat table. It is a reproducible global worldgen prototype and measurable seed survey.
+The next technical milestone is not another Marea habitat table. It is a reproducible global worldgen prototype and measurable seed survey that also reports whether the proposed spawn gives reasonable early access to popular Pokémon through valid habitats.
