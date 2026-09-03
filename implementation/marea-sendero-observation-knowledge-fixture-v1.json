@@ -1,0 +1,208 @@
+{
+  "fixture_id": "marea-sendero-observation-knowledge-v1",
+  "pass": 240,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "canon_policy": {
+    "may_reference_existing_canon": true,
+    "creates_new_canon": false,
+    "hidden_world_truth_authority": "OUROS",
+    "structured_battle_authority": "AUTOPTU",
+    "presentation_authority": "MINECRAFT_COBBLEMON"
+  },
+  "purpose": "Deterministically validate observation, evidence, source-chain, contradiction, staleness and persistent-individual recognition without leaking or mutating hidden ecology state.",
+  "location_ref": "MAREA:SENDERO_DEL_VIDRIO",
+  "actors": {
+    "observer_a": "FIXTURE_OBSERVER_A",
+    "observer_b": "FIXTURE_OBSERVER_B",
+    "npc_relay": "FIXTURE_NPC_RELAY",
+    "archive": "FIXTURE_FIELD_ARCHIVE"
+  },
+  "hidden_truth": {
+    "population_ref": "EXISTING_SENDERO_FLETCHLING_POPULATION",
+    "population_total": "USE_EXISTING_CANON_AT_RUNTIME",
+    "persistent_member_ref": "EXISTING_FIRST_PERSISTENT_FLETCHLING",
+    "rules": [
+      "never expose population_total to observer knowledge",
+      "never expose persistent internal ids or Minecraft UUIDs as diegetic evidence",
+      "observation events do not mutate population_total"
+    ]
+  },
+  "windows": [
+    {
+      "id": "W0_BASELINE",
+      "input": {"knowledge": "UNKNOWN", "observations": []},
+      "expect": {"population_mutations": 0, "claims": []}
+    },
+    {
+      "id": "W1_SINGLE_DIRECT_SIGHTING",
+      "input": {
+        "observer": "FIXTURE_OBSERVER_A",
+        "modality": "DIRECT_VISUAL",
+        "visible_count": 1,
+        "apparent_species": "FLETCHLING",
+        "subject_resolution_internal": "UNRESOLVED_LOCAL_MEMBER"
+      },
+      "expect": {
+        "claims": [
+          {"type": "PRESENCE", "state": "OBSERVED", "confidence_band": "HIGH"},
+          {"type": "OBSERVED_MINIMUM_COUNT", "value": 1, "state": "OBSERVED"}
+        ],
+        "must_not_create": ["TOTAL_ABUNDANCE", "POPULATION_INCREMENT", "PERSISTENT_IDENTITY_PROOF"]
+      }
+    },
+    {
+      "id": "W2_INDEPENDENT_CORROBORATION",
+      "input": {
+        "observer": "FIXTURE_OBSERVER_B",
+        "modality": "TRACK",
+        "claim": "recent Fletchling presence",
+        "independent_source": true
+      },
+      "expect": {
+        "presence_claim_state": "SUPPORTED",
+        "total_abundance_known": false,
+        "population_mutations": 0
+      }
+    },
+    {
+      "id": "W3_SECONDHAND_MANY_RUMOR",
+      "input": {
+        "holder": "FIXTURE_NPC_RELAY",
+        "modality": "SECONDHAND_REPORT",
+        "report": "many Fletchling were seen",
+        "source_chain": ["FIXTURE_UNVERIFIED_SOURCE", "FIXTURE_NPC_RELAY"]
+      },
+      "expect": {
+        "claim_type": "OBSERVED_MINIMUM_COUNT",
+        "claim_state": "SUSPECTED",
+        "confidence_band": "LOW",
+        "hidden_population_exposed": false
+      }
+    },
+    {
+      "id": "W4_DUPLICATE_RUMOR_IS_NOT_CORROBORATION",
+      "input": {
+        "two_reports": true,
+        "source_chains": [
+          ["FIXTURE_UNVERIFIED_SOURCE", "NPC_X"],
+          ["FIXTURE_UNVERIFIED_SOURCE", "NPC_Y"]
+        ]
+      },
+      "expect": {
+        "independent_sources": 1,
+        "confidence_must_not_increase_for_duplicate_origin": true
+      }
+    },
+    {
+      "id": "W5_CONTRADICTORY_ROUTE_EVIDENCE",
+      "input": {
+        "existing_claim": "route_use_north_cut",
+        "new_evidence": {"modality": "TRACK", "supports": "route_use_creek_edge"}
+      },
+      "expect": {
+        "existing_claim_state": "DISPUTED",
+        "new_claim_state": "SUSPECTED",
+        "older_claim_deleted": false
+      }
+    },
+    {
+      "id": "W6_REPEAT_SIGHTING_PROBABLE_IDENTITY",
+      "input": {
+        "observer": "FIXTURE_OBSERVER_A",
+        "modality": "DIRECT_VISUAL",
+        "observable_match_cues": ["distinctive_marking", "repeated_behavior", "same_microhabitat_window"],
+        "minecraft_uuid_changed": true
+      },
+      "expect": {
+        "subject_resolution": "PROBABLE_MATCH",
+        "minecraft_uuid_used_as_evidence": false,
+        "population_mutations": 0
+      }
+    },
+    {
+      "id": "W7_AUTHORIZED_IDENTITY_CORROBORATION",
+      "input": {
+        "modality": "AUTHORIZED_RECORD",
+        "record_matches_observable_cues": true
+      },
+      "expect": {
+        "identity_claim_state": "SUPPORTED",
+        "player_visible_internal_persistent_id": false
+      }
+    },
+    {
+      "id": "W8_STALENESS",
+      "input": {"advance_time_beyond_route_claim_freshness": true},
+      "expect": {
+        "route_claim_freshness": "STALE",
+        "historical_evidence_retained": true,
+        "claim_retroactively_false": false
+      }
+    },
+    {
+      "id": "W9_NO_SIGHTING_IS_NOT_ABSENCE",
+      "input": {"survey_result": "NO_DETECTION"},
+      "expect": {
+        "absence_claim_automatically_created": false,
+        "population_mutations": 0
+      }
+    },
+    {
+      "id": "W10_NPC_RELAY",
+      "input": {
+        "from": "FIXTURE_OBSERVER_A",
+        "to": "FIXTURE_NPC_RELAY",
+        "claim": "recent presence near creek"
+      },
+      "expect": {
+        "source_chain_appended": true,
+        "relay_alone_increases_confidence": false,
+        "recipient_stance": "HEARD"
+      }
+    },
+    {
+      "id": "W11_HIDDEN_TRUTH_CHANGES_WITHOUT_NEW_EVIDENCE",
+      "input": {"simulate_authoritative_population_change_elsewhere": true},
+      "expect": {
+        "npc_knowledge_instantly_changes": false,
+        "existing_claims_preserved_until_new_evidence_or_record": true
+      }
+    },
+    {
+      "id": "W12_AUTOPTU_KO_RESULT",
+      "input": {
+        "modality": "AUTOPTU_SEMANTIC_RESULT",
+        "semantic_result": "KO",
+        "combatant_is_persistent_member": true
+      },
+      "expect": {
+        "allowed_claim": "RECENT_BATTLE_OUTCOME:KO",
+        "death_claim": false,
+        "ecological_mortality_event": false
+      }
+    },
+    {
+      "id": "W13_MINECRAFT_ENTITY_DISAPPEARS",
+      "input": {"projection_event": "DESPAWN_OR_CHUNK_UNLOAD"},
+      "expect": {
+        "absence_claim": false,
+        "death_claim": false,
+        "emigration_claim": false,
+        "historical_observations_retained": true
+      }
+    }
+  ],
+  "regression_invariants": [
+    "observation never directly changes population abundance",
+    "direct sighting proves only observable presence and minimum count for its window",
+    "no detection is not automatic absence",
+    "source ancestry prevents duplicate rumor from counting as independent corroboration",
+    "contradictory evidence is retained",
+    "staleness changes usability, not historical truth of the observation record",
+    "Minecraft UUID is never identity evidence",
+    "NPC knowledge does not synchronize from hidden world truth",
+    "battle evidence enters only as an AutoPTU semantic result",
+    "KO is not death",
+    "despawn or unload is not death, emigration or absence"
+  ]
+}
