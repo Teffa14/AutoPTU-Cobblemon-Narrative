@@ -1,0 +1,29 @@
+name: Ecology Fixture Regressions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'implementation/**'
+      - 'tools/validate_ecology_fixtures.py'
+      - 'tests/test_ecology_fixture_validator.py'
+      - '.github/workflows/ecology-fixtures.yml'
+  pull_request:
+    paths:
+      - 'implementation/**'
+      - 'tools/validate_ecology_fixtures.py'
+      - 'tests/test_ecology_fixture_validator.py'
+      - '.github/workflows/ecology-fixtures.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate ecology fixtures
+        run: python tools/validate_ecology_fixtures.py
+      - name: Run ecology regression tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
