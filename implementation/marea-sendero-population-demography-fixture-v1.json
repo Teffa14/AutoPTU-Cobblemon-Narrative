@@ -1,0 +1,357 @@
+{
+  "fixture_id": "ouros.marea.sendero.population_demography.pass238.v1",
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "site_id": "ouros.marea.sendero_vidrio",
+  "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+  "species_id": "fletchling",
+  "scenario_is_canon": false,
+  "authority": {
+    "population_truth": "OUROS",
+    "ecology_truth": "OUROS",
+    "battle_truth": "AUTOPTU_WHEN_EXPLICIT_HANDOFF",
+    "presentation": "MINECRAFT_COBBLEMON",
+    "minecraft_entity_count_is_population_truth": false
+  },
+  "starting_state": {
+    "population_status": "RESIDENT",
+    "total_count": 12,
+    "stage_counts": {
+      "DEPENDENT_JUVENILE": 2,
+      "INDEPENDENT_JUVENILE": 3,
+      "SUBADULT_OR_PREBREEDER": 2,
+      "BREEDING_ADULT": 4,
+      "NONBREEDING_ADULT": 1
+    },
+    "known_persistent_member_ids": [
+      "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+    ],
+    "unresolved_member_pool_count": 11,
+    "connectivity_state": "CONNECTED_TO_TEST_SOURCE_PATCH",
+    "reference_abundance_is_canon": false
+  },
+  "test_source_population": {
+    "population_id": "fixture.external.sendero_upper_shelf.fletchling",
+    "scenario_is_canon": false,
+    "starting_total_count": 20,
+    "connected_to_target": true
+  },
+  "invariants": {
+    "total_equals_sum_of_stage_counts": true,
+    "total_equals_known_persistent_plus_unresolved_pool": true,
+    "habitat_recovery_alone_cannot_change_abundance": true,
+    "generic_spawn_cannot_change_abundance": true,
+    "despawn_cannot_change_abundance": true,
+    "vanilla_death_cannot_change_abundance": true,
+    "battle_ko_alone_cannot_change_abundance": true,
+    "stage_transition_conserves_total": true,
+    "all_abundance_deltas_require_ledger_events": true,
+    "local_extirpation_preserves_population_record": true,
+    "recolonization_requires_source_and_connectivity": true,
+    "paired_patch_movement_conserves_regional_count": true,
+    "chunk_unload_preserves_state": true,
+    "server_restart_preserves_state": true
+  },
+  "windows": [
+    {
+      "id": "A_BASELINE",
+      "tick": 0,
+      "input_events": [],
+      "expected": {
+        "target_total_count": 12,
+        "source_total_count": 20,
+        "regional_total_count": 32,
+        "target_status": "RESIDENT"
+      },
+      "assertions": [
+        "stage_sum_equals_12",
+        "known_plus_unresolved_equals_12"
+      ]
+    },
+    {
+      "id": "B_HABITAT_RECOVERY_WITHOUT_DEMOGRAPHIC_EVENT",
+      "tick": 1000,
+      "input_events": [
+        {
+          "event_type": "ECOLOGY_CONTEXT_UPDATE",
+          "habitat_recovery_improved": true,
+          "resource_availability_delta": 0.20,
+          "demographic_event": false
+        }
+      ],
+      "expected": {
+        "target_total_count": 12,
+        "source_total_count": 20,
+        "regional_total_count": 32
+      },
+      "assertions": [
+        "no_abundance_refill_from_habitat_improvement",
+        "no_implicit_recruitment"
+      ]
+    },
+    {
+      "id": "C_STAGE_TRANSITION_ONLY",
+      "tick": 2000,
+      "input_events": [
+        {
+          "demographic_event_id": "demo_stage_001",
+          "event_type": "STAGE_TRANSITION",
+          "count": 1,
+          "from_stage": "INDEPENDENT_JUVENILE",
+          "to_stage": "SUBADULT_OR_PREBREEDER",
+          "cause_code": "AGE_PROGRESS_TEST",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        }
+      ],
+      "expected": {
+        "target_total_count": 12,
+        "stage_counts": {
+          "DEPENDENT_JUVENILE": 2,
+          "INDEPENDENT_JUVENILE": 2,
+          "SUBADULT_OR_PREBREEDER": 3,
+          "BREEDING_ADULT": 4,
+          "NONBREEDING_ADULT": 1
+        }
+      },
+      "assertions": [
+        "stage_transition_conserves_total"
+      ]
+    },
+    {
+      "id": "D_LOCAL_RECRUITMENT",
+      "tick": 4000,
+      "input_events": [
+        {
+          "demographic_event_id": "demo_recruit_001",
+          "event_type": "LOCAL_RECRUITMENT",
+          "count": 2,
+          "to_stage": "DEPENDENT_JUVENILE",
+          "cause_code": "SUCCESSFUL_LOCAL_RECRUITMENT_TEST",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        }
+      ],
+      "expected": {
+        "target_total_count": 14,
+        "source_total_count": 20,
+        "regional_total_count": 34
+      },
+      "assertions": [
+        "recruitment_has_local_reproduction_provenance",
+        "recruitment_not_inferred_from_visible_juveniles"
+      ]
+    },
+    {
+      "id": "E_IMMIGRATION_PAIRED_WITH_SOURCE_EMIGRATION",
+      "tick": 6000,
+      "input_events": [
+        {
+          "demographic_event_id": "demo_emigrate_source_001",
+          "population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "event_type": "EMIGRATION",
+          "count": 2,
+          "destination_population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+          "cause_code": "TEST_CONNECTED_PATCH_MOVEMENT",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        },
+        {
+          "demographic_event_id": "demo_immigrate_target_001",
+          "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+          "event_type": "IMMIGRATION",
+          "count": 2,
+          "source_population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "to_stage": "NONBREEDING_ADULT",
+          "cause_code": "TEST_CONNECTED_PATCH_MOVEMENT",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        }
+      ],
+      "expected": {
+        "target_total_count": 16,
+        "source_total_count": 18,
+        "regional_total_count": 34
+      },
+      "assertions": [
+        "immigration_and_recruitment_are_distinct_causes",
+        "paired_patch_movement_conserves_regional_count"
+      ]
+    },
+    {
+      "id": "F_MORTALITY_AND_EMIGRATION_DISTINCT",
+      "tick": 8000,
+      "input_events": [
+        {
+          "demographic_event_id": "demo_mortality_001",
+          "event_type": "ECOLOGICAL_MORTALITY",
+          "count": 1,
+          "from_stage": "NONBREEDING_ADULT",
+          "cause_code": "FIXTURE_AUTHORED_MORTALITY",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        },
+        {
+          "demographic_event_id": "demo_emigrate_target_001",
+          "event_type": "EMIGRATION",
+          "count": 1,
+          "from_stage": "SUBADULT_OR_PREBREEDER",
+          "destination_population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "cause_code": "FIXTURE_DISPERSAL",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        },
+        {
+          "demographic_event_id": "demo_immigrate_source_001",
+          "population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "event_type": "IMMIGRATION",
+          "count": 1,
+          "source_population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+          "cause_code": "FIXTURE_DISPERSAL",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        }
+      ],
+      "expected": {
+        "target_total_count": 14,
+        "source_total_count": 19,
+        "regional_total_count": 33
+      },
+      "assertions": [
+        "mortality_reduces_regional_count",
+        "emigration_only_moves_member_between_known_patches",
+        "mortality_and_emigration_are_not_same_event_type"
+      ]
+    },
+    {
+      "id": "G_GENERIC_PRESENTATION_NO_WRITE",
+      "tick": 9000,
+      "input_events": [
+        {
+          "event_type": "MINECRAFT_GENERIC_ENTITY_SPAWN",
+          "count": 5
+        },
+        {
+          "event_type": "MINECRAFT_ENTITY_DESPAWN",
+          "count": 3
+        },
+        {
+          "event_type": "MINECRAFT_VANILLA_DEATH",
+          "count": 1
+        },
+        {
+          "event_type": "AUTOPTU_KO_PRESENTATION_ONLY",
+          "count": 1,
+          "semantic_removal_result": false
+        }
+      ],
+      "expected": {
+        "target_total_count": 14,
+        "source_total_count": 19,
+        "regional_total_count": 33
+      },
+      "assertions": [
+        "presentation_events_do_not_write_population_truth",
+        "ko_without_semantic_population_result_does_not_remove_member"
+      ]
+    },
+    {
+      "id": "H_LOCAL_EXTIRPATION",
+      "tick": 12000,
+      "input_events": [
+        {
+          "demographic_event_id": "demo_fixture_remove_remaining",
+          "event_type": "RELOCATION_OUT",
+          "count": 14,
+          "destination_population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "cause_code": "FIXTURE_CONTROLLED_RELOCATION",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        },
+        {
+          "demographic_event_id": "demo_fixture_receive_remaining",
+          "population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "event_type": "RELOCATION_IN",
+          "count": 14,
+          "source_population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+          "cause_code": "FIXTURE_CONTROLLED_RELOCATION",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        }
+      ],
+      "expected": {
+        "target_total_count": 0,
+        "target_status": "LOCALLY_EXTIRPATED",
+        "source_total_count": 33,
+        "regional_total_count": 33,
+        "population_record_exists": true
+      },
+      "assertions": [
+        "zero_count_does_not_delete_population_record",
+        "history_and_ledger_preserved"
+      ]
+    },
+    {
+      "id": "I_INVALID_GENERIC_RECOLONIZATION_REJECTED",
+      "tick": 13000,
+      "input_events": [
+        {
+          "event_type": "MINECRAFT_GENERIC_ENTITY_SPAWN",
+          "count": 4
+        }
+      ],
+      "expected": {
+        "target_total_count": 0,
+        "target_status": "LOCALLY_EXTIRPATED"
+      },
+      "assertions": [
+        "generic_spawn_does_not_recolonize"
+      ]
+    },
+    {
+      "id": "J_VALID_RECOLONIZATION",
+      "tick": 15000,
+      "input_events": [
+        {
+          "demographic_event_id": "demo_recolonize_source_001",
+          "population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "event_type": "EMIGRATION",
+          "count": 3,
+          "destination_population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+          "cause_code": "CONNECTED_SOURCE_RECOLONIZATION",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE"
+        },
+        {
+          "demographic_event_id": "demo_recolonize_target_001",
+          "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+          "event_type": "IMMIGRATION",
+          "count": 3,
+          "source_population_id": "fixture.external.sendero_upper_shelf.fletchling",
+          "to_stage": "NONBREEDING_ADULT",
+          "cause_code": "CONNECTED_SOURCE_RECOLONIZATION",
+          "provenance": "OUROS_DEMOGRAPHY_FIXTURE",
+          "connectivity_proven": true
+        }
+      ],
+      "expected": {
+        "target_total_count": 3,
+        "target_status": "RECOLONIZING",
+        "source_total_count": 30,
+        "regional_total_count": 33
+      },
+      "assertions": [
+        "recolonization_has_source_provenance",
+        "recolonization_requires_connectivity",
+        "regional_count_conserved"
+      ]
+    }
+  ],
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  }
+}
