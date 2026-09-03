@@ -8,16 +8,13 @@ Depends on:
 - `design/cobblemon-native-spawn-projection-contract.md`
 - `design/global-species-interaction-graph.md`
 - `proposals/2026-09-03-marea-sendero-species-interaction-matrix-226.md`
+- `research/2026-09-03-cobblemon-1.7.1-marea-spawn-envelope-audit-228.md`
 
 ## Purpose
 
-Translate the first Marea ecology work into a fixture that can eventually be evaluated against the actual Minecraft biome and installed Cobblemon spawn data.
-
-The fixture deliberately does not invent biome IDs for Marea. The physical world must report the real Minecraft biome at each canonical cell, and the adapter must resolve the active Cobblemon biome/tag memberships and spawn details.
+Translate the first Marea ecology work into a fixture evaluated against actual Minecraft biome state and pinned Cobblemon spawn data. Ouros ecological cells refine native habitats; they never replace Minecraft/Cobblemon biome semantics.
 
 ## Runtime cell contract
-
-Each ecological cell needs a native environment binding:
 
 ```yaml
 cell_id: marea.sendero_lower_shelf
@@ -31,184 +28,231 @@ authored_zone_ids: []
 resolution_status: runtime_required
 ```
 
-These fields are measured/resolved from the actual map. They are not prose lore.
+These fields are measured from the actual map. They are not prose lore.
+
+## Native spawn-detail evidence from Cobblemon 1.7.1
+
+This fixture now records exact details from public branch `Delta-Academy-MC/Cobblemon:academy-1.7.1`. The actual Ouros installation must still pin/verify its own version and datapacks.
+
+### Fletchling — CANON persistent individual, generic population unresolved
+
+Observed native detail:
+
+```yaml
+spawn_detail_id: fletchling-1
+presets: [natural, treetop]
+spawnable_position_type: grounded
+bucket: common
+level: 3-28
+base_weight: 5.4
+required_biome_tags:
+  - '#cobblemon:is_forest'
+  - '#cobblemon:is_sky'
+  - '#cobblemon:is_taiga'
+skylight: 8-15
+time: day
+```
+
+Projection rule:
+- the canonical persistent lower-Sendero Fletchling can remain authored even when generic native compatibility is unresolved;
+- generic Fletchling spawning is permitted only if the actual cell resolves to a matching native detail;
+- the persistent identity must be reserved before any anonymous population materialization.
+
+### Taillow — PROPOSED CONDITIONAL
+
+Observed native detail:
+
+```yaml
+spawn_detail_id: taillow-1
+presets: [natural, treetop]
+bucket: common
+level: 2-27
+base_weight: 9.0
+required_biome_tags:
+  - '#cobblemon:is_sky'
+  - '#cobblemon:is_temperate'
+forbidden_biome_tags:
+  - '#cobblemon:is_spooky'
+skylight: 8-15
+time: day
+```
+
+Correction to prior fixture assumptions: native eligibility is not specifically forest-gated. Any ecology requirement for vegetation/prey remains a separate Ouros layer.
+
+### Swellow — PROPOSED
+
+Observed native detail:
+
+```yaml
+spawn_detail_id: swellow-1
+presets: [natural, treetop]
+bucket: common
+level: 22-46
+base_weight: 1.0
+required_biome_tags:
+  - '#cobblemon:is_sky'
+  - '#cobblemon:is_temperate'
+forbidden_biome_tags:
+  - '#cobblemon:is_spooky'
+skylight: 8-15
+time: day
+```
+
+Taillow and Swellow share the same broad biome envelope in the inspected source but retain distinct level ranges and base weights. Ouros must never collapse them into one local bird spawn rate.
+
+### Squawkabilly — PROPOSED, stronger Puerto Bruma candidate
+
+Relevant native details:
+
+```yaml
+spawn_detail_id: squawkabilly-2
+presets: [urban, natural, treetop]
+bucket: common
+level: 17-42
+base_weight: 6.0
+required_biome_tags:
+  - '#cobblemon:is_overworld'
+forbidden_biome_tags:
+  - '#cobblemon:is_freezing'
+  - '#cobblemon:is_sandy'
+skylight: 8-15
+time: day
+weather: not_raining
+```
+
+```yaml
+spawn_detail_id: squawkabilly-3
+presets: [natural, treetop]
+base_weight: 6.0
+required_biome_tags:
+  - '#cobblemon:is_overworld'
+required_structures:
+  - '#minecraft:village'
+forbidden_biome_tags:
+  - '#cobblemon:is_freezing'
+  - '#cobblemon:is_sandy'
+time: day
+weather: not_raining
+```
+
+```yaml
+spawn_detail_id: squawkabilly-4
+base_weight: 10.0
+required_biome_tags:
+  - '#cobblemon:is_sky'
+time: day
+```
+
+Puerto Bruma should therefore be tested first against `squawkabilly-2`, not assumed to be a village. Settlement canon does not imply a Minecraft `#minecraft:village` structure tag.
+
+### Scatterbug — PROPOSED LATER
+
+Observed primary detail:
+
+```yaml
+spawn_detail_id: scatterbug-1
+presets: [natural, foliage]
+bucket: common
+level: 1-20
+base_weight: 7.0
+required_biome_tags:
+  - '#cobblemon:is_floral'
+  - '#cobblemon:is_plains'
+  - '#cobblemon:is_savanna'
+skylight: 8-15
+```
+
+Loma Clara or a Sendero vegetation cell becomes a candidate only if the actual Minecraft biome/tag and foliage context satisfy the native detail. Crop prose alone is insufficient.
+
+### Wurmple — PROPOSED, SPAWN PROVENANCE UNRESOLVED
+
+The expected standard `0265_wurmple.json` spawn-pool row was not present in the inspected public 1.7.1 branch and code search did not surface a standard `pokemon: wurmple` spawn detail.
+
+Do not fabricate a habitat envelope. Before Wurmple can participate in an executable generic-population fixture, verify the exact Ouros distribution/datapack and locate its spawn provenance or approve a deliberate datapack addition.
 
 ## Existing Marea cells
 
-`marea.puerto_bruma_populated_edge`, `marea.sendero_lower_shelf`, `marea.sendero_vegetated_band`, and `marea.loma_clara_cultivation_edge` remain ecology cells for reasoning and persistence.
+These remain ecology/persistence cells, never Minecraft biomes:
 
-They are not Minecraft biomes and must never be passed to Cobblemon as if they were biome IDs.
+- `marea.puerto_bruma_populated_edge`
+- `marea.sendero_lower_shelf`
+- `marea.sendero_vegetated_band`
+- `marea.loma_clara_cultivation_edge`
 
-Each cell instead binds to the Minecraft biome/tag state underneath its coordinates.
+Each cell binds to the real Minecraft biome/tag/structure/block context under its coordinates.
 
-## Species projection records
+## First end-to-end runtime fixtures
 
-### Fletchling
-
-Local status: CANON PRESENT as a persistent individual in the lower Sendero context.
-
-```yaml
-species_id: fletchling
-cell_id: marea.sendero_lower_shelf
-population_projection_mode: persistent_individual_first
-native_spawn_details: runtime_lookup
-native_habitat_compatibility: unresolved_until_map_lookup
-generic_spawn_allowed: unresolved
-persistent_individual_reserved: true
-ecology_modifiers:
-  population_pressure: null
-  ecological_weight_multiplier: null
-  visibility_multiplier: null
-```
-
-The existing persistent individual must not be duplicated because a generic Fletchling spawn detail is legal at the same location.
-
-### Squawkabilly
-
-Local status: PROPOSED.
-
-```yaml
-species_id: squawkabilly
-candidate_cells:
-  - marea.puerto_bruma_populated_edge
-  - marea.sendero_lower_shelf
-native_spawn_details: runtime_lookup
-native_habitat_compatibility: unresolved
-activation_requires:
-  - species_local_approval
-  - actual_native_spawn_compatibility_or_reviewed_datapack_change
-  - authored_contested_resource_for_territorial_loop
-```
-
-No amount of ecological territorial logic can activate generic Squawkabilly spawning if the installed native spawn envelope rejects the actual Marea biome/context.
-
-### Wurmple
-
-Local status: PROPOSED.
-
-```yaml
-species_id: wurmple
-candidate_cells:
-  - marea.sendero_vegetated_band
-native_spawn_details: runtime_lookup
-native_habitat_compatibility: unresolved
-activation_requires:
-  - species_local_approval
-  - physical_vegetation_cover_established
-  - actual_native_spawn_compatibility_or_reviewed_datapack_change
-  - authored_tree_or_sap_resource_for_foraging_loop
-```
-
-If Wurmple becomes locally valid, predator pressure may reduce `visibility_multiplier` without asserting an immediate demographic decline.
-
-### Swellow
-
-Local status: PROPOSED.
-
-```yaml
-species_id: swellow
-candidate_cells:
-  - marea.sendero_vegetated_band
-  - marea.sendero_lower_shelf
-native_spawn_details: runtime_lookup
-native_habitat_compatibility: unresolved
-activation_requires:
-  - species_local_approval
-  - actual_native_spawn_compatibility_or_reviewed_datapack_change
-  - prey/resource overlap for trophic activity
-```
-
-### Taillow
-
-Local status: PROPOSED CONDITIONAL.
-
-The current matrix already gates Taillow on forest-compatible overlap. Pass 227 strengthens that gate: a narrative statement that an area is vegetated is insufficient. The actual Minecraft biome/tag plus installed Cobblemon spawn conditions must support the species, unless a reviewed datapack/world change expands native eligibility.
-
-```yaml
-species_id: taillow
-candidate_cells:
-  - marea.sendero_vegetated_band
-native_spawn_details: runtime_lookup
-native_habitat_compatibility: unresolved
-activation_requires:
-  - species_local_approval
-  - physical_map_cover_approval
-  - native_spawn_envelope_match
-```
-
-### Scatterbug
-
-Local status: PROPOSED LATER.
-
-Scatterbug remains deferred. Any later activation follows the same native envelope rule and must bind plant-resource ecology to actual Minecraft/Cobblemon-observable microhabitat facts where possible.
-
-## First end-to-end spawn fixture
-
-The first implementation target should use Fletchling because a persistent local individual already exists.
-
-Expected sequence:
+### Fixture A — persistent Fletchling reconciliation
 
 ```text
-1. Resolve the real Minecraft biome at lower Sendero.
-2. Expand relevant biome tags from the installed datapack set.
-3. Find all active Cobblemon Fletchling spawn details compatible with that context.
-4. Record their IDs, bucket, base weight, presets and conditions.
-5. Reserve the canonical persistent Fletchling identity.
-6. Evaluate whether anonymous generic Fletchling population projection is also allowed in that cell.
-7. Apply local ecology modifiers only to anonymous eligible details.
-8. Materialize/reconcile visible entities without cloning the persistent individual.
-9. Record telemetry: cell, native detail ID, native weight, ecology modifiers, entity identity.
+1. Resolve real biome + tags at lower Sendero.
+2. Evaluate `fletchling-1` and every installed Fletchling spawn detail independently.
+3. Record native eligibility before Ouros ecology is considered.
+4. Reserve the canonical persistent Fletchling identity.
+5. Decide whether anonymous Fletchling population projection is also allowed.
+6. Apply ecology multipliers only to native-legal anonymous details.
+7. Materialize/reconcile entity identity.
+8. Record detail ID, native weight, ecology modifiers, materialized entity ID and persistent reservation state.
 ```
 
-This fixture tests the architecture without requiring a new species to become canon.
+Pass condition: changing the Ouros multiplier never makes an otherwise native-illegal Fletchling detail eligible.
 
-## Second fixture: Wurmple visibility under predator pressure
+### Fixture B — Puerto Bruma Squawkabilly native envelope
 
-Enable only after Wurmple and a compatible predator are approved locally and the native spawn envelope validates both.
-
-Baseline:
-
-```yaml
-population_pressure: 1.0
-visibility_multiplier: 1.0
-ecological_weight_multiplier: 1.0
+```text
+1. Resolve Puerto Bruma biome tags, rain state, skylight and actual preset context.
+2. Test `squawkabilly-2` independently.
+3. Test `squawkabilly-3` only if a real `#minecraft:village` structure match exists.
+4. Test `squawkabilly-4` only if the native `is_sky` biome tag matches.
+5. Keep species status PROPOSED even if native eligibility succeeds.
 ```
 
-Predator pressure phase:
+Pass condition: a real settlement is never treated as a Minecraft village merely because humans live there.
 
-```yaml
-population_pressure: 1.0
-visibility_multiplier: reduced
- ecological_weight_multiplier: context_dependent
+### Fixture C — Taillow vs Swellow relative native availability
+
+When both species are locally approved and the real biome is compatible:
+
+```text
+native eligible Taillow detail weight: 9.0
+native eligible Swellow detail weight: 1.0
 ```
 
-The test passes only if visible exposed encounters fall while the persistent population state can remain unchanged.
+Ouros may later alter each detail through separate ecological causes. Telemetry must retain both original weights and reason refs.
 
-No numeric multiplier is canonized by this fixture.
+Pass condition: ecology can suppress or concentrate either species without losing the distinction between their native base weights.
+
+### Fixture D — Scatterbug foliage gate
+
+Resolve actual biome tags plus the native `foliage` preset semantics before enabling generic Scatterbug projection.
+
+Pass condition: `vegetated`, `farm`, `crop` or `garden` narrative labels do not themselves satisfy the native foliage requirement.
 
 ## Failure conditions
 
-The implementation should fail validation when:
-
+Validation fails when:
 - an Ouros cell name is used as a Minecraft biome ID;
-- a species is made eligible only because a narrative habitat label resembles a biome;
-- ecology expands a native spawn envelope without an explicit reviewed datapack/world decision;
+- a narrative habitat label is accepted as native compatibility evidence;
+- ecology expands a native spawn envelope without a reviewed datapack/world change;
 - visible spawn counts are written back as population truth without reconciliation;
-- a persistent named individual is cloned by anonymous generic spawning;
-- all spawn details for a species are flattened into one universal local rate;
-- a proposed species becomes canon merely because Cobblemon permits it to spawn there.
+- a persistent named individual is cloned by anonymous spawning;
+- several spawn details are flattened into one universal species rate;
+- a proposed species becomes canon merely because Cobblemon permits it;
+- a settlement is treated as `#minecraft:village` without actual structure-tag evidence;
+- a missing Wurmple row is silently replaced with guessed biome rules.
 
-## Mechanical dependencies
+## Mechanical dependency
 
-Ambient fixture dependency:
-- Minecraft/Cobblemon/Craftics adapter/playback support: PARTIAL/BLOCKING until live native spawn-data lookup, dynamic ecology projection and identity reconciliation are verified.
+Ambient projection depends on Minecraft/Cobblemon/Craftics adapter/playback support and remains PARTIAL/BLOCKING until live biome/tag/preset lookup, dynamic spawn filtering/weight projection and identity reconciliation are verified end-to-end.
 
-No AutoPTU tactical capability is required for the spawn-validation fixture itself.
-
-If territorial or predator encounters escalate into battle, use the capability declarations already required by the interaction matrix and encounter contracts. Do not infer full support from representative mechanics.
+No AutoPTU tactical capability is required for these spawn fixtures. If a visible ecological interaction escalates to battle, use the permanent encounter capability matrix independently.
 
 ## Next evidence needed
 
-The highest-value implementation evidence is the actual Marea world biome/tag state plus the exact Cobblemon version/datapack spawn rows for Fletchling and the proposed local roster.
-
-Until that exists, all biome compatibility fields in this file remain explicitly unresolved rather than being guessed from prose.
+Highest-value next work:
+- resolve actual Marea Minecraft biome IDs and tags from the fixed world/map;
+- pin the exact Ouros Cobblemon build/datapacks;
+- verify runtime semantics for `natural`, `treetop`, `urban`, and `foliage` presets;
+- locate Wurmple spawn provenance in the intended distribution;
+- implement/read an adapter-facing diagnostic that prints cell -> biome/tags -> matching spawn-detail IDs.
