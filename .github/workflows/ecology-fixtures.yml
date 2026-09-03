@@ -5,14 +5,14 @@ on:
     branches: [main]
     paths:
       - 'implementation/**'
-      - 'tools/validate_ecology_fixtures.py'
-      - 'tests/test_ecology_fixture_validator.py'
+      - 'tools/validate_ecology_*.py'
+      - 'tests/test_ecology_*.py'
       - '.github/workflows/ecology-fixtures.yml'
   pull_request:
     paths:
       - 'implementation/**'
-      - 'tools/validate_ecology_fixtures.py'
-      - 'tests/test_ecology_fixture_validator.py'
+      - 'tools/validate_ecology_*.py'
+      - 'tests/test_ecology_*.py'
       - '.github/workflows/ecology-fixtures.yml'
 
 jobs:
@@ -25,5 +25,7 @@ jobs:
           python-version: '3.12'
       - name: Validate ecology fixtures
         run: python tools/validate_ecology_fixtures.py
+      - name: Validate persistent actor cross-fixture trace
+        run: python tools/validate_ecology_cross_trace.py
       - name: Run ecology regression tests
         run: python -m unittest discover -s tests -p 'test_*.py' -v
