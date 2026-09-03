@@ -1,0 +1,329 @@
+{
+  "fixture_id": "marea-sendero-persistent-actor-cross-fixture-trace-v1",
+  "pass": 244,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "site_id": "ouros.marea.sendero_vidrio",
+  "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+  "persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+  "mechanical_profile_ref": "ouros.vertical_slice.ptu_1_05.fletchling_v1",
+  "purpose": "Validate end-to-end continuity of one persistent wild actor across population membership, Cobblemon projection, observation, ecology-event pressure, optional AutoPTU handoff, semantic return, later sighting and server lifecycle.",
+  "canon_policy": {
+    "may_reference_existing_canon": true,
+    "creates_new_canon": false,
+    "ecology_authority": "OUROS",
+    "battle_authority": "AUTOPTU",
+    "presentation_authority": "MINECRAFT_COBBLEMON"
+  },
+  "source_fixtures": [
+    {
+      "path": "implementation/marea-sendero-population-demography-fixture-v1.json",
+      "required_windows": ["A_BASELINE", "G_GENERIC_PRESENTATION_NO_WRITE"]
+    },
+    {
+      "path": "implementation/marea-sendero-spawn-reconciliation-fixture-v1.json",
+      "required_windows": ["B_RESERVE_CANON_MEMBER", "I_BATTLE_LOCK_PREVENTS_RESPAWN", "J_KO_ONLY_RETURNS_MEMBER", "H_REMATERIALIZE_AFTER_UNLOAD"]
+    },
+    {
+      "path": "implementation/marea-sendero-observation-knowledge-fixture-v1.json",
+      "required_windows": ["W1_SINGLE_DIRECT_SIGHTING", "W6_REPEAT_SIGHTING_PROBABLE_IDENTITY", "W12_AUTOPTU_KO_RESULT"]
+    },
+    {
+      "path": "implementation/marea-sendero-ecology-world-event-fixture-v1.json",
+      "required_windows": ["W2_OVERLAP_CROSSES_TRIGGER", "W13_OPTIONAL_AUTOPTU_HANDOFF"]
+    },
+    {
+      "path": "implementation/marea-sendero-autoptu-handoff-fixture-v1.json",
+      "required_windows": ["W4_DIRECT_STRUCTURED_ENGAGEMENT", "W5_MANIFEST_FREEZE", "W10_TACTICAL_KO_RETURN", "W13_EVENT_REEVALUATION_AFTER_RESULT"]
+    }
+  ],
+  "starting_state": {
+    "population_total": 12,
+    "known_member_exists": true,
+    "active_projection_lease": null,
+    "minecraft_entity_uuid": null,
+    "battle_id": null,
+    "encounter_history_count": 0,
+    "avoidance_pressure": 0.20,
+    "ecological_mortality_events": 0,
+    "emigration_events": 0,
+    "source_event_state": "CLOSED"
+  },
+  "windows": [
+    {
+      "id": "T0_POPULATION_BASELINE",
+      "input_events": [],
+      "expected": {
+        "persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+        "population_total": 12,
+        "known_member_exists": true,
+        "active_projection_lease": null
+      }
+    },
+    {
+      "id": "T1_RESERVE_AND_MATERIALIZE",
+      "input_events": [
+        {
+          "event_type": "LEASE_RESERVE",
+          "lease_id": "trace.lease.fletchling.001",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+        },
+        {
+          "event_type": "LEASE_MATERIALIZE",
+          "lease_id": "trace.lease.fletchling.001",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000002441"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "active_projection_lease": "trace.lease.fletchling.001",
+        "minecraft_entity_uuid": "00000000-0000-0000-0000-000000002441"
+      }
+    },
+    {
+      "id": "T2_DIRECT_OBSERVATION",
+      "input_events": [
+        {
+          "event_type": "OBSERVATION_RECORDED",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "modality": "DIRECT_VISUAL",
+          "player_visible_subject_resolution": "UNRESOLVED_OR_PROBABLE",
+          "internal_id_exposed_to_player": false
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "population_mutations": 0,
+        "internal_id_exposed_to_player": false
+      }
+    },
+    {
+      "id": "T3_ECOLOGY_EVENT_OPENS",
+      "input_events": [
+        {
+          "event_type": "ECOLOGY_EVENT_EVALUATION",
+          "event_ref": "ouros.event.sendero.forage_window_compression.v1",
+          "resource_window_remaining": 0.25,
+          "activity_pressure": 0.72,
+          "human_overlap_pressure": 0.68,
+          "disturbance_pressure": 0.48,
+          "result_state": "FORMING"
+        }
+      ],
+      "expected": {
+        "source_event_state": "FORMING",
+        "population_total": 12,
+        "battle_open": false
+      }
+    },
+    {
+      "id": "T4_WARNING_REMAINS_OVERWORLD",
+      "input_events": [
+        {
+          "event_type": "OVERWORLD_INTERACTION",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "wild_intent": "WARN",
+          "player_intent": "HOLD_POSITION",
+          "decision": "STAY_OVERWORLD"
+        }
+      ],
+      "expected": {
+        "battle_open": false,
+        "population_total": 12,
+        "ecological_mortality_events": 0,
+        "emigration_events": 0
+      }
+    },
+    {
+      "id": "T5_MANIFEST_FREEZE_THEN_HANDOFF",
+      "input_events": [
+        {
+          "event_type": "BATTLE_MANIFEST_FREEZE",
+          "battle_id": "trace.battle.sendero.244.001",
+          "participants": [
+            {
+              "persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+              "mechanical_profile_ref": "ouros.vertical_slice.ptu_1_05.fletchling_v1",
+              "side": "WILD"
+            },
+            {
+              "persistent_actor_ref": "FIXTURE_PLAYER_ACTIVE_POKEMON",
+              "mechanical_profile_ref": "FIXTURE_PLAYER_PROFILE",
+              "side": "PLAYER"
+            }
+          ]
+        },
+        {
+          "event_type": "STRUCTURED_BATTLE_HANDOFF",
+          "battle_id": "trace.battle.sendero.244.001",
+          "lease_id": "trace.lease.fletchling.001",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+        }
+      ],
+      "expected": {
+        "battle_open": true,
+        "manifest_frozen_before_handoff": true,
+        "active_projection_lease_state": "ENGAGED",
+        "population_total": 12
+      }
+    },
+    {
+      "id": "T6_AUTOPTU_SEMANTIC_KO_RETURN",
+      "input_events": [
+        {
+          "event_type": "AUTOPTU_SEMANTIC_RESULT",
+          "battle_id": "trace.battle.sendero.244.001",
+          "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "objective_results": ["TACTICAL_KO_CONFIRMED"],
+          "capture_confirmed": false,
+          "removal_confirmed": false
+        }
+      ],
+      "expected": {
+        "battle_open": false,
+        "population_total": 12,
+        "ecological_death": false,
+        "automatic_emigration": false,
+        "semantic_actor_matches_persistent_actor": true
+      }
+    },
+    {
+      "id": "T7_ECOLOGY_WRITEBACK_WITHOUT_DEMOGRAPHIC_LOSS",
+      "input_events": [
+        {
+          "event_type": "ENCOUNTER_HISTORY_APPEND",
+          "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "source_battle_id": "trace.battle.sendero.244.001",
+          "history_kind": "TACTICAL_KO_SURVIVED"
+        },
+        {
+          "event_type": "ECOLOGY_PRESSURE_DELTA",
+          "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "avoidance_pressure_delta": 0.12,
+          "reason": "RECENT_HOSTILE_STRUCTURED_ENCOUNTER"
+        },
+        {
+          "event_type": "LEASE_SUSPEND",
+          "lease_id": "trace.lease.fletchling.001",
+          "reason": "POST_BATTLE_RECOVERY_WINDOW"
+        }
+      ],
+      "expected": {
+        "population_total": 12,
+        "encounter_history_count": 1,
+        "avoidance_pressure": 0.32,
+        "ecological_mortality_events": 0,
+        "emigration_events": 0,
+        "active_projection_lease_state": "SUSPENDED"
+      }
+    },
+    {
+      "id": "T8_SOURCE_EVENT_REEVALUATES",
+      "input_events": [
+        {
+          "event_type": "ECOLOGY_EVENT_REEVALUATION",
+          "event_ref": "ouros.event.sendero.forage_window_compression.v1",
+          "battle_result_is_direct_resolution": false,
+          "post_battle_disturbance_pressure": 0.52,
+          "result_state": "ACTIVE"
+        }
+      ],
+      "expected": {
+        "source_event_state": "ACTIVE",
+        "event_resolved_directly_by_battle": false,
+        "population_total": 12
+      }
+    },
+    {
+      "id": "T9_REMATERIALIZE_SAME_ACTOR_NEW_UUID",
+      "input_events": [
+        {
+          "event_type": "LEASE_REMATERIALIZE",
+          "lease_id": "trace.lease.fletchling.001",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "minecraft_entity_uuid": "00000000-0000-0000-0000-000000002442"
+        }
+      ],
+      "expected": {
+        "persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+        "minecraft_uuid_changed": true,
+        "population_total": 12,
+        "encounter_history_count": 1,
+        "avoidance_pressure": 0.32
+      }
+    },
+    {
+      "id": "T10_REPEAT_SIGHTING",
+      "input_events": [
+        {
+          "event_type": "OBSERVATION_RECORDED",
+          "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+          "modality": "DIRECT_VISUAL",
+          "observable_match_cues": ["distinctive_marking", "same_microhabitat_window", "avoidance_after_recent_encounter"],
+          "player_visible_subject_resolution": "PROBABLE_MATCH",
+          "internal_id_exposed_to_player": false
+        }
+      ],
+      "expected": {
+        "subject_resolution": "PROBABLE_MATCH",
+        "population_total": 12,
+        "minecraft_uuid_used_as_identity_evidence": false,
+        "hidden_encounter_history_exposed_automatically": false
+      }
+    },
+    {
+      "id": "T11_SERVER_RESTART_PRESERVES_CONTINUITY",
+      "input_events": [
+        {
+          "event_type": "SERVER_RESTART"
+        },
+        {
+          "event_type": "LEASE_INDEX_RECONCILE"
+        }
+      ],
+      "expected": {
+        "persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+        "known_member_exists": true,
+        "population_total": 12,
+        "encounter_history_count": 1,
+        "avoidance_pressure": 0.32,
+        "ecological_mortality_events": 0,
+        "emigration_events": 0
+      }
+    }
+  ],
+  "regression_invariants": [
+    "the persistent actor reference never changes across system boundaries",
+    "Minecraft UUID never becomes canonical identity",
+    "projection and observation do not change abundance",
+    "an ecology event can open while population total remains unchanged",
+    "warning and ordinary avoidance can stay in overworld",
+    "manifest freeze precedes structured battle handoff",
+    "AutoPTU semantic results map back to the same persistent actor",
+    "KO does not imply ecological death or emigration",
+    "post-battle ecology may update encounter memory and avoidance pressure without demographic loss",
+    "battle completion never directly resolves the source ecology event",
+    "rematerialization may use a new Minecraft UUID for the same actor",
+    "repeat sighting does not expose internal IDs or hidden history",
+    "server restart preserves actor identity and persistent ecological consequence state"
+  ],
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  }
+}
