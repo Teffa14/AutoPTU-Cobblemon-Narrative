@@ -1,0 +1,161 @@
+{
+  "schema": "ouros.ecology.projection_arbitration_trace.v1",
+  "pass": 249,
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "canon_effect": "NONE",
+  "location_id": "ouros.marea.sendero_lower_shelf",
+  "species": "Fletchling",
+  "population": {
+    "population_id": "ouros.marea.population.sendero_lower_shelf.fletchling",
+    "initial_total": 12,
+    "expected_final_total": 12
+  },
+  "persistent_actor": {
+    "actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+  },
+  "fixture_only_presentation": {
+    "indirect_sign_kind": "ACOUSTIC_PRESENCE_CUE",
+    "sign_behavior_canonized": false,
+    "exact_call_pattern_defined": false,
+    "physical_resource_defined": false
+  },
+  "events": [
+    {
+      "seq": 1,
+      "type": "PROJECTION_ENVELOPE_EVALUATED",
+      "envelope_id": "env.249.disturbance",
+      "direct_entity_eligible": false,
+      "indirect_sign_eligible": true,
+      "population_total": 12
+    },
+    {
+      "seq": 2,
+      "type": "PRESENTATION_ARBITRATED",
+      "decision": "INDIRECT_SIGN",
+      "envelope_id": "env.249.disturbance"
+    },
+    {
+      "seq": 3,
+      "type": "INDIRECT_SIGN_EMITTED",
+      "sign_id": "sign.249.001",
+      "provenance_root_id": "obsroot.249.001",
+      "sign_kind": "ACOUSTIC_PRESENCE_CUE",
+      "species_hint": "Fletchling",
+      "minecraft_entity_uuid": null,
+      "projection_lease_id": null,
+      "persistent_actor_id": null,
+      "exact_population_total_exposed": false,
+      "autoptu_handoff": "STAY_OVERWORLD"
+    },
+    {
+      "seq": 4,
+      "type": "OBSERVATION_RECORDED",
+      "observation_id": "obs.249.001",
+      "provenance_root_id": "obsroot.249.001",
+      "claim": "FLETCHLING_PRESENCE_POSSIBLE",
+      "confidence": "LOW",
+      "persistent_actor_id_exposed": false,
+      "exact_population_total_exposed": false
+    },
+    {
+      "seq": 5,
+      "type": "SIGN_RELAYED",
+      "relay_id": "relay.249.001",
+      "source_provenance_root_id": "obsroot.249.001",
+      "new_independent_root_created": false,
+      "confidence_increase": false
+    },
+    {
+      "seq": 6,
+      "type": "PROJECTION_ENVELOPE_EVALUATED",
+      "envelope_id": "env.249.quiet",
+      "direct_entity_eligible": true,
+      "indirect_sign_eligible": true,
+      "population_total": 12
+    },
+    {
+      "seq": 7,
+      "type": "PRESENTATION_ARBITRATED",
+      "decision": "DIRECT_ENTITY",
+      "envelope_id": "env.249.quiet",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0"
+    },
+    {
+      "seq": 8,
+      "type": "PROJECTION_LEASE_RESERVED",
+      "lease_id": "lease.249.direct.001",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "state": "RESERVED"
+    },
+    {
+      "seq": 9,
+      "type": "COBBLEMON_ENTITY_MATERIALIZED",
+      "lease_id": "lease.249.direct.001",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "minecraft_entity_uuid": "24900000-0000-0000-0000-000000000001"
+    },
+    {
+      "seq": 10,
+      "type": "UNCORRELATED_NATIVE_ENTITY_SEEN",
+      "minecraft_entity_uuid": "24900000-0000-0000-0000-00000000bad0",
+      "species_hint": "Fletchling",
+      "lease_id": null,
+      "ouros_source_id": null
+    },
+    {
+      "seq": 11,
+      "type": "PRESENTATION_ARBITRATED",
+      "decision": "QUARANTINE_UNCORRELATED_ENTITY",
+      "minecraft_entity_uuid": "24900000-0000-0000-0000-00000000bad0",
+      "ecology_write_authorized": false,
+      "autoptu_handoff": "BLOCK_UNSUPPORTED"
+    },
+    {
+      "seq": 12,
+      "type": "COBBLEMON_ENTITY_DESPAWNED",
+      "lease_id": "lease.249.direct.001",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "minecraft_entity_uuid": "24900000-0000-0000-0000-000000000001",
+      "demographic_effect": "NONE"
+    },
+    {
+      "seq": 13,
+      "type": "PROJECTION_LEASE_RELEASED",
+      "lease_id": "lease.249.direct.001",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "reason": "PRESENTATION_COMPLETE"
+    },
+    {
+      "seq": 14,
+      "type": "PROJECTION_LEASE_RESERVED",
+      "lease_id": "lease.249.direct.002",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "state": "RESERVED"
+    },
+    {
+      "seq": 15,
+      "type": "COBBLEMON_ENTITY_MATERIALIZED",
+      "lease_id": "lease.249.direct.002",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "minecraft_entity_uuid": "24900000-0000-0000-0000-000000000002"
+    },
+    {
+      "seq": 16,
+      "type": "SERVER_RESTART",
+      "runtime_uuid_correlations_cleared": true,
+      "persistent_identity_preserved": true,
+      "population_total": 12
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "persistent_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "runtime_minecraft_uuid": null,
+    "independent_evidence_roots": ["obsroot.249.001"],
+    "observation_claim": "FLETCHLING_PRESENCE_POSSIBLE",
+    "observation_confidence": "LOW",
+    "quarantined_uncorrelated_entities": ["24900000-0000-0000-0000-00000000bad0"],
+    "demographic_events": 0,
+    "autoptu_battles_opened": 0
+  }
+}
