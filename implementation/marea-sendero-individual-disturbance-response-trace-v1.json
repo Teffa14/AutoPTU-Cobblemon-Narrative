@@ -1,0 +1,124 @@
+{
+  "fixture_id": "ouros.marea.sendero.individual_disturbance_response.pass256.v1",
+  "schema": "ouros.ecology.individual_disturbance_response_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 256,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12,
+    "shared_disturbance_pressure": 0.50
+  },
+  "fixture_policy": {
+    "policy_revision": "fixture.fletchling.response.v1",
+    "values_are_canon": false,
+    "stimulus_class": "HUMAN_CLOSE_APPROACH"
+  },
+  "actors": [
+    {
+      "source_class": "PERSISTENT_MEMBER",
+      "persistent_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "baseline_wariness": 0.30,
+      "prior_benign_exposures": 3,
+      "prior_response_trend": "HABITUATING"
+    },
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "fixture_source_id": "fixture-only:unresolved-counted-fletchling-source-256",
+      "baseline_wariness": 0.70,
+      "prior_benign_exposures": 3,
+      "prior_response_trend": "SENSITIZING"
+    }
+  ],
+  "windows": [
+    {"id": "256-A-shared-pressure"},
+    {"id": "256-B-actor-a-evaluation"},
+    {"id": "256-C-actor-b-evaluation"},
+    {"id": "256-D-projection-contribution"},
+    {"id": "256-E-stimulus-specificity-check"},
+    {"id": "256-F-restart"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "LOCAL_DISTURBANCE_CONTEXT_READ",
+      "disturbance_pressure": 0.50,
+      "stimulus_class": "HUMAN_CLOSE_APPROACH",
+      "population_delta": 0
+    },
+    {
+      "seq": 2,
+      "type": "INDIVIDUAL_RESPONSE_EVALUATED",
+      "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "source_class": "PERSISTENT_MEMBER",
+      "stimulus_class": "HUMAN_CLOSE_APPROACH",
+      "baseline_wariness": 0.30,
+      "prior_exposure_count": 3,
+      "prior_response_trend": "HABITUATING",
+      "result": "CONTEXT_TOLERANCE",
+      "response_transaction_id": "response.256.001",
+      "population_delta": 0,
+      "ptu_state_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 3,
+      "type": "INDIVIDUAL_RESPONSE_EVALUATED",
+      "actor_ref": "fixture-only:unresolved-counted-fletchling-source-256",
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "stimulus_class": "HUMAN_CLOSE_APPROACH",
+      "baseline_wariness": 0.70,
+      "prior_exposure_count": 3,
+      "prior_response_trend": "SENSITIZING",
+      "result": "EARLY_WITHDRAWAL",
+      "response_transaction_id": "response.256.002",
+      "population_delta": 0,
+      "ptu_state_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 4,
+      "type": "PROJECTION_RESPONSE_CONTRIBUTION",
+      "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "projection_result": "ELIGIBLE_QUIET_EDGE_WINDOW",
+      "reason": "FIXTURE_CONTEXT_TOLERANCE",
+      "population_delta": 0
+    },
+    {
+      "seq": 5,
+      "type": "PROJECTION_RESPONSE_CONTRIBUTION",
+      "actor_ref": "fixture-only:unresolved-counted-fletchling-source-256",
+      "projection_result": "REDUCED_EXPOSURE",
+      "reason": "FIXTURE_EARLY_WITHDRAWAL",
+      "population_delta": 0
+    },
+    {
+      "seq": 6,
+      "type": "STIMULUS_CLASS_QUERY",
+      "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "queried_stimulus_class": "PHYSICAL_HANDLING",
+      "inherited_close_approach_tolerance": false,
+      "result": "UNKNOWN_FAIL_CLOSED",
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 7,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "response_history_preserved": true,
+      "policy_revision_preserved": "fixture.fletchling.response.v1"
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "ptu_state_mutations": 0,
+    "distinct_individual_projection_responses": 2,
+    "cross_stimulus_tolerance_inheritance": 0,
+    "response_history_preserved": true
+  }
+}
