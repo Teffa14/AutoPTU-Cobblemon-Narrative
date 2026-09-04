@@ -1,0 +1,42 @@
+{
+  "fixture_id": "marea-sendero-shared-resource-final-snapshot-v1",
+  "pass": 246,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "expected_final_state": {
+    "actors": {
+      "ouros.marea.encounter.sendero_lower_shelf.fletchling.0": {
+        "avoidance_pressure": 0.28,
+        "encounter_history_count": 1,
+        "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1"
+      }
+    },
+    "observations": [
+      {
+        "observed_units": 3,
+        "population_id": "fixture.marea.sendero.squawkabilly.v1",
+        "resource_id": "fixture.marea.sendero.lower_shelf.forage_patch.246"
+      }
+    ],
+    "populations": {
+      "fixture.marea.sendero.squawkabilly.v1": {
+        "resource_pressure": 0.22,
+        "species": "squawkabilly",
+        "total": 5
+      },
+      "ouros.marea.wild.sendero_lower_shelf.fletchling.v1": {
+        "resource_pressure": 0.35,
+        "species": "fletchling",
+        "total": 12
+      }
+    },
+    "resource_transactions": ["tx.246.resource.001", "tx.246.resource.002"],
+    "resources": {
+      "fixture.marea.sendero.lower_shelf.forage_patch.246": {
+        "available_units": 3,
+        "depleted": false
+      }
+    },
+    "restart_count": 1
+  }
+}
