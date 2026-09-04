@@ -8,7 +8,7 @@
   "windows": [
     {"id": "250-A-unmanaged-natural-filter"},
     {"id": "250-B-managed-direct-admission"},
-    {"id": "250-C-runtime-backstop-and-exempt-pass-through"},
+    {"id": "250-C-bestspawner-backstop-and-nonspawner-separation"},
     {"id": "250-D-despawn-release-restart"}
   ],
   "population": {
@@ -22,17 +22,21 @@
     "form_id": "standard"
   },
   "verified_adapter_primitives": {
+    "compatibility_target": "cobblemon:1.7.3",
     "entity_spawn_event": "CobblemonEvents.ENTITY_SPAWN",
     "pokemon_entity_spawn_stream": "CobblemonEvents.POKEMON_ENTITY_SPAWN",
+    "entity_spawn_event_scope": "BESTSPAWNER_ONLY",
     "entity_spawn_cancelable": true,
+    "cancellation_before_world_add_verified_for_single_entity_spawn_action": true,
     "spawn_rule_filter_supported": true,
-    "version_binding_required": true
+    "party_send_lifecycle_has_separate_events": true,
+    "runtime_dependency_pin_verified": false
   },
   "events": [
     {
       "seq": 1,
       "type": "SPAWN_RULE_EVALUATED",
-      "candidate_class": "NATURAL_WILD",
+      "candidate_class": "BESTSPAWNER_NATURAL_WILD",
       "species_id": "cobblemon:fletchling",
       "managed_scope": true,
       "decision": "DENY_UNMANAGED_NATURAL_DIRECT",
@@ -64,14 +68,14 @@
     },
     {
       "seq": 5,
-      "type": "COBBLEMON_MATERIALIZATION_REQUESTED",
+      "type": "COBBLEMON_BESTSPAWNER_MATERIALIZATION_REQUESTED",
       "request_correlation_id": "materialize.250.001",
       "token_id": "token.250.001",
       "species_id": "cobblemon:fletchling"
     },
     {
       "seq": 6,
-      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
+      "type": "BESTSPAWNER_POKEMON_ENTITY_SPAWN_CALLBACK",
       "admission_class": "OUROS_MANAGED_DIRECT",
       "token_id": "token.250.001",
       "species_id": "cobblemon:fletchling",
@@ -93,8 +97,8 @@
     },
     {
       "seq": 9,
-      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
-      "admission_class": "UNCONTROLLED_NATURAL",
+      "type": "BESTSPAWNER_POKEMON_ENTITY_SPAWN_CALLBACK",
+      "admission_class": "UNCONTROLLED_BESTSPAWNER_WILD",
       "species_id": "cobblemon:fletchling",
       "minecraft_uuid": "00000000-0000-0000-0000-000000250099",
       "decision": "CANCEL_BACKSTOP",
@@ -106,22 +110,23 @@
     },
     {
       "seq": 10,
-      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
-      "admission_class": "EXEMPT_OWNED_OR_SYSTEM_PRESENTATION",
+      "type": "NON_BESTSPAWNER_PRESENTATION_PATH",
+      "presentation_class": "OWNED_PARTY_SEND_OUT",
+      "verified_lifecycle_surface": "CobblemonEvents.POKEMON_SENT_PRE/POST",
       "species_id": "cobblemon:fletchling",
       "minecraft_uuid": "00000000-0000-0000-0000-000000250200",
-      "decision": "PASS_THROUGH_NON_WILD",
-      "cancel_event": false,
+      "decision": "OUTSIDE_WILD_SPAWN_GATE",
       "wild_population_membership_created": false,
       "population_delta": 0
     },
     {
       "seq": 11,
-      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
-      "admission_class": "UNKNOWN_OR_UNCLASSIFIED",
+      "type": "BESTSPAWNER_POKEMON_ENTITY_SPAWN_CALLBACK",
+      "admission_class": "UNKNOWN_BESTSPAWNER_CANDIDATE",
       "species_id": "cobblemon:fletchling",
       "minecraft_uuid": "00000000-0000-0000-0000-000000250300",
-      "decision": "CANCEL_OR_QUARANTINE_FAIL_CLOSED",
+      "decision": "CANCEL_FAIL_CLOSED",
+      "cancel_event": true,
       "ecology_write_authorized": false,
       "persistent_actor_created": false,
       "population_delta": 0,
