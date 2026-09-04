@@ -31,5 +31,7 @@ jobs:
         run: python tools/validate_ecology_cross_trace.py
       - name: Replay persistent actor ecology trace
         run: python tools/replay_ecology_cross_trace.py
+      - name: Replay shared-resource multi-species ecology trace
+        run: python tools/replay_ecology_shared_resource_trace.py
       - name: Run ecology regression tests
         run: python -m unittest discover -s tests -p 'test_*.py' -v
