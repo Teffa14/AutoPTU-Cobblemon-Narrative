@@ -1,0 +1,78 @@
+{
+  "fixture_id": "marea-sendero-resource-scarcity-world-event-trace-v1",
+  "pass": 247,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "site_id": "ouros.marea.sendero_vidrio",
+  "purpose": "Integrate a finite fixture-only forage resource with imperfect observation, NPC knowledge and ecology-driven world-event hysteresis without changing canon population abundance.",
+  "canon_scope": {
+    "canon_population_refs": ["ouros.marea.wild.sendero_lower_shelf.fletchling.v1"],
+    "fixture_only_resource_refs": ["fixture.marea.sendero.lower_shelf.forage_patch.247"],
+    "fixture_only_event_definition_refs": ["fixture.event.sendero.resource_scarcity.247"],
+    "creates_new_canon": false
+  },
+  "starting_state": {
+    "populations": {
+      "ouros.marea.wild.sendero_lower_shelf.fletchling.v1": {"species": "fletchling", "total": 12, "resource_pressure": 0.20}
+    },
+    "resources": {
+      "fixture.marea.sendero.lower_shelf.forage_patch.247": {"available_units": 5, "depleted": false}
+    },
+    "events": {
+      "fixture.event.sendero.resource_scarcity.247": {"phase": "INACTIVE", "clear_streak": 0, "open_count": 0}
+    },
+    "knowledge_holders": {
+      "fixture.marea.field_observer.247": {"claims": {}}
+    }
+  },
+  "event_rule": {
+    "event_id": "fixture.event.sendero.resource_scarcity.247",
+    "resource_id": "fixture.marea.sendero.lower_shelf.forage_patch.247",
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "open_when": {"available_units_lte": 2, "resource_pressure_gte": 0.35},
+    "clear_when": {"available_units_gte": 4, "resource_pressure_lte": 0.25, "consecutive_evaluations": 2}
+  },
+  "windows": [
+    {"id": "R0_BASELINE", "input_events": []},
+    {"id": "R1_RESOURCE_CONSUMED", "input_events": [
+      {"event_type": "RESOURCE_CONSUMPTION_CONFIRMED", "transaction_id": "tx.247.consume.001", "resource_id": "fixture.marea.sendero.lower_shelf.forage_patch.247", "consumer_population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "units": 3},
+      {"event_type": "POPULATION_RESOURCE_PRESSURE_DELTA", "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "resource_pressure_delta": 0.20, "reason": "FINITE_PATCH_REDUCED"}
+    ]},
+    {"id": "R2_EVENT_OPENS_FROM_WORLD_STATE", "input_events": [
+      {"event_type": "ECOLOGY_EVENT_EVALUATE", "event_id": "fixture.event.sendero.resource_scarcity.247"}
+    ]},
+    {"id": "R3_SYMPTOM_OBSERVED", "input_events": [
+      {"event_type": "OBSERVATION_CAPTURED", "observation_id": "obs.247.001", "holder_id": "fixture.marea.field_observer.247", "claimable_symptom": "CONCENTRATED_FORAGING", "visible_count": 2, "exposes_hidden_resource_units": false}
+    ]},
+    {"id": "R4_CAUSE_ONLY_SUSPECTED", "input_events": [
+      {"event_type": "CLAIM_UPSERT", "claim_id": "claim.247.resource_scarcity", "holder_id": "fixture.marea.field_observer.247", "claim_type": "RESOURCE_SCARCITY", "state": "SUSPECTED", "confidence_band": "LOW", "evidence_refs": ["obs.247.001"], "source_root": "obs.247.001"}
+    ]},
+    {"id": "R5_DUPLICATE_RELAY_NO_CORROBORATION", "input_events": [
+      {"event_type": "CLAIM_RELAY", "claim_id": "claim.247.resource_scarcity", "holder_id": "fixture.marea.field_observer.247", "relay_id": "relay.247.001", "source_root": "obs.247.001"}
+    ]},
+    {"id": "R6_RESOURCE_RENEWS", "input_events": [
+      {"event_type": "RESOURCE_RENEWAL_CONFIRMED", "transaction_id": "tx.247.renew.001", "resource_id": "fixture.marea.sendero.lower_shelf.forage_patch.247", "units": 3},
+      {"event_type": "POPULATION_RESOURCE_PRESSURE_DELTA", "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "resource_pressure_delta": -0.20, "reason": "PATCH_ACCESS_RECOVERED"}
+    ]},
+    {"id": "R7_FIRST_CLEAR_EVALUATION", "input_events": [
+      {"event_type": "ECOLOGY_EVENT_EVALUATE", "event_id": "fixture.event.sendero.resource_scarcity.247"}
+    ]},
+    {"id": "R8_SECOND_CLEAR_EVALUATION", "input_events": [
+      {"event_type": "ECOLOGY_EVENT_EVALUATE", "event_id": "fixture.event.sendero.resource_scarcity.247"}
+    ]},
+    {"id": "R9_KNOWLEDGE_LAGS_TRUTH", "input_events": [
+      {"event_type": "CLAIM_RELAY", "claim_id": "claim.247.resource_scarcity", "holder_id": "fixture.marea.field_observer.247", "relay_id": "relay.247.002", "source_root": "obs.247.001"}
+    ]},
+    {"id": "R10_RESTART", "input_events": [{"event_type": "SERVER_RESTART"}]}
+  ],
+  "regression_invariants": [
+    "resource scarcity opens from hidden world state rather than an observation or quest flag",
+    "observations expose symptoms but not hidden resource ledger quantities",
+    "a scarcity inference may remain suspected while the world event is active or later resolved",
+    "relaying the same source root never upgrades confidence through false corroboration",
+    "resource renewal requires its own idempotent transaction and does not create population members",
+    "event clearing requires two consecutive clear evaluations",
+    "population abundance remains unchanged without a demographic event",
+    "server restart preserves resource, event and epistemic history"
+  ]
+}
