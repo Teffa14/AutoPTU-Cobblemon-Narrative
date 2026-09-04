@@ -1,0 +1,192 @@
+{
+  "fixture_id": "ouros.marea.sendero.provisional_retention.pass260.v1",
+  "schema": "ouros.ecology.provisional_retention_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 260,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  },
+  "sources": [
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-260-site",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor": false
+    },
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-260-response",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor": false
+    },
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-260-noise",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor": false
+    }
+  ],
+  "windows": [
+    {"id": "260-A-site-use-open"},
+    {"id": "260-B-site-use-expiry"},
+    {"id": "260-C-response-retain"},
+    {"id": "260-D-restart"},
+    {"id": "260-E-noise-rejection"},
+    {"id": "260-F-horizon-evaluation"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "PROVISIONAL_RETAINED_STATE_OPENED",
+      "transaction_id": "retention.260.site.open",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-260-site",
+      "state_class": "RECENT_SITE_USE",
+      "authority_source": "OUROS_OBSERVATION_PIPELINE",
+      "provenance_root": "obs.260.site.001",
+      "retention_outcome": "RETAIN_UNTIL_SEMANTIC_HORIZON",
+      "semantic_horizon": "fixture-only:site-context-horizon-260",
+      "public_identity_effect": "NONE",
+      "population_delta": 0,
+      "demographic_event": false,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 2,
+      "type": "PUBLIC_OBSERVATION_RECORDED",
+      "provenance_root": "obs.260.site.001",
+      "public_identity_state": "UNRESOLVED",
+      "private_source_exposed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 3,
+      "type": "SEMANTIC_HORIZON_EVALUATED",
+      "transaction_id": "retention.260.site.expire",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-260-site",
+      "state_class": "RECENT_SITE_USE",
+      "horizon_reached": true,
+      "result": "DROP_PRIVATE_KEEP_PUBLIC_HISTORY",
+      "public_observation_history_preserved": true,
+      "private_linkage_closed": true,
+      "source_count_contribution_preserved": true,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 4,
+      "type": "PROVISIONAL_RETAINED_STATE_OPENED",
+      "transaction_id": "retention.260.response.open",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-260-response",
+      "state_class": "INDIVIDUAL_DISTURBANCE_RESPONSE",
+      "authority_source": "OUROS_ECOLOGY_DISTURBANCE_PIPELINE",
+      "provenance_root": "disturbance.260.response.001",
+      "retention_outcome": "RETAIN_UNTIL_SEMANTIC_HORIZON",
+      "semantic_horizon": "fixture-only:disturbance-recovery-horizon-260",
+      "horizon_reached": false,
+      "classification": "DURABLE_CANDIDATE",
+      "public_identity_effect": "NONE",
+      "population_delta": 0,
+      "demographic_event": false,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 5,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "active_retained_state_refs": ["fixture-only:unresolved-counted-fletchling-source-260-response"],
+      "expired_site_linkage_restored": false,
+      "disturbance_response_restored": true,
+      "semantic_horizon_still_active": true,
+      "public_identity_promoted": false,
+      "autoptu_handoffs_after_restart": 0
+    },
+    {
+      "seq": 6,
+      "type": "MINECRAFT_PRESENTATION_EVENT_OBSERVED",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-260-noise",
+      "presentation_event": "GENERIC_ENTITY_DAMAGE_SIGNAL",
+      "authoritative_ptu_result_present": false,
+      "observation_record_allowed": true,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 7,
+      "type": "RETAINED_STATE_AUTHORING_ATTEMPT",
+      "transaction_id": "retention.260.noise.injury-attempt",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-260-noise",
+      "requested_state_class": "PERSISTENT_INJURY",
+      "authority_source": "MINECRAFT_PRESENTATION_ONLY",
+      "authoritative_autoptu_semantic_result_present": false,
+      "result": "REJECT_UNAUTHORIZED_STATE",
+      "retained_state_created": false,
+      "ptu_state_mutated": false,
+      "population_delta": 0,
+      "demographic_event": false,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 8,
+      "type": "SEMANTIC_HORIZON_EVALUATED",
+      "transaction_id": "retention.260.response.evaluate",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-260-response",
+      "state_class": "INDIVIDUAL_DISTURBANCE_RESPONSE",
+      "horizon_reached": false,
+      "aggregation_would_misattribute_active_consequence": true,
+      "admissible_internal_continuity_present": false,
+      "result": "PROMOTE_OR_QUARANTINE",
+      "promotion_committed": false,
+      "quarantined_from_aggregate_application": true,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 9,
+      "type": "PUBLIC_KNOWLEDGE_CHECK",
+      "public_identity_state": "UNRESOLVED",
+      "internal_retention_state_exposed": false,
+      "internal_source_exposed": false,
+      "minecraft_damage_promoted_to_injury": false,
+      "population_delta": 0
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "net_population_delta": 0,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "site_use_private_linkages_expired": 1,
+    "restart_safe_retained_states": 1,
+    "unauthorized_ptu_state_rejections": 1,
+    "persistent_injuries_created_from_minecraft_noise": 0,
+    "promotions_committed": 0,
+    "aggregate_misattributions": 0,
+    "public_identity_promotions": 0,
+    "internal_source_leaks": 0
+  }
+}
