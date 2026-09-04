@@ -1,0 +1,242 @@
+{
+  "fixture_id": "ouros.marea.sendero.semantic_horizon_clock.pass261.v1",
+  "schema": "ouros.ecology.semantic_horizon_clock_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 261,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  },
+  "clock": {
+    "clock_domain": "OUROS_WORLD_TICK",
+    "clock_epoch": 4,
+    "source_adapter": "FIXTURE_ONLY_SYNTHETIC_CLOCK",
+    "source_version": "fixture-only:261",
+    "time_of_day_is_monotonic_basis": false,
+    "offline_progression_enabled": false
+  },
+  "registry": [
+    {
+      "registry_policy_id": "fixture-only:261.recent-site-use",
+      "state_class": "RECENT_SITE_USE",
+      "evaluator_kind": "DURATION_SINCE_AUTHORITY_EVENT",
+      "clock_domain": "OUROS_WORLD_TICK",
+      "fixture_duration_ticks": 1200,
+      "canon_duration": false,
+      "on_reached_outcome": "DROP_PRIVATE_KEEP_PUBLIC_HISTORY"
+    },
+    {
+      "registry_policy_id": "fixture-only:261.disturbance-stable",
+      "state_class": "INDIVIDUAL_DISTURBANCE_RESPONSE",
+      "evaluator_kind": "CONDITION_STABLE_FOR",
+      "clock_domain": "OUROS_WORLD_TICK",
+      "fixture_stable_ticks": 2400,
+      "canon_duration": false,
+      "on_reached_outcome": "RECOVERY_EVALUATION_ALLOWED"
+    },
+    {
+      "registry_policy_id": "fixture-only:261.marker-validity",
+      "state_class": "ACTIVE_DIEGETIC_MARKER_LINK",
+      "evaluator_kind": "VALIDITY_RECORD_BOUND",
+      "clock_domain": "OUROS_WORLD_TICK",
+      "canon_duration": false,
+      "on_reached_outcome": "DOWNGRADE_MARKER_LINK"
+    }
+  ],
+  "windows": [
+    {"id": "261-A-clock-open"},
+    {"id": "261-B-time-of-day-mutation"},
+    {"id": "261-C-site-horizon-close"},
+    {"id": "261-D-disturbance-restart"},
+    {"id": "261-E-marker-validity-event"},
+    {"id": "261-F-clock-rollback"},
+    {"id": "261-G-post-reconcile"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "CLOCK_CHECKPOINT_COMMITTED",
+      "checkpoint_id": "clock.261.cp.10000",
+      "clock_epoch": 4,
+      "raw_world_tick": 10000,
+      "monotonic_value": 10000,
+      "population_delta": 0
+    },
+    {
+      "seq": 2,
+      "type": "RETAINED_STATE_OPENED",
+      "retained_state_id": "retained.261.site",
+      "state_class": "RECENT_SITE_USE",
+      "registry_policy_id": "fixture-only:261.recent-site-use",
+      "opened_at_monotonic_value": 10000,
+      "authority_source": "OUROS_OBSERVATION_PIPELINE",
+      "public_identity_effect": "NONE",
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 3,
+      "type": "MINECRAFT_TIME_OF_DAY_CHANGED",
+      "time_of_day_before": 6000,
+      "time_of_day_after": 18000,
+      "monotonic_value_before": 10400,
+      "monotonic_value_after": 10400,
+      "retained_state_expired": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 4,
+      "type": "SEMANTIC_HORIZON_EVALUATED",
+      "evaluation_transaction_id": "horizon.261.site.11200",
+      "retained_state_id": "retained.261.site",
+      "horizon_type": "DURATION_SINCE_AUTHORITY_EVENT",
+      "registry_policy_id": "fixture-only:261.recent-site-use",
+      "clock_checkpoint_id": "clock.261.cp.11200",
+      "clock_epoch": 4,
+      "evaluated_at_monotonic_value": 11200,
+      "horizon_reached": true,
+      "result": "DROP_PRIVATE_KEEP_PUBLIC_HISTORY",
+      "public_observation_history_preserved": true,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 5,
+      "type": "RETAINED_STATE_OPENED",
+      "retained_state_id": "retained.261.disturbance",
+      "state_class": "INDIVIDUAL_DISTURBANCE_RESPONSE",
+      "registry_policy_id": "fixture-only:261.disturbance-stable",
+      "opened_at_monotonic_value": 12000,
+      "authority_source": "OUROS_ECOLOGY_DISTURBANCE_PIPELINE",
+      "stable_condition_started_at": 12600,
+      "public_identity_effect": "NONE",
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 6,
+      "type": "SERVER_RESTART",
+      "checkpoint_before_restart": "clock.261.cp.13000",
+      "clock_epoch_after_restart": 4,
+      "raw_world_tick_after_restart": 13000,
+      "monotonic_value_after_restart": 13000,
+      "disturbance_state_restored": true,
+      "restart_implied_expiry": false,
+      "population_total_after_restart": 12,
+      "autoptu_handoffs_after_restart": 0
+    },
+    {
+      "seq": 7,
+      "type": "SEMANTIC_HORIZON_EVALUATED",
+      "evaluation_transaction_id": "horizon.261.disturbance.14000",
+      "retained_state_id": "retained.261.disturbance",
+      "horizon_type": "CONDITION_STABLE_FOR",
+      "registry_policy_id": "fixture-only:261.disturbance-stable",
+      "clock_checkpoint_id": "clock.261.cp.14000",
+      "clock_epoch": 4,
+      "evaluated_at_monotonic_value": 14000,
+      "stable_ticks_elapsed": 1400,
+      "required_fixture_stable_ticks": 2400,
+      "horizon_reached": false,
+      "result": "RETAIN_ACTIVE",
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 8,
+      "type": "MARKER_VALIDITY_RECORD_CHANGED",
+      "retained_state_id": "retained.261.marker",
+      "registry_policy_id": "fixture-only:261.marker-validity",
+      "marker_status_before": "ACTIVE",
+      "marker_status_after": "REPORTED_LOST",
+      "elapsed_ticks_required": false,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 9,
+      "type": "SEMANTIC_HORIZON_EVALUATED",
+      "evaluation_transaction_id": "horizon.261.marker.lost",
+      "retained_state_id": "retained.261.marker",
+      "horizon_type": "VALIDITY_RECORD_BOUND",
+      "registry_policy_id": "fixture-only:261.marker-validity",
+      "clock_checkpoint_id": "clock.261.cp.14500",
+      "clock_epoch": 4,
+      "evaluated_at_monotonic_value": 14500,
+      "authority_inputs": ["MARKER_REGISTRY:REPORTED_LOST"],
+      "horizon_reached": true,
+      "result": "DOWNGRADE_MARKER_LINK",
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 10,
+      "type": "CLOCK_ROLLBACK_DETECTED",
+      "checkpoint_id": "clock.261.cp.rollback",
+      "clock_epoch": 4,
+      "previous_committed_raw_world_tick": 14500,
+      "observed_raw_world_tick": 9000,
+      "rollback_detected": true,
+      "automatic_horizon_expiry_suspended": true,
+      "states_expired_due_to_rollback": 0,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 11,
+      "type": "CLOCK_EPOCH_RECONCILED",
+      "transaction_id": "clock.261.restore.epoch5",
+      "previous_epoch": 4,
+      "new_epoch": 5,
+      "raw_world_tick": 9000,
+      "monotonic_value": 0,
+      "history_rewritten": false,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 12,
+      "type": "PUBLIC_KNOWLEDGE_CHECK",
+      "clock_epoch_exposed": false,
+      "registry_policy_exposed": false,
+      "internal_retained_state_exposed": false,
+      "public_identity_promoted": false,
+      "population_delta": 0
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "net_population_delta": 0,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "site_use_horizons_closed": 1,
+    "disturbance_states_retained_after_restart": 1,
+    "marker_validity_closures": 1,
+    "time_of_day_false_expiries": 0,
+    "rollback_false_expiries": 0,
+    "clock_epoch_after_reconcile": 5,
+    "public_identity_promotions": 0,
+    "internal_clock_leaks": 0
+  }
+}
