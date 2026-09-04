@@ -1,0 +1,119 @@
+{
+  "fixture_id": "marea-sendero-resource-pulse-trace-v1",
+  "pass": 265,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "resource_is_canon": false,
+    "site_variant_is_canon": false,
+    "new_persistent_actor_created": false
+  },
+  "resource_event": {
+    "event_id": "fixture-only:marea-sendero-resource-pulse-265",
+    "schema": "RESOURCE_PULSE_EVENT_V1",
+    "resource_class": "FIXTURE_EPHEMERAL_FORAGE",
+    "authority_class": "FIXTURE_PREVALIDATED_ECOLOGY_EVENT",
+    "clock_epoch": "fixture-epoch-265",
+    "phase": "ONSET",
+    "scope": ["fixture-only:sendero-resource-site-a"],
+    "horizon_policy_ref": "fixture-only:pulse-horizon-265",
+    "projection_effect": "ELEVATED_ALREADY_COUNTED_SOURCE_ACTIVITY",
+    "provenance_root": "fixture-only:provenance-265"
+  },
+  "counted_sources": [
+    "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "fixture-only:unresolved-counted-fletchling-source-265-a",
+    "fixture-only:unresolved-counted-fletchling-source-265-b"
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "action": "BASELINE",
+      "world_tick": 20000,
+      "population": 12,
+      "visible_counted_sources": ["ouros.marea.encounter.sendero_lower_shelf.fletchling.0"],
+      "demographic_events": []
+    },
+    {
+      "step": 2,
+      "action": "START_RESOURCE_PULSE",
+      "transaction_id": "pulse-265-start",
+      "world_tick": 20200,
+      "phase": "ONSET",
+      "scope": ["fixture-only:sendero-resource-site-a"],
+      "population": 12,
+      "demographic_events": [],
+      "autoptu_handoffs": []
+    },
+    {
+      "step": 3,
+      "action": "PEAK_PROJECTION",
+      "transaction_id": "pulse-265-peak",
+      "world_tick": 21000,
+      "phase": "PEAK",
+      "population": 12,
+      "visible_counted_sources": [
+        "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+        "fixture-only:unresolved-counted-fletchling-source-265-a",
+        "fixture-only:unresolved-counted-fletchling-source-265-b"
+      ],
+      "public_observation": "Several Fletchling already associated with this population were visible feeding in the same window.",
+      "public_population_growth_claim": false,
+      "demographic_events": []
+    },
+    {
+      "step": 4,
+      "action": "RESTART",
+      "restored_event_id": "fixture-only:marea-sendero-resource-pulse-265",
+      "restored_phase": "PEAK",
+      "population": 12,
+      "expired": false
+    },
+    {
+      "step": 5,
+      "action": "DAY_NIGHT_AND_CHUNK_PRESENTATION_CHANGES",
+      "world_tick": 21400,
+      "day_time_changed": true,
+      "chunk_unloaded_and_reloaded": true,
+      "event_expired": false,
+      "population": 12
+    },
+    {
+      "step": 6,
+      "action": "SHIFT_RESOURCE_WAVE_SCOPE",
+      "transaction_id": "pulse-265-wave-shift",
+      "world_tick": 22000,
+      "phase": "DECLINE",
+      "old_scope": ["fixture-only:sendero-resource-site-a"],
+      "new_scope": ["fixture-only:sendero-resource-site-b"],
+      "actor_movement_asserted": false,
+      "teleport_asserted": false,
+      "forced_movement_asserted": false,
+      "source_identity_mutations": [],
+      "population": 12
+    },
+    {
+      "step": 7,
+      "action": "CLOSE_BY_SEMANTIC_HORIZON",
+      "transaction_id": "pulse-265-close",
+      "world_tick": 24000,
+      "phase": "CLOSED",
+      "closure_reason": "FIXTURE_SEMANTIC_HORIZON_REACHED",
+      "population": 12,
+      "demographic_events": [],
+      "ptu_state_mutations": [],
+      "autoptu_handoffs": []
+    }
+  ],
+  "assertions": {
+    "population_values_are_always": [12],
+    "no_demographic_events": true,
+    "all_projected_sources_were_already_counted": true,
+    "higher_visibility_does_not_claim_population_growth": true,
+    "restart_does_not_expire_event": true,
+    "day_night_or_chunk_reload_do_not_expire_event": true,
+    "resource_wave_scope_shift_does_not_assert_actor_movement": true,
+    "no_ptu_state_mutation": true,
+    "no_autoptu_handoff": true
+  }
+}
