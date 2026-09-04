@@ -1,0 +1,113 @@
+{
+  "fixture_id": "marea-sendero-resource-pressure-projection-trace-v1",
+  "pass": 248,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "site_id": "ouros.marea.sendero_vidrio",
+  "purpose": "Prove that ecological pressure can change where and when already-counted Fletchling become eligible for Cobblemon projection without changing abundance or creating identities.",
+  "canon_scope": {
+    "canon_population_refs": ["ouros.marea.wild.sendero_lower_shelf.fletchling.v1"],
+    "canon_member_refs": ["ouros.marea.encounter.sendero_lower_shelf.fletchling.0"],
+    "fixture_only_projection_policy_refs": ["fixture.projection.sendero.fletchling.248"],
+    "creates_new_canon": false
+  },
+  "starting_state": {
+    "populations": {
+      "ouros.marea.wild.sendero_lower_shelf.fletchling.v1": {
+        "species": "fletchling",
+        "total": 12,
+        "resource_pressure": 0.20,
+        "disturbance_pressure": 0.10
+      }
+    },
+    "projection": {
+      "policy_id": "fixture.projection.sendero.fletchling.248",
+      "eligible_microhabitats": ["lower_shelf_core"],
+      "activity_windows": ["DAYLIGHT_CORE"],
+      "search_radius_band": "LOCAL",
+      "visibility_band": "NORMAL",
+      "candidate_limit": 3,
+      "active_candidate_ids": []
+    },
+    "leases": {},
+    "audit": []
+  },
+  "projection_rules": {
+    "normal": {
+      "resource_pressure_lte": 0.25,
+      "disturbance_pressure_lte": 0.20,
+      "eligible_microhabitats": ["lower_shelf_core"],
+      "activity_windows": ["DAYLIGHT_CORE"],
+      "search_radius_band": "LOCAL",
+      "visibility_band": "NORMAL",
+      "candidate_limit": 3
+    },
+    "scarcity_search": {
+      "resource_pressure_gte": 0.35,
+      "eligible_microhabitats": ["lower_shelf_core", "lower_shelf_edge", "sendero_margin"],
+      "activity_windows": ["EARLY_DAYLIGHT", "DAYLIGHT_CORE", "LATE_DAYLIGHT"],
+      "search_radius_band": "EXPANDED",
+      "visibility_band": "DIFFUSE",
+      "candidate_limit": 3
+    },
+    "disturbance_avoidance": {
+      "disturbance_pressure_gte": 0.45,
+      "eligible_microhabitats": ["lower_shelf_core", "sheltered_ledge"],
+      "activity_windows": ["EARLY_DAYLIGHT", "LATE_DAYLIGHT"],
+      "search_radius_band": "LOCAL",
+      "visibility_band": "REDUCED",
+      "candidate_limit": 2
+    }
+  },
+  "windows": [
+    {"id": "P0_BASELINE", "input_events": [
+      {"event_type": "PROJECTION_POLICY_EVALUATE"}
+    ]},
+    {"id": "P1_RESERVE_CANON_MEMBER", "input_events": [
+      {"event_type": "PROJECTION_CANDIDATE_RESERVE", "candidate_id": "candidate.248.fletchling.0", "source_class": "PERSISTENT_MEMBER", "member_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0", "microhabitat": "lower_shelf_core", "activity_window": "DAYLIGHT_CORE"}
+    ]},
+    {"id": "P2_MATERIALIZE", "input_events": [
+      {"event_type": "PROJECTION_MATERIALIZED", "candidate_id": "candidate.248.fletchling.0", "lease_id": "lease.248.fletchling.0", "minecraft_entity_uuid": "fixture-uuid-248-a"}
+    ]},
+    {"id": "P3_SCARCITY_PRESSURE_RISES", "input_events": [
+      {"event_type": "POPULATION_RESOURCE_PRESSURE_DELTA", "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "resource_pressure_delta": 0.20, "reason": "FIXTURE_RESOURCE_SCARCITY"},
+      {"event_type": "PROJECTION_POLICY_EVALUATE"}
+    ]},
+    {"id": "P4_EXISTING_ACTOR_REMAINS_SAME_MEMBER", "input_events": [
+      {"event_type": "PROJECTION_SIGHTING", "candidate_id": "candidate.248.fletchling.0", "minecraft_entity_uuid": "fixture-uuid-248-a", "microhabitat": "lower_shelf_edge", "activity_window": "EARLY_DAYLIGHT"}
+    ]},
+    {"id": "P5_UNRESOLVED_SLOT_USES_EXPANDED_ELIGIBILITY", "input_events": [
+      {"event_type": "PROJECTION_CANDIDATE_RESERVE", "candidate_id": "candidate.248.pool.001", "source_class": "UNRESOLVED_POOL_SLOT", "unresolved_slot_token": "slot.248.001", "microhabitat": "sendero_margin", "activity_window": "LATE_DAYLIGHT"}
+    ]},
+    {"id": "P6_DISTURBANCE_SPIKES", "input_events": [
+      {"event_type": "POPULATION_DISTURBANCE_PRESSURE_DELTA", "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "disturbance_pressure_delta": 0.40, "reason": "FIXTURE_HUMAN_TRAFFIC"},
+      {"event_type": "PROJECTION_POLICY_EVALUATE"}
+    ]},
+    {"id": "P7_EDGE_CANDIDATE_REJECTED", "input_events": [
+      {"event_type": "PROJECTION_CANDIDATE_REJECT_EXPECTED", "candidate_id": "candidate.248.rejected.edge", "source_class": "UNRESOLVED_POOL_SLOT", "unresolved_slot_token": "slot.248.002", "microhabitat": "sendero_margin", "activity_window": "DAYLIGHT_CORE", "reason": "CURRENT_POLICY_INELIGIBLE"}
+    ]},
+    {"id": "P8_PRESSURES_RECOVER", "input_events": [
+      {"event_type": "POPULATION_RESOURCE_PRESSURE_DELTA", "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "resource_pressure_delta": -0.20, "reason": "FIXTURE_RESOURCE_RECOVERY"},
+      {"event_type": "POPULATION_DISTURBANCE_PRESSURE_DELTA", "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "disturbance_pressure_delta": -0.40, "reason": "FIXTURE_TRAFFIC_RECOVERY"},
+      {"event_type": "PROJECTION_POLICY_EVALUATE"}
+    ]},
+    {"id": "P9_DESPAWN_DOES_NOT_CHANGE_POPULATION", "input_events": [
+      {"event_type": "PROJECTION_RELEASE", "candidate_id": "candidate.248.fletchling.0", "reason": "CHUNK_UNLOAD"}
+    ]},
+    {"id": "P10_RESTART", "input_events": [
+      {"event_type": "SERVER_RESTART"}
+    ]}
+  ],
+  "regression_invariants": [
+    "projection policy changes eligibility and visibility only",
+    "resource or disturbance pressure does not alter population abundance",
+    "expanded search does not create new Pokémon",
+    "a persistent member retains identity when its eligible microhabitat or activity window changes",
+    "candidate reservation must reference an already-counted persistent member or unresolved pool slot",
+    "current projection policy gates microhabitat and activity-window eligibility",
+    "candidate limits constrain presentation rather than population truth",
+    "Minecraft UUID remains presentation correlation only",
+    "despawn or chunk unload does not imply death, emigration or capture",
+    "server restart preserves population and projection audit state"
+  ]
+}
