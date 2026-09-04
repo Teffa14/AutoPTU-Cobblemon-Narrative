@@ -1,0 +1,105 @@
+{
+  "fixture_id": "marea-sendero-habitat-engineering-legacy-trace-v1",
+  "pass": 267,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "structure_is_canon": false,
+    "engineering_behavior_is_canon": false,
+    "facilitates_edge_is_canon": false,
+    "nest_or_territory_created": false,
+    "new_persistent_actor_created": false
+  },
+  "modification": {
+    "schema": "ECOLOGICAL_HABITAT_MODIFICATION_V1",
+    "modification_id": "fixture-only:sendero-legacy-structure-267",
+    "site_scope": "fixture-only:sendero-microstructure-site-267",
+    "physical_change_class": "FIXTURE_LOOSE_MATERIAL_DISPLACEMENT",
+    "physical_state": "PRESENT",
+    "origin_authority": "OUROS_FIXTURE_PREVALIDATED",
+    "creator_attribution_state": "ATTRIBUTED_INTERNAL",
+    "creator_source_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "semantic_horizon_policy": "AUTHORITATIVE_PHYSICAL_STATE_TRANSITION",
+    "ecological_effect_state": "NOT_EVALUATED",
+    "tactical_semantics_state": "PRESENTATION_ONLY",
+    "canon_status": "FIXTURE_ONLY"
+  },
+  "counted_sources": [
+    "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "fixture-only:unresolved-counted-fletchling-source-267-b"
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "event": "BASELINE",
+      "population": 12,
+      "demographic_events": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "step": 2,
+      "event": "PHYSICAL_MODIFICATION_COMMITTED",
+      "source_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "population": 12,
+      "claims": ["FIXTURE_ONLY_PHYSICAL_CHANGE"],
+      "forbidden_claims": ["NEST", "TERRITORY", "REPRODUCTION", "SPECIES_ENGINEERING_TRAIT"]
+    },
+    {
+      "step": 3,
+      "event": "CREATOR_NOT_PRESENT_MODIFICATION_PERSISTS",
+      "physical_state": "PRESENT",
+      "creator_currently_projected": false,
+      "population": 12
+    },
+    {
+      "step": 4,
+      "event": "RECIPIENT_USE_OBSERVED",
+      "recipient_source_ref": "fixture-only:unresolved-counted-fletchling-source-267-b",
+      "ecological_effect_state": "RECIPIENT_USE_OBSERVED",
+      "population": 12,
+      "forbidden_claims": ["OWNERSHIP", "NESTING", "HABITAT_BENEFIT", "FACILITATES_CANON", "POPULATION_GROWTH"]
+    },
+    {
+      "step": 5,
+      "event": "RESTART_RESTORE",
+      "physical_state": "PRESENT",
+      "creator_currently_projected": false,
+      "recipient_use_history_preserved": true,
+      "population": 12
+    },
+    {
+      "step": 6,
+      "event": "TACTICAL_COVER_PROMOTION_ATTEMPT",
+      "requested_semantics": "PTU_TACTICAL_COVER_OR_BLOCKER",
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "reason": "TERRAIN_ZONE_REACTION_PATH_NOT_ADMITTED_FOR_THIS_MODIFICATION",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "step": 7,
+      "event": "FACILITATION_PROMOTION_ATTEMPT",
+      "result": "REMAIN_HYPOTHESIS",
+      "ecological_effect_state": "FACILITATION_HYPOTHESIS",
+      "reason": "RECIPIENT_USE_WITHOUT_COMPARATIVE_EFFECT_EVIDENCE",
+      "population": 12
+    },
+    {
+      "step": 8,
+      "event": "AUTHORITATIVE_PHYSICAL_DEGRADATION",
+      "physical_state": "DEGRADING",
+      "population": 12
+    },
+    {
+      "step": 9,
+      "event": "AUTHORITATIVE_PHYSICAL_CLOSURE",
+      "physical_state": "CLOSED",
+      "historical_creator_attribution_preserved": true,
+      "historical_recipient_use_preserved": true,
+      "population": 12,
+      "demographic_events": 0,
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    }
+  ]
+}

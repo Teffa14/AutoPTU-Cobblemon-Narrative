@@ -1,0 +1,21 @@
+# Engine readiness snapshot — Pass 267
+
+Evidence date: 2026-09-04. AutoPTU-Java and AutoPTU inspected read-only.
+
+AutoPTU-Java live head is `225986bf830a974b1ed8a220327d133156b29718`, merge of PR #349, `Preserve single-target move-special action finalization`. The associated narrow change adds/tests a single-target move-special action-finalization seam and ordering. This is additional evidence for one move-special/lifecycle path only. It does not establish complete move-specific behavior, complete turn/round lifecycle, complete stateful aftermath, terrain semantics or a public AutoPTU→Ouros semantic-result API.
+
+AutoPTU Python oracle remains `729bae2d424963ff9bb3f4159c9a7ac9152128a7`. Its latest inspected change is presentation-only and explicitly states that battle rules/outcomes do not change.
+
+Permanent capability audit: targeting/footprints/range/LoS VERIFIED within audited contracts; base movement legality VERIFIED within audited contracts; complete movement including push/pull/knockback/interception/forced movement PARTIAL; core calculations VERIFIED within audited contracts; action economy/initiative VERIFIED within audited contracts; full turn/round lifecycle PARTIAL; full stateful damage pipeline PARTIAL; status lifecycle PARTIAL; terrain/weather/hazards/zones/reactions MIXED/PARTIAL/BLOCKING; move-specific behavior PARTIAL with narrow delayed-hit and single-target finalization evidence in recent Java passes; abilities PARTIAL; items PARTIAL; Trainer Features/perks PARTIAL; AI legal-action infrastructure VERIFIED within audited contracts; AI tactical policy BLOCKING; Minecraft/Cobblemon/Craftics adapter/playback support PARTIAL/BLOCKING end-to-end.
+
+No category is promoted in Pass 267.
+
+The reduced habitat-engineering legacy loop requires ecological world-state persistence, provenance/observation and adapter presentation. It deliberately gives the physical feature no PTU cover, blocker, movement-cost, hazard, reaction, damage or status meaning and requires no AutoPTU handoff.
+
+The full active-construction version requires targeting/footprints/range/LoS when sensing or targeting matters; base movement legality for ordinary construction approach/traversal; action economy/initiative and full turn/round lifecycle for tactical sequencing; AI legal-action infrastructure for legal autonomous actions; AI tactical policy for deciding to create, maintain, exploit, contest, avoid or abandon the feature; and Minecraft/Cobblemon/Craftics adapter/playback for live world execution. Complete movement is added for push/pull/knockback/interception/blocking/forced displacement. Tactical cover, difficult terrain, hazards, zones, weather interactions or reactions add terrain/weather/hazards/zones/reactions. Exact Moves, Abilities, Items and Trainer Features add their respective families. Damage aftermath adds full stateful damage; persistent status adds status lifecycle.
+
+A visible Minecraft structure must remain presentation-only until an exact tactical semantic path is admitted. Physical persistence in Ouros world state cannot be used as evidence that AutoPTU understands the same feature as cover, a blocker or a hazard.
+
+PTU remains the selected mechanical baseline. Survival/Perception can support field discovery where adopted rules allow, but they do not prove creator identity, facilitation, ecological quality, abundance or tactical semantics. Kairos remains a living-world/reference source unless explicitly adopted. No local Caelo source pack was found in the project evidence inspected for this pass, so no Caelo-specific rule is inferred.
+
+Unresolved questions: choose real Marea/Sendero engineer species or abiotic/biotic structure classes before canon promotion; define authoritative physical-change creation and degradation events; decide how authored Ouros structures map to persistent Minecraft blocks/entities; define evidence thresholds for `FACILITATES`; preserve Pass 266 quality separation; verify exact terrain/LoS semantics before tactical use; keep AI tactical policy blocking for autonomous construction behavior; expose public typed AutoPTU semantic results before importing battle-created persistent consequences.

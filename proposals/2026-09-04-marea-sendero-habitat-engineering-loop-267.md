@@ -1,0 +1,17 @@
+# Marea/Sendero habitat-legacy investigation loop — Pass 267
+
+Status: PROPOSED narrative pattern. No fixture structure, behavior, quest, NPC, faction or interaction edge is canon.
+
+The player can encounter a small persistent environmental alteration before understanding who made it or what it does. Later visits can show a different already-counted Pokémon using the same feature. The important mystery is causal rather than collectible: who modified this place, how long does the modification last, which organisms use it, and what actually changes because it exists?
+
+The loop supports observation across time. One visit establishes the physical feature. Another may reveal a possible maker. A later visit can show a different recipient. Restart, unload and temporary absence do not erase the world fact. The feature can eventually degrade through an authoritative semantic transition while the historical evidence remains available.
+
+The player-facing interpretation must remain narrower than Ouros internal provenance. Seeing one Pokémon modify loose material and another use the altered site does not prove nesting, territory, ownership, reproductive success or a beneficial interaction. A field observer archetype can reasonably propose facilitation; a route-maintenance archetype can reasonably care about accessibility; neither opinion becomes ecological truth without evidence. Those roles are reusable archetypes only and are not new Marea NPCs.
+
+This creates quest hooks without forcing battle: document an unexplained physical change; compare use before and after alteration; determine whether a later occupant is using the structure or merely co-occurring; revisit after a disturbance; decide whether removing an obstruction risks destroying a useful microhabitat; investigate a chain where one modification creates conditions for a later modification. No answer is hard-coded into the generic loop.
+
+The reduced version is immediately compatible with the existing narrative architecture. Ouros persists the feature and its provenance, projects already-counted sources, and lets Minecraft/Cobblemon show the changed scenery. Survival/Perception may support discovery under adopted PTU rules. No AutoPTU battle state, tactical terrain effect or autonomous engineering decision is required.
+
+The full version can become mechanically rich later. A Pokémon that autonomously chooses to build, maintain or abandon a feature needs AI legal-action infrastructure plus AI tactical policy, with base movement and action-economy/lifecycle support for the physical sequence. Any push/pull/knockback/interception/forced movement adds complete movement. A feature that truly blocks LoS, supplies cover, changes movement costs, becomes a hazard/zone or triggers reactions requires exact targeting/LoS and terrain/weather/hazards/zones/reactions admission. Creating or destroying the feature through a Move, Ability, Item or Trainer Feature adds that exact family. Damage/status aftermath adds the corresponding stateful damage/status families. Live persistence and visual playback remain an adapter responsibility.
+
+Longer-term worldbuilding opportunity: engineering legacies can create ecological succession and layered environmental storytelling. A place can carry traces of earlier occupants without requiring those occupants to remain loaded or even identified. This gives Ouros a way to make routes feel historically inhabited while preserving authority, uncertainty and population conservation.
