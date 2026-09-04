@@ -1,0 +1,33 @@
+{
+  "fixture_id": "marea-sendero-facilitation-cascade-trace-v1",
+  "pass": 268,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "cascade_is_canon": false,
+    "species_behavior_is_canon": false,
+    "new_persistent_actor_created": false,
+    "population_growth_claimed": false
+  },
+  "counted_sources": [
+    "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "fixture-only:unresolved-counted-fletchling-source-268-b",
+    "fixture-only:unresolved-counted-fletchling-source-268-c"
+  ],
+  "nodes": [
+    {"id":"fixture-only:modification-a-268","physical_state":"PRESENT","canon_status":"FIXTURE_ONLY"},
+    {"id":"fixture-only:modification-b-268","physical_state":"PRESENT","canon_status":"FIXTURE_ONLY"},
+    {"id":"fixture-only:modification-c-268","physical_state":"PRESENT","canon_status":"FIXTURE_ONLY"}
+  ],
+  "trace": [
+    {"step":1,"event":"BASELINE","population":12,"demographic_events":0,"autoptu_handoffs":0},
+    {"step":2,"event":"COOCCURRENCE_EDGE_ATTEMPT","edge":"A_TO_B","result":"REMAIN_DEPENDENCY_HYPOTHESIS","population":12},
+    {"step":3,"event":"DIRECT_DEPENDENCY_EVIDENCE_ACCEPTED","edge":"A_TO_B","relation":"FIXTURE_SUBSTRATE_DEPENDENCY","interpretation_state":"DIRECT_DEPENDENCY_SUPPORTED","canon_status":"FIXTURE_ONLY","population":12},
+    {"step":4,"event":"DIRECT_DEPENDENCY_EVIDENCE_ACCEPTED","edge":"B_TO_C","relation":"FIXTURE_ACCESS_DEPENDENCY","interpretation_state":"DIRECT_DEPENDENCY_SUPPORTED","canon_status":"FIXTURE_ONLY","population":12},
+    {"step":5,"event":"TRANSITIVE_EDGE_INFERENCE_ATTEMPT","requested_edge":"A_TO_C","result":"REJECT_TRANSITIVE_INFERENCE","reason":"NO_DIRECT_A_TO_C_EVIDENCE","population":12},
+    {"step":6,"event":"TACTICAL_SEMANTICS_ATTEMPT","requested_semantics":["COVER","BLOCKER","HAZARD"],"result":"REJECT_UNVERIFIED_TACTICAL_SEMANTICS","ptu_state_mutations":0,"autoptu_handoffs":0},
+    {"step":7,"event":"AUTHORITATIVE_UPSTREAM_CLOSURE","node":"fixture-only:modification-a-268","physical_state":"CLOSED","edge_A_TO_B_validity":"HISTORICAL","node_b_physical_state":"PRESENT","descendants_recursively_deleted":false,"population":12},
+    {"step":8,"event":"DOWNSTREAM_REEVALUATION","node":"fixture-only:modification-b-268","result":"PERSISTS_BY_OWN_PHYSICAL_VALIDITY","edge_B_TO_C_validity":"ACTIVE","population":12},
+    {"step":9,"event":"RESTART_RESTORE","historical_edge_A_TO_B_preserved":true,"active_edge_B_TO_C_preserved":true,"transitive_edge_A_TO_C_present":false,"population":12,"demographic_events":0,"ptu_state_mutations":0,"autoptu_handoffs":0}
+  ]
+}
