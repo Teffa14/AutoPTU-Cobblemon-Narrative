@@ -1,0 +1,160 @@
+{
+  "fixture_id": "ouros.marea.sendero.observation_disturbance.pass255.v1",
+  "schema": "ouros.ecology.observation_disturbance_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 255,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12,
+    "disturbance_pressure_start": 0.10
+  },
+  "fixture_policy": {
+    "reduced_visibility_at_or_above": 0.45,
+    "passive_remote_delta": 0.00,
+    "close_approach_delta": 0.20,
+    "quiet_recovery_delta": -0.40,
+    "thresholds_are_canon": false
+  },
+  "windows": [
+    {"id": "255-A-baseline"},
+    {"id": "255-B-passive-observation"},
+    {"id": "255-C-close-approach-one"},
+    {"id": "255-D-close-approach-two"},
+    {"id": "255-E-projection-reduced"},
+    {"id": "255-F-relay-does-not-repeat-impact"},
+    {"id": "255-G-unauthorized-handling-denied"},
+    {"id": "255-H-quiet-recovery"},
+    {"id": "255-I-restart"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.255.passive.001",
+      "provenance_root": "root.255.passive.001",
+      "method_class": "PASSIVE_REMOTE",
+      "evidence_quality": "MEDIUM",
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 2,
+      "type": "OBSERVATION_IMPACT_APPLIED",
+      "impact_transaction_id": "impact.255.001",
+      "observation_id": "obs.255.passive.001",
+      "provenance_root": "root.255.passive.001",
+      "method_class": "PASSIVE_REMOTE",
+      "disturbance_pressure_delta": 0.00,
+      "reason": "FIXTURE_LOW_IMPACT_METHOD",
+      "population_delta": 0
+    },
+    {
+      "seq": 3,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.255.close.001",
+      "provenance_root": "root.255.close.001",
+      "method_class": "CLOSE_APPROACH",
+      "evidence_quality": "HIGH",
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 4,
+      "type": "OBSERVATION_IMPACT_APPLIED",
+      "impact_transaction_id": "impact.255.002",
+      "observation_id": "obs.255.close.001",
+      "provenance_root": "root.255.close.001",
+      "method_class": "CLOSE_APPROACH",
+      "disturbance_pressure_delta": 0.20,
+      "reason": "FIXTURE_CLOSE_APPROACH",
+      "population_delta": 0
+    },
+    {
+      "seq": 5,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.255.close.002",
+      "provenance_root": "root.255.close.002",
+      "method_class": "CLOSE_APPROACH",
+      "evidence_quality": "LOW",
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 6,
+      "type": "OBSERVATION_IMPACT_APPLIED",
+      "impact_transaction_id": "impact.255.003",
+      "observation_id": "obs.255.close.002",
+      "provenance_root": "root.255.close.002",
+      "method_class": "CLOSE_APPROACH",
+      "disturbance_pressure_delta": 0.20,
+      "reason": "FIXTURE_CLOSE_APPROACH_DESPITE_LOW_EVIDENCE",
+      "population_delta": 0
+    },
+    {
+      "seq": 7,
+      "type": "PROJECTION_POLICY_EVALUATED",
+      "disturbance_pressure": 0.50,
+      "visibility_band": "REDUCED",
+      "reason": "PASS_248_DISTURBANCE_INPUT",
+      "population_delta": 0
+    },
+    {
+      "seq": 8,
+      "type": "OBSERVATION_RELAYED",
+      "observation_id": "obs.255.close.002",
+      "provenance_root": "root.255.close.002",
+      "new_impact_transaction_created": false,
+      "disturbance_pressure_delta": 0.00
+    },
+    {
+      "seq": 9,
+      "type": "PHYSICAL_HANDLING_REQUESTED",
+      "method_class": "PHYSICAL_HANDLING",
+      "purpose": "FIXTURE_MARKER_APPLICATION",
+      "canon_authority_present": false,
+      "result": "DENIED_FAIL_CLOSED",
+      "marker_applied": false,
+      "disturbance_pressure_delta": 0.00,
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 10,
+      "type": "ECOLOGY_DISTURBANCE_RECOVERY_APPLIED",
+      "recovery_transaction_id": "recovery.255.001",
+      "reason": "FIXTURE_QUIET_INTERVAL",
+      "quiet_condition_verified": true,
+      "disturbance_pressure_delta": -0.40,
+      "population_delta": 0
+    },
+    {
+      "seq": 11,
+      "type": "PROJECTION_POLICY_EVALUATED",
+      "disturbance_pressure": 0.10,
+      "visibility_band": "NORMAL",
+      "reason": "PASS_248_RECOVERY_INPUT",
+      "population_delta": 0
+    },
+    {
+      "seq": 12,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "disturbance_pressure_after_restart": 0.10,
+      "observation_history_preserved": true
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "disturbance_pressure": 0.10,
+    "visibility_band": "NORMAL",
+    "impact_transactions_applied": 3,
+    "duplicate_relay_impacts": 0,
+    "unauthorized_marker_applications": 0,
+    "observation_history_preserved": true
+  }
+}
