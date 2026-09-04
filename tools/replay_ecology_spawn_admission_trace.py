@@ -21,8 +21,13 @@ def validate(trace):
     demographic_events = 0
     autoptu_handoffs = 0
 
-    if not trace["verified_adapter_primitives"].get("entity_spawn_cancelable"):
+    primitives = trace["verified_adapter_primitives"]
+    if not primitives.get("entity_spawn_cancelable"):
         raise ReplayError("fixture requires a verified cancellable entity-spawn primitive")
+    if primitives.get("entity_spawn_event_scope") != "BESTSPAWNER_ONLY":
+        raise ReplayError("spawn callback must be scoped to the verified BestSpawner path")
+    if not primitives.get("cancellation_before_world_add_verified_for_single_entity_spawn_action"):
+        raise ReplayError("fixture requires source evidence that cancellation precedes world insertion")
 
     for event in sorted(trace["events"], key=lambda item: item["seq"]):
         kind = event["type"]
@@ -46,12 +51,12 @@ def validate(trace):
                 raise ReplayError("admission token source must match lease source")
             tokens[event["token_id"]] = {"lease_id": lease_id, "consumed": False}
 
-        elif kind == "COBBLEMON_MATERIALIZATION_REQUESTED":
+        elif kind == "COBBLEMON_BESTSPAWNER_MATERIALIZATION_REQUESTED":
             token_id = event["token_id"]
             if token_id not in tokens or tokens[token_id]["consumed"]:
                 raise ReplayError("materialization request requires live unused token")
 
-        elif kind == "POKEMON_ENTITY_SPAWN_CALLBACK":
+        elif kind == "BESTSPAWNER_POKEMON_ENTITY_SPAWN_CALLBACK":
             admission_class = event["admission_class"]
             if admission_class == "OUROS_MANAGED_DIRECT":
                 token_id = event.get("token_id")
@@ -62,27 +67,32 @@ def validate(trace):
                 if event.get("ecology_write_authorized"):
                     raise ReplayError("entity admission cannot authorize ecology writes")
                 admitted += 1
-            elif admission_class == "UNCONTROLLED_NATURAL":
+            elif admission_class == "UNCONTROLLED_BESTSPAWNER_WILD":
                 if not event.get("cancel_event"):
-                    raise ReplayError("uncontrolled natural entity must hit cancellation backstop")
+                    raise ReplayError("uncontrolled BestSpawner wild candidate must hit cancellation backstop")
                 if event.get("ecology_write_authorized") or event.get("persistent_actor_created"):
-                    raise ReplayError("uncontrolled natural entity cannot author ecology")
+                    raise ReplayError("uncontrolled BestSpawner candidate cannot author ecology")
                 if event.get("autoptu_eligible"):
-                    raise ReplayError("uncontrolled natural entity cannot enter AutoPTU")
+                    raise ReplayError("uncontrolled BestSpawner candidate cannot enter AutoPTU")
                 cancelled_uncontrolled += 1
-            elif admission_class == "EXEMPT_OWNED_OR_SYSTEM_PRESENTATION":
-                if event.get("cancel_event"):
-                    raise ReplayError("fixture must not blanket-cancel exempt owned/system presentation")
-                if event.get("wild_population_membership_created"):
-                    raise ReplayError("owned/system presentation cannot become wild population membership")
-                passthrough += 1
-            elif admission_class == "UNKNOWN_OR_UNCLASSIFIED":
+            elif admission_class == "UNKNOWN_BESTSPAWNER_CANDIDATE":
+                if not event.get("cancel_event"):
+                    raise ReplayError("unknown BestSpawner candidate must fail closed in the managed fixture")
                 if event.get("ecology_write_authorized") or event.get("persistent_actor_created"):
                     unknown_with_authority += 1
                 if event.get("autoptu_eligible"):
-                    raise ReplayError("unknown entity cannot enter AutoPTU")
+                    raise ReplayError("unknown BestSpawner candidate cannot enter AutoPTU")
             else:
-                raise ReplayError(f"unknown admission class: {admission_class}")
+                raise ReplayError(f"unknown BestSpawner admission class: {admission_class}")
+
+        elif kind == "NON_BESTSPAWNER_PRESENTATION_PATH":
+            if event.get("presentation_class") != "OWNED_PARTY_SEND_OUT":
+                raise ReplayError("fixture only verifies explicit owned party send-out separation")
+            if event.get("decision") != "OUTSIDE_WILD_SPAWN_GATE":
+                raise ReplayError("non-BestSpawner owned presentation must stay outside the wild spawn gate")
+            if event.get("wild_population_membership_created"):
+                raise ReplayError("owned/system presentation cannot become wild population membership")
+            passthrough += 1
 
         elif kind == "ADMISSION_TOKEN_CONSUMED":
             token_id = event["token_id"]
