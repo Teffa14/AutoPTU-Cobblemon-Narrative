@@ -1,0 +1,221 @@
+{
+  "fixture_id": "ouros.marea.sendero.semantic_result_ingress.pass262.v1",
+  "schema": "ouros.ecology.semantic_result_ingress_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 262,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  },
+  "sources": [
+    {
+      "source_class": "PERSISTENT_ACTOR_FIXTURE_BINDING",
+      "internal_source_ref": "fixture-only:pass262-fletchling-subject-a",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor": false
+    },
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:pass262-fletchling-subject-b",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor": false
+    }
+  ],
+  "authority_profile": {
+    "producer_id": "fixture-only:autoptu-authority",
+    "producer_revision": "fixture-only:prevalidated-semantic-result-producer",
+    "rules_profile_id": "fixture-only:project-adopted-ptu-profile",
+    "cryptographic_authentication_claimed": false,
+    "live_damage_pipeline_claimed_verified": false
+  },
+  "battle_handoff": {
+    "battle_session_id": "fixture-only:battle-session-262-a",
+    "subject_binding": "fixture-only:pass262-fletchling-subject-a",
+    "minecraft_uuid_used_as_authority": false
+  },
+  "windows": [
+    {"id": "262-A-authoritative-result"},
+    {"id": "262-B-idempotent-replay"},
+    {"id": "262-C-conflicting-replay"},
+    {"id": "262-D-presentation-spoof"},
+    {"id": "262-E-lineage-mismatch"},
+    {"id": "262-F-capability-quarantine"},
+    {"id": "262-G-restart"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "AUTOPTU_SEMANTIC_RESULT_INGRESS_ATTEMPT",
+      "envelope": {
+        "schema_version": "OUROS_AUTOPTU_SEMANTIC_RESULT_V1",
+        "result_id": "fixture-result-262-injury-001",
+        "result_type": "PTU_INJURY_APPLIED",
+        "producer_id": "fixture-only:autoptu-authority",
+        "producer_revision": "fixture-only:prevalidated-semantic-result-producer",
+        "rules_profile_id": "fixture-only:project-adopted-ptu-profile",
+        "battle_session_id": "fixture-only:battle-session-262-a",
+        "causation_id": "fixture-only:action-262-a",
+        "correlation_id": "fixture-only:encounter-262-a",
+        "subject_binding": "fixture-only:pass262-fletchling-subject-a",
+        "semantic_payload": {
+          "injury_event_id": "fixture-only:injury-262-001",
+          "injury_delta": 1,
+          "owning_battle_transition_ref": "fixture-only:transition-262-a"
+        },
+        "capability_provenance": {
+          "mode": "FIXTURE_PREVALIDATED_ONLY",
+          "production_admission_claimed": false,
+          "required_families": [
+            "full_turn_round_lifecycle",
+            "full_stateful_damage_pipeline"
+          ]
+        },
+        "provenance_root": "fixture-only:autoptu-result-root-262-a",
+        "replay_policy": "SOURCE_RESULT_ID_IDEMPOTENT"
+      },
+      "schema_valid": true,
+      "producer_authority_valid": true,
+      "rules_profile_valid": true,
+      "subject_lineage_valid": true,
+      "fixture_prevalidation_override_for_contract_test": true,
+      "live_engine_production_capability_admitted": false,
+      "result": "ACCEPTED_COMMITTED",
+      "ingress_receipt_created": true,
+      "persistent_fixture_consequence_created": true,
+      "canon_injury_created": false,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 2,
+      "type": "AUTOPTU_SEMANTIC_RESULT_INGRESS_ATTEMPT",
+      "result_id": "fixture-result-262-injury-001",
+      "producer_id": "fixture-only:autoptu-authority",
+      "semantic_identity_matches_committed_receipt": true,
+      "result": "IDEMPOTENT_NO_OP",
+      "new_ingress_receipts": 0,
+      "new_persistent_consequences": 0,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 3,
+      "type": "AUTOPTU_SEMANTIC_RESULT_INGRESS_ATTEMPT",
+      "result_id": "fixture-result-262-injury-001",
+      "producer_id": "fixture-only:autoptu-authority",
+      "semantic_identity_matches_committed_receipt": false,
+      "conflict": "SUBJECT_BINDING_CHANGED",
+      "result": "REJECT_CONFLICTING_REPLAY",
+      "new_ingress_receipts": 0,
+      "new_persistent_consequences": 0,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 4,
+      "type": "MINECRAFT_PRESENTATION_EVENT_OBSERVED",
+      "presentation_event": "GENERIC_ENTITY_DAMAGE_SIGNAL",
+      "minecraft_entity_uuid": "fixture-only:minecraft-uuid-262-noise",
+      "requested_semantic_result_type": "PTU_INJURY_APPLIED",
+      "authoritative_autoptu_envelope_present": false,
+      "result": "REJECT_PRODUCER_AUTHORITY",
+      "persistent_consequence_created": false,
+      "observation_record_allowed": true,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 5,
+      "type": "AUTOPTU_SEMANTIC_RESULT_INGRESS_ATTEMPT",
+      "result_id": "fixture-result-262-lineage-mismatch-001",
+      "producer_id": "fixture-only:autoptu-authority",
+      "battle_session_id": "fixture-only:battle-session-262-a",
+      "subject_binding": "fixture-only:pass262-fletchling-subject-b",
+      "expected_handoff_subject_binding": "fixture-only:pass262-fletchling-subject-a",
+      "subject_lineage_valid": false,
+      "result": "QUARANTINE_SUBJECT_LINEAGE_UNRESOLVED",
+      "persistent_consequence_created": false,
+      "aggregate_consequence_created": false,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 6,
+      "type": "AUTOPTU_SEMANTIC_RESULT_INGRESS_ATTEMPT",
+      "result_id": "fixture-result-262-status-001",
+      "producer_id": "fixture-only:autoptu-authority",
+      "battle_session_id": "fixture-only:battle-session-262-a",
+      "subject_binding": "fixture-only:pass262-fletchling-subject-a",
+      "result_type": "PTU_PERSISTENT_STATUS_APPLIED",
+      "required_capability_families": ["full_turn_round_lifecycle", "status_lifecycle"],
+      "status_lifecycle_readiness": "PARTIAL",
+      "result": "QUARANTINE_CAPABILITY_PATH_UNVERIFIED",
+      "persistent_consequence_created": false,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 7,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "accepted_ingress_receipts_restored": 1,
+      "accepted_fixture_consequences_restored": 1,
+      "duplicate_consequences_after_restart": 0,
+      "quarantined_records_restored": 2,
+      "minecraft_noise_promoted_after_restart": false,
+      "public_internal_ids_exposed": false,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 8,
+      "type": "PUBLIC_KNOWLEDGE_CHECK",
+      "fixture_injury_exposed_as_canon_fact": false,
+      "producer_id_exposed": false,
+      "result_id_exposed": false,
+      "battle_session_id_exposed": false,
+      "internal_source_ref_exposed": false,
+      "quarantine_state_exposed": false,
+      "population_delta": 0
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "net_population_delta": 0,
+    "demographic_events": 0,
+    "accepted_ingress_receipts": 1,
+    "accepted_fixture_consequences": 1,
+    "canon_injuries_created": 0,
+    "idempotent_replays": 1,
+    "conflicting_replays_rejected": 1,
+    "minecraft_spoof_rejections": 1,
+    "lineage_quarantines": 1,
+    "capability_quarantines": 1,
+    "duplicate_consequences": 0,
+    "aggregate_misattributions": 0,
+    "internal_id_leaks": 0
+  }
+}
