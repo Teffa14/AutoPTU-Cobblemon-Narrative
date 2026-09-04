@@ -7,14 +7,14 @@ on:
       - 'implementation/**'
       - 'tools/validate_ecology_*.py'
       - 'tools/replay_ecology_*.py'
-      - 'tests/test_ecology_*.py'
+      - 'tests/test_*.py'
       - '.github/workflows/ecology-fixtures.yml'
   pull_request:
     paths:
       - 'implementation/**'
       - 'tools/validate_ecology_*.py'
       - 'tools/replay_ecology_*.py'
-      - 'tests/test_ecology_*.py'
+      - 'tests/test_*.py'
       - '.github/workflows/ecology-fixtures.yml'
 
 jobs:
