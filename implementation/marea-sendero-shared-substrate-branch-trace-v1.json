@@ -1,0 +1,96 @@
+{
+  "schema": "OUROS_ECOLOGY_TRACE_V1",
+  "pass": 269,
+  "fixture_id": "marea_sendero_shared_substrate_branch_v1",
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "branch_actors_are_canon": false,
+    "shared_substrate_is_canon": false,
+    "species_behavior_is_canon": false,
+    "new_persistent_actor_created": false,
+    "population_growth_claimed": false
+  },
+  "fixture_entities": {
+    "substrate": "fixture-only:sendero-shared-substrate-269",
+    "branch_a": "fixture-only:branch-a-269",
+    "branch_b": "fixture-only:branch-b-269",
+    "source_a": "fixture-only:counted-fletchling-source-a-269",
+    "source_b": "fixture-only:counted-fletchling-source-b-269"
+  },
+  "trace": [
+    {
+      "step": 1,
+      "event": "BASELINE",
+      "population": 12,
+      "demographic_events": 0,
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "step": 2,
+      "event": "SHARED_SITE_OBSERVED",
+      "population": 12,
+      "projected_sources": ["fixture-only:counted-fletchling-source-a-269", "fixture-only:counted-fletchling-source-b-269"],
+      "interpretation": "OBSERVED_OVERLAP",
+      "competition_claimed": false
+    },
+    {
+      "step": 3,
+      "event": "ARRIVAL_ORDER_INFERENCE_ATTEMPT",
+      "earlier_branch": "fixture-only:branch-a-269",
+      "requested_interpretation": "DIRECT_LIMITATION_SUPPORTED",
+      "result": "REJECT_PRIORITY_WITHOUT_MECHANISM",
+      "population": 12
+    },
+    {
+      "step": 4,
+      "event": "DIRECT_LIMITATION_EVIDENCE_ACCEPTED",
+      "limiting_branch": "fixture-only:branch-a-269",
+      "affected_branch": "fixture-only:branch-b-269",
+      "mechanism": "ACCESS_OBSTRUCTION",
+      "interpretation": "DIRECT_LIMITATION_SUPPORTED",
+      "canon_status": "FIXTURE_ONLY",
+      "population": 12
+    },
+    {
+      "step": 5,
+      "event": "GLOBAL_SPECIES_RELATION_INFERENCE_ATTEMPT",
+      "requested_relation": "SPECIES_A_ALWAYS_DISPLACES_SPECIES_B",
+      "result": "REJECT_CONTEXT_COLLAPSE",
+      "population": 12
+    },
+    {
+      "step": 6,
+      "event": "TACTICAL_DISPLACEMENT_INFERENCE_ATTEMPT",
+      "visual_evidence": "CROWDING_AND_LOCAL_ACCESS_LOSS",
+      "requested_semantics": ["FORCED_MOVEMENT", "BLOCKER", "HAZARD"],
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "step": 7,
+      "event": "AUTHORITATIVE_BRANCH_A_CLOSURE",
+      "branch_a_state": "CLOSED",
+      "branch_b_state": "ACTIVE_REEVALUATION_REQUIRED",
+      "substrate_state": "PRESENT_UNREASSESSED",
+      "population": 12,
+      "population_recovery_claimed": false,
+      "habitat_recovery_claimed": false,
+      "ownership_transferred": false
+    },
+    {
+      "step": 8,
+      "event": "RESTART_RESTORE",
+      "population": 12,
+      "historical_limitation_edge_preserved": true,
+      "branch_a_state": "CLOSED",
+      "branch_b_state": "ACTIVE_REEVALUATION_REQUIRED",
+      "substrate_state": "PRESENT_UNREASSESSED",
+      "demographic_events": 0,
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    }
+  ]
+}

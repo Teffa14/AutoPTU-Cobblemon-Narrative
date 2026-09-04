@@ -1,0 +1,15 @@
+# Engine readiness snapshot — Pass 269
+
+Status: evidence snapshot for narrative dependency gating. This document does not modify AutoPTU-Java or AutoPTU and does not promote a capability family from one representative implementation.
+
+Read-only heads inspected: AutoPTU-Java `20ef8ca596e688ec0ef81ccd8c4238ae1d63b091` (merge PR #351, compose move-special transport with action finalization). AutoPTU Python `729bae2d424963ff9bb3f4159c9a7ac9152128a7` (presentation-only viewport synchronization).
+
+Current conservative classification remains: targeting/footprints/range/LoS VERIFIED within audited contracts; base movement legality VERIFIED; complete movement PARTIAL; core calculations VERIFIED; action economy/initiative VERIFIED; full turn/round lifecycle PARTIAL; full stateful damage pipeline PARTIAL; status lifecycle PARTIAL; terrain/weather/hazards/zones/reactions MIXED/PARTIAL/BLOCKING; move-specific behavior PARTIAL; abilities PARTIAL; items PARTIAL; Trainer Features/perks PARTIAL; AI legal-action infrastructure VERIFIED; AI tactical policy BLOCKING; Minecraft/Cobblemon/Craftics adapter/playback support PARTIAL/BLOCKING end-to-end.
+
+Java PR #351 adds narrow evidence that move-special target transport is composed with action finalization in the current runtime path. Combined with PR #350, this strengthens per-target transport/finalization seams. It does not prove the complete move-specific family, the full turn/round lifecycle, complete movement, terrain semantics, statuses, abilities, items, tactical AI, or a public Ouros semantic-result export API.
+
+Pass 269 reduced shared-substrate investigation requires no AutoPTU capability family. It depends on Ouros ecological persistence/provenance plus Minecraft/Cobblemon presentation of already-authorized actors/features.
+
+For a mechanically rich branch contest: active detection/targeting uses targeting/footprints/range/LoS; ordinary approach uses base movement legality; interception/push/pull/knockback/forced displacement/blocking uses complete movement; mapped numerical PTU effects use core calculations; contest ordering uses action economy/initiative and full turn/round lifecycle; destructive persistent consequences use full stateful damage pipeline; persistent conditions use status lifecycle; cover/difficult terrain/hazards/zones/reactions/weather use terrain/weather/hazards/zones/reactions; move-created access effects require move-specific behavior; Ability-, Item- or Trainer Feature-driven effects require those exact families; autonomous legal options require AI legal-action infrastructure; autonomous decisions to contest, yield, wait, reroute or exploit the substrate require AI tactical policy; live projection and feedback require Minecraft/Cobblemon/Craftics adapter/playback support.
+
+No capability promotion is justified by Pass 269. No Caelo mechanic is inferred.
