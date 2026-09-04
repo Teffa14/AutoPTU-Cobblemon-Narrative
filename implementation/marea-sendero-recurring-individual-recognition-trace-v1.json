@@ -1,0 +1,184 @@
+{
+  "fixture_id": "ouros.marea.sendero.recurring_individual_recognition.pass253.v1",
+  "schema": "ouros.ecology.recurring_individual_recognition_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 253,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "windows": [
+    {"id": "253-A-first-observation"},
+    {"id": "253-B-independent-compatible-observation"},
+    {"id": "253-C-relay-no-false-corroboration"},
+    {"id": "253-D-confounder-preserves-ambiguity"},
+    {"id": "253-E-third-independent-observation"},
+    {"id": "253-F-restart-preserves-epistemic-state"}
+  ],
+  "population": {
+    "population_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "hidden_truth": {
+    "recurring_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "confounder_source": "fixture-only:unresolved-counted-fletchling-source-253",
+    "confounder_is_canon_actor": false
+  },
+  "public_payload_forbidden_fields": [
+    "persistent_actor_id",
+    "projection_lease_id",
+    "minecraft_uuid",
+    "internal_population_source_id"
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.253.001",
+      "provenance_root": "root.253.001",
+      "hidden_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "public_evidence": {
+        "species": "Fletchling",
+        "place_band": "lower_sendero_shelf",
+        "activity_window": "early_day",
+        "perch_class": "exposed_edge",
+        "retreat_vector": "toward_upper_cover",
+        "quality": "ORDINARY"
+      },
+      "population_delta": 0
+    },
+    {
+      "seq": 2,
+      "type": "IDENTITY_HYPOTHESIS_CREATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "state": "UNRESOLVED",
+      "independent_roots": ["root.253.001"],
+      "public_actor_identity_exposed": false,
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 3,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.253.002",
+      "provenance_root": "root.253.002",
+      "hidden_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "public_evidence": {
+        "species": "Fletchling",
+        "place_band": "lower_sendero_shelf",
+        "activity_window": "early_day",
+        "perch_class": "exposed_edge",
+        "retreat_vector": "toward_upper_cover",
+        "quality": "ORDINARY"
+      },
+      "population_delta": 0
+    },
+    {
+      "seq": 4,
+      "type": "IDENTITY_HYPOTHESIS_UPDATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "from": "UNRESOLVED",
+      "to": "POSSIBLE_SAME_INDIVIDUAL",
+      "independent_roots": ["root.253.001", "root.253.002"],
+      "reason": "INDEPENDENT_COMPATIBLE_FIELD_EVIDENCE",
+      "public_actor_identity_exposed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 5,
+      "type": "OBSERVATION_RELAYED",
+      "source_observation_id": "obs.253.002",
+      "provenance_root": "root.253.002",
+      "relay_id": "relay.253.001",
+      "counts_as_independent_root": false
+    },
+    {
+      "seq": 6,
+      "type": "IDENTITY_HYPOTHESIS_EVALUATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "state_before": "POSSIBLE_SAME_INDIVIDUAL",
+      "state_after": "POSSIBLE_SAME_INDIVIDUAL",
+      "independent_root_count": 2,
+      "reason": "RELAY_DOES_NOT_CORROBORATE"
+    },
+    {
+      "seq": 7,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.253.003",
+      "provenance_root": "root.253.003",
+      "hidden_source_id": "fixture-only:unresolved-counted-fletchling-source-253",
+      "public_evidence": {
+        "species": "Fletchling",
+        "place_band": "lower_sendero_shelf",
+        "activity_window": "early_day",
+        "perch_class": "exposed_edge",
+        "retreat_vector": "toward_lower_scrub",
+        "quality": "ORDINARY"
+      },
+      "population_delta": 0
+    },
+    {
+      "seq": 8,
+      "type": "IDENTITY_HYPOTHESIS_EVALUATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "state_before": "POSSIBLE_SAME_INDIVIDUAL",
+      "state_after": "POSSIBLE_SAME_INDIVIDUAL",
+      "competing_candidate_opened": true,
+      "contradiction_preserved": "RETREAT_VECTOR_CONFLICT",
+      "auto_merge_performed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 9,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.253.004",
+      "provenance_root": "root.253.004",
+      "hidden_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "public_evidence": {
+        "species": "Fletchling",
+        "place_band": "lower_sendero_shelf",
+        "activity_window": "early_day",
+        "perch_class": "exposed_edge",
+        "retreat_vector": "toward_upper_cover",
+        "quality": "ORDINARY"
+      },
+      "population_delta": 0
+    },
+    {
+      "seq": 10,
+      "type": "IDENTITY_HYPOTHESIS_UPDATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "from": "POSSIBLE_SAME_INDIVIDUAL",
+      "to": "PROBABLE_SAME_INDIVIDUAL",
+      "supporting_independent_roots": ["root.253.001", "root.253.002", "root.253.004"],
+      "excluded_competing_root": "root.253.003",
+      "certainty_cap_reason": "NO_CANON_APPROVED_STABLE_INDIVIDUAL_MARKER",
+      "public_actor_identity_exposed": false,
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 11,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "minecraft_entity_continuity_required": false
+    },
+    {
+      "seq": 12,
+      "type": "OBSERVER_KNOWLEDGE_RESTORED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "state": "PROBABLE_SAME_INDIVIDUAL",
+      "hidden_actor_id_in_public_record": false,
+      "population_delta": 0
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "hypothesis_state": "PROBABLE_SAME_INDIVIDUAL",
+    "independent_supporting_roots": 3,
+    "competing_candidate_preserved": true,
+    "confirmed_identity": false,
+    "hidden_actor_identity_exposed": false
+  }
+}
