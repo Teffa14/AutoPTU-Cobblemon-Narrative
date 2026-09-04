@@ -1,0 +1,51 @@
+{
+  "fixture_id": "marea-sendero-cue-quality-divergence-trace-v1",
+  "pass": 266,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "cue_is_canon": false,
+    "site_quality_is_canon": false,
+    "ecological_trap_is_canon": false,
+    "new_persistent_actor_created": false
+  },
+  "cue_quality_record": {
+    "schema": "ECOLOGICAL_CUE_QUALITY_DIVERGENCE_V1",
+    "record_id": "fixture-only:sendero-cue-quality-266",
+    "site_ref": "fixture-only:sendero-altered-cue-site-266",
+    "cue_class": "FIXTURE_ANTHROPOGENIC_ATTRACTION_CUE",
+    "cue_state": "PRESENT",
+    "selection_evidence_state": "USE_ONLY",
+    "quality_evidence_state": "UNKNOWN",
+    "trap_hypothesis_state": "UNRESOLVED",
+    "canon_status": "FIXTURE_ONLY"
+  },
+  "counted_sources": [
+    "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "fixture-only:unresolved-counted-fletchling-source-266-a",
+    "fixture-only:unresolved-counted-fletchling-source-266-b"
+  ],
+  "trace": [
+    {"step":1,"action":"BASELINE","population":12,"demographic_events":[],"ptu_state_mutations":[]},
+    {"step":2,"action":"OBSERVE_CUE","cue_state":"PRESENT","quality_evidence_state":"UNKNOWN","population":12},
+    {"step":3,"action":"REPEATED_USE_WINDOW","visible_counted_sources":["ouros.marea.encounter.sendero_lower_shelf.fletchling.0","fixture-only:unresolved-counted-fletchling-source-266-a","fixture-only:unresolved-counted-fletchling-source-266-b"],"selection_evidence_state":"USE_ONLY","public_observation":"Several already-counted Fletchling used the altered site during the observation window.","population":12},
+    {"step":4,"action":"TRY_INFER_GOOD_HABITAT_FROM_USE","result":"REJECTED_INSUFFICIENT_QUALITY_EVIDENCE","quality_evidence_state":"UNKNOWN","population":12},
+    {"step":5,"action":"TRY_DECLARE_ECOLOGICAL_TRAP_FROM_USE_ONLY","result":"REJECTED_COMPARATIVE_OUTCOME_EVIDENCE_MISSING","trap_hypothesis_state":"UNRESOLVED","population":12},
+    {"step":6,"action":"ADD_LOCAL_COST_SIGNAL","evidence":"FIXTURE_ONLY_SITE_COST_SIGNAL","quality_evidence_state":"OUTCOME_SIGNAL_PRESENT","trap_hypothesis_state":"UNRESOLVED","reason":"cost signal lacks comparative selection-plus-outcome proof","population":12},
+    {"step":7,"action":"MINECRAFT_GENERIC_DAMAGE_PRESENTATION","result":"REJECT_UNAUTHORIZED_PTU_STATE","injury_created":false,"status_created":false,"hp_mutated":false,"population":12},
+    {"step":8,"action":"RESTART","restored_trap_hypothesis_state":"UNRESOLVED","restored_quality_evidence_state":"OUTCOME_SIGNAL_PRESENT","population":12},
+    {"step":9,"action":"REMOVE_CUE","cue_state":"REMOVED","history_rewritten":false,"recovery_claim_created":false,"trap_hypothesis_state":"UNRESOLVED","population":12}
+  ],
+  "assertions": {
+    "population_values_are_always": [12],
+    "no_demographic_events": true,
+    "all_visible_sources_were_already_counted": true,
+    "repeated_use_does_not_prove_quality": true,
+    "repeated_use_does_not_prove_ecological_trap": true,
+    "cost_signal_without_comparator_keeps_trap_unresolved": true,
+    "minecraft_presentation_cannot_create_ptu_aftermath": true,
+    "restart_preserves_uncertainty": true,
+    "cue_removal_does_not_rewrite_history_or_prove_recovery": true,
+    "no_autoptu_handoff": true
+  }
+}
