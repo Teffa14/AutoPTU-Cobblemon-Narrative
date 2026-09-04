@@ -1,86 +1,88 @@
-# Cobblemon spawn admission gate contract — Pass 250
+# Cobblemon spawn admission gate contract — Pass 250, corrected by Pass 251
 
 Status: PROPOSED DESIGN CONTRACT
 Canon effect: NONE until separately approved
 
 ## Purpose
 
-Pass 249 defined how Ouros should treat direct entities, indirect signs, no-presentation results and uncorrelated Pokemon entities. This contract binds that policy to publicly verified Cobblemon spawn-control primitives without moving ecological or PTU authority into the adapter.
+Pass 249 defined how Ouros should treat direct entities, indirect signs, no-presentation results and uncorrelated Pokemon entities. Pass 250 bound that policy to Cobblemon spawn-control primitives. Pass 251 narrows the event claim against the tagged Cobblemon 1.7.3 source so the adapter does not pretend that one event covers every PokemonEntity lifecycle path.
 
-## Verified Cobblemon primitives
+## Verified Cobblemon 1.7.3 primitives
 
-Current public Cobblemon source exposes:
+At upstream tag `1.7.3`:
 
-- `CobblemonEvents.ENTITY_SPAWN` as `CancelableObservable<SpawnEvent<*>>`;
-- `CobblemonEvents.POKEMON_ENTITY_SPAWN` as the PokemonEntity-filtered stream;
-- Spawn Rules `filter` components capable of blocking natural spawn candidates.
+- `CobblemonEvents.ENTITY_SPAWN` is a `CancelableObservable<SpawnEvent<*>>`.
+- `CobblemonEvents.POKEMON_ENTITY_SPAWN` is the PokemonEntity-filtered projection of that same event.
+- `SpawnEvent` explicitly documents that it fires for an entity spawned using `BestSpawner` and that cancellation prevents that spawn.
+- `SingleEntitySpawnAction.run()` creates the entity, posts `ENTITY_SPAWN`, and only on success calls `world.addFreshEntity(e)`.
+- `PokemonSpawnAction` is a `SingleEntitySpawnAction<PokemonEntity>` used by the spawning system.
+- Spawn Rules support `filter` and `location` components that can block natural spawn candidates earlier in the spawning process.
+- Cobblemon also exposes separate `POKEMON_SENT_PRE` / `POKEMON_SENT_POST` events for party send-out lifecycle.
 
-Historical changelog evidence explicitly records that SpawnEvent cancellation was fixed to respect `Cancelable#cancel`.
+These are adapter affordances, not Ouros canon.
 
-These primitives are adapter affordances, not Ouros canon.
+## Critical scope correction
 
-## Double-gate model
+`POKEMON_ENTITY_SPAWN` must not be described as a universal stream for every PokemonEntity entering the world.
 
-### Gate A — natural spawn policy
+The verified 1.7.3 contract is narrower: it observes PokemonEntity instances flowing through Cobblemon's `BestSpawner` spawn action path.
 
-Within an Ouros-managed ecological scope, use Cobblemon Spawn Rules or equivalent supported configuration to deny natural direct Pokemon presentation that would bypass Ouros source reservation.
+Therefore:
 
-Gate A reduces uncontrolled candidates early. It does not reserve a population member, create identity or authorize a direct actor.
+- Gate B can safely reason about candidates that actually traverse this verified spawner path.
+- Owned party send-outs, entity loads/restores, commands, integrations or other presentation paths must not be assumed to traverse Gate B unless separately verified.
+- A listener must never cancel or classify an unrelated lifecycle path merely because the object is a PokemonEntity.
+- Absence from `POKEMON_ENTITY_SPAWN` is not evidence that an entity is wild, owned, restored or authoritative.
 
-### Gate B — entity admission backstop
+This correction supersedes the Pass 250 wording that treated the stream as entity-wide.
 
-Subscribe to the supported cancellable Pokemon entity-spawn surface.
+## Two-gate model for verified BestSpawner natural projection
 
-For every Pokemon entity candidate entering an Ouros-managed scope, resolve an admission class before accepting ecological authority.
+### Gate A — early natural-spawn policy
 
-Allowed admission classes:
+Within an Ouros-managed ecological scope, use Cobblemon Spawn Rules or an equivalent version-supported configuration to deny generic natural direct presentation that would bypass Ouros source reservation.
+
+Gate A reduces uncontrolled BestSpawner candidates. It does not reserve a population member, create identity or authorize a direct actor.
+
+### Gate B — cancellable BestSpawner backstop
+
+Subscribe to the supported cancellable Pokemon spawn surface for candidates that flow through `BestSpawner`.
+
+Within an Ouros-managed ecological scope the verified classes are:
 
 - `OUROS_MANAGED_DIRECT`
-- `EXEMPT_OWNED_OR_SYSTEM_PRESENTATION`
-- `UNCONTROLLED_NATURAL`
-- `UNKNOWN_OR_UNCLASSIFIED`
+- `UNCONTROLLED_BESTSPAWNER_WILD`
+- `UNKNOWN_BESTSPAWNER_CANDIDATE`
 
-The event must fail closed for ecological authority when the class is unknown.
+`EXEMPT_OWNED_OR_SYSTEM_PRESENTATION` is removed from this event classifier. Those paths require their own lifecycle-specific verification and remain outside wild ecological authority.
 
 ## OUROS_MANAGED_DIRECT
 
-Admission requires all of the following before the Pokemon entity becomes trusted presentation:
+Admission requires all of the following before a BestSpawner Pokemon entity becomes trusted presentation:
 
 1. projection envelope permits direct presentation;
 2. an already-counted Ouros source is selected;
 3. a Pass 239 projection lease is active;
 4. a one-use adapter admission token exists for that lease;
-5. species/form requested by the materialization agrees with the leased source profile;
+5. species/form requested by materialization agrees with the leased source profile;
 6. scope/location agrees with the request within adapter tolerance;
 7. token has not already admitted another entity.
 
 On successful admission:
 
 - consume the one-use admission token;
-- correlate returned Minecraft UUID to the active lease;
+- correlate the resulting Minecraft UUID to the active lease;
 - keep persistent actor identity in Ouros state;
 - expose only sanitized observation data externally;
 - do not change population total.
 
-If any required field fails, cancel or quarantine the entity according to the supported adapter mechanism. Never repair the mismatch by inventing a population member.
+If any required field fails, cancel the BestSpawner event when it is still inside the verified cancellable path. Never repair a mismatch by inventing a population member.
 
-## EXEMPT_OWNED_OR_SYSTEM_PRESENTATION
+## UNCONTROLLED_BESTSPAWNER_WILD
 
-The Pokemon entity spawn surface can include non-wild presentations such as Pokemon sent out by an owner. A blanket cancellation policy would break valid gameplay.
+A generic BestSpawner Pokemon candidate inside an Ouros-managed ecological scope without an Ouros admission token has no authoritative source.
 
-An exempt entity may pass through when the adapter can verify that it belongs to a presentation path outside wild population projection.
-
-Pass-through does not imply wild ecological membership. The entity cannot be inserted into a wild population ledger merely because it is physically present in a habitat.
-
-Where classification cannot be proven from supported metadata, treat the candidate as `UNKNOWN_OR_UNCLASSIFIED` rather than guessing.
-
-## UNCONTROLLED_NATURAL
-
-A natural Pokemon entity appearing inside an Ouros-managed ecological scope without an admission token has no authoritative source.
-
-Preferred action when supported by the current adapter version: cancel at the cancellable spawn event.
-
-Required semantic result:
+Required result:
 
 - `presentation_admitted = false`
 - `ecology_write_authorized = false`
@@ -88,15 +90,28 @@ Required semantic result:
 - `persistent_actor_created = false`
 - `autoptu_eligible = false`
 
-Cancellation is a presentation-control action only. It cannot be recorded as death, capture, emigration or failure of the population to exist.
+Cancellation is presentation control only. It cannot become death, capture, emigration or evidence that the persistent population does not exist.
 
-## UNKNOWN_OR_UNCLASSIFIED
+## UNKNOWN_BESTSPAWNER_CANDIDATE
 
-Unknown entity provenance must never be upgraded to a persistent wild actor automatically.
+If a candidate traverses the verified BestSpawner event but its provenance cannot be reconciled, fail closed for wild ecological authority. Inside a managed scope, cancellation is the safe default for the verified 1.7.3 event path unless a separately documented integration requires another treatment.
 
-If cancellation is safe for the current integration path, cancel. Otherwise preserve the Pass 249 quarantine rule until a loader/version-specific isolation mechanism is verified.
+Unknown provenance must never be upgraded to a persistent wild actor automatically.
 
-This branch exists because `POKEMON_ENTITY_SPAWN` is entity-wide; it is not documented as a natural-spawn-only stream.
+## Non-BestSpawner PokemonEntity paths
+
+Owned send-out, recall, load/restore, command and third-party integration paths are separate adapter concerns.
+
+Current policy:
+
+- do not create wild membership from physical presence;
+- do not use Gate B as proof that these paths were observed;
+- preserve valid owned/system gameplay through lifecycle-specific hooks;
+- use separate correlation/reconciliation contracts where persistent Ouros actors are restored;
+- quarantine ecological authority when provenance is unresolved;
+- add a dedicated regression for each path before declaring it controlled.
+
+Cobblemon 1.7.3 exposes `POKEMON_SENT_PRE` and `POKEMON_SENT_POST`; those events are evidence that party send-out has an explicit lifecycle surface and should not be conflated with BestSpawner natural spawning.
 
 ## Admission token
 
@@ -117,12 +132,12 @@ request_correlation_id
 
 Properties:
 
-- one token admits at most one Pokemon entity;
+- one token admits at most one BestSpawner Pokemon entity;
 - token creation does not create population;
 - token consumption does not create population;
 - expired or reused token fails admission;
 - entity UUID is written only after successful admission;
-- restart invalidates unresolved runtime tokens unless a future persistence contract explicitly says otherwise.
+- restart invalidates unresolved runtime tokens unless a later persistence contract explicitly says otherwise.
 
 ## Ordering contract
 
@@ -133,83 +148,73 @@ projection envelope eligible
 -> select already-counted source
 -> reserve lease
 -> issue one-use admission token
--> request Cobblemon entity materialization
--> Pokemon entity spawn callback
+-> request versioned Cobblemon materialization
+-> verified BestSpawner Pokemon spawn callback
 -> validate/consume token
--> admit entity
+-> event succeeds
+-> entity is added to world
 -> correlate Minecraft UUID
 ```
 
 Forbidden order:
 
 ```text
-Cobblemon entity appears
--> search for something in the population that resembles it
--> create or reserve source retroactively
+uncontrolled entity appears
+-> search for a similar population member
+-> reserve or invent source retroactively
 ```
 
-That reverse lookup would allow presentation to author ecology.
+Presentation cannot author ecology.
+
+## Cancellation ordering evidence
+
+Cobblemon 1.7.3 `SingleEntitySpawnAction.run()` posts `ENTITY_SPAWN` before `world.addFreshEntity(e)` and only executes the add-to-world block when the event succeeds. This is strong source-level evidence that cancellation on this path occurs before world insertion.
+
+It does not prove that every command, restore, send-out or third-party entity creation path uses the same ordering.
 
 ## Spawn Rules relationship
 
-Spawn Rules are an early filtering layer. They may reduce natural spawn generation inside managed habitats or for managed species.
+Spawn Rules are an early filtering layer. They may reduce generic spawn generation inside managed habitats or for managed species.
 
-They must not encode hidden persistent counts, lease IDs or individual identities.
-
-A Spawn Rule passing a candidate does not authorize direct projection. Gate B remains authoritative for admission.
+They must not encode hidden persistent counts, lease IDs or individual identities. A Spawn Rule passing a candidate does not authorize direct projection; Gate B remains the backstop for the verified BestSpawner path.
 
 ## Indirect evidence
 
-Suppressing a direct entity must not suppress all evidence of ecological presence. Pass 249 `INDIRECT_SIGN` remains available independently when the projection policy chooses it.
+Suppressing a direct entity must not suppress ecological evidence. Pass 249 `INDIRECT_SIGN` remains independent.
 
-The adapter must not convert a cancelled uncontrolled entity into a new evidence root. Evidence must originate from an Ouros-approved sign-generation event or a valid admitted actor.
+A cancelled generic BestSpawner candidate does not automatically become a new evidence root. Signs must originate from Ouros-approved sign generation or a valid admitted actor.
 
 ## AutoPTU boundary
 
 Spawn admission never opens AutoPTU.
 
-Only a valid admitted direct actor can later be considered by the Pass 242 encounter-intent evaluator.
-
-An uncontrolled, cancelled or quarantined entity cannot enter a combatant manifest.
+Only a valid admitted direct actor can later be considered by the Pass 242 encounter-intent evaluator. A cancelled or unresolved candidate cannot enter a combatant manifest.
 
 ## Executable invariants
 
 - managed direct admission requires a prior active lease;
 - managed direct admission requires a live unused token;
 - one token admits no more than one entity;
-- UUID correlation occurs after admission, never before;
-- uncontrolled natural entities cannot mutate population state;
-- owned/system pass-through cannot become wild population membership;
-- a blanket `cancel every PokemonEntity` policy is invalid;
+- UUID correlation follows successful admission;
+- generic BestSpawner candidates cannot mutate population state;
+- non-BestSpawner physical presence cannot become wild membership by inference;
 - cancellation cannot become mortality/emigration/capture truth;
 - spawn-rule pass does not substitute for lease/token admission;
-- cancelled uncontrolled entities cannot open AutoPTU;
-- restart clears unresolved runtime tokens without deleting persistent population state.
+- cancelled candidates cannot open AutoPTU;
+- restart clears unresolved runtime tokens without deleting persistent population state;
+- a Cobblemon upgrade must re-verify event type, event scope and cancellation ordering.
 
 ## Capability dependencies
 
 Reduced ecology projection path:
 
-- Minecraft/Cobblemon/Craftics adapter/playback support: PARTIAL/BLOCKING until implemented against a pinned Cobblemon version;
-- all AutoPTU tactical capability families: NOT REQUIRED.
+- Minecraft/Cobblemon/Craftics adapter/playback support: PARTIAL/BLOCKING until the Ouros runtime dependency is pinned and the 1.7.3-compatible contract is implemented/tested there;
+- AutoPTU tactical capability families: NOT REQUIRED.
 
-Rich pursuit/interception after a valid admitted actor:
+Rich pursuit/interception after a valid admitted actor additionally depends on the exact tactical families used, including complete movement for interception/forced movement interactions, lifecycle, tactical AI and adapter/playback. Terrain, reactions, damage, statuses, Moves, Abilities, Items and Trainer Features are dependencies only when the encounter actually uses them.
 
-- targeting/footprints/range/LoS when tactical range/visibility matters;
-- base movement legality;
-- complete movement for interception/forced movement interactions;
-- core calculations when PTU arithmetic is used;
-- action economy/initiative;
-- full turn/round lifecycle;
-- damage/status only when those outcomes are authored;
-- terrain/weather/hazards/zones/reactions only when used;
-- exact Moves, Abilities, Items and Trainer Features used;
-- AI legal-action infrastructure;
-- AI tactical policy for autonomous tactical behavior;
-- Minecraft/Cobblemon/Craftics adapter/playback end-to-end.
+## Version status
 
-## Version risk
+Upstream Cobblemon 1.7.3 is a verified compatibility target for this contract, not proof of the Ouros runtime's current dependency pin.
 
-The runtime implementation must pin the Cobblemon version/API surface it compiles against. Event names, spawn causes, fields and cancellation behavior must be regression-tested on upgrade.
-
-Public evidence proves useful primitives exist in current Cobblemon source. It does not prove every third-party spawn path or future release traverses the same path.
+The project still needs to locate or establish the actual Cobblemon/loader/Minecraft version used by the writable integration project. Until then, adapter implementation remains BLOCKING even though the upstream 1.7.3 seam is source-verified.
