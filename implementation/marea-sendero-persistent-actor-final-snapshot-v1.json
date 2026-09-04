@@ -1,0 +1,32 @@
+{
+  "fixture_id": "marea-sendero-persistent-actor-final-snapshot-v1",
+  "pass": 245,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "source_trace": "implementation/marea-sendero-persistent-actor-cross-fixture-trace-v1.json",
+  "expected_final_state": {
+    "persistent_actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "population_total": 12,
+    "known_member_exists": true,
+    "active_projection_lease": "trace.lease.fletchling.001",
+    "projection_lease_state": "SUSPENDED",
+    "minecraft_entity_uuid": null,
+    "active_battle_id": null,
+    "battle_open": false,
+    "encounter_history_count": 1,
+    "avoidance_pressure": 0.32,
+    "ecological_mortality_events": 0,
+    "emigration_events": 0,
+    "source_event_state": "ACTIVE",
+    "last_semantic_result": "TACTICAL_KO_CONFIRMED",
+    "restart_count": 1
+  },
+  "replay_invariants": [
+    "replaying the same ordered event stream yields the same final ecology snapshot",
+    "the persistent actor survives Minecraft UUID replacement and server restart",
+    "a tactical KO remains semantic encounter history rather than demographic removal",
+    "the source ecology event remains ACTIVE until Ouros reevaluates ecological conditions",
+    "presentation correlation is cleared across restart while the projection lease remains reconcilable"
+  ]
+}
