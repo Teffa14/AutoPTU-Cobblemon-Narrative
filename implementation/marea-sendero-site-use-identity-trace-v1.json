@@ -1,0 +1,131 @@
+{
+  "fixture_id": "ouros.marea.sendero.site_use_identity.pass257.v1",
+  "schema": "ouros.ecology.site_use_identity_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 257,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "site": {
+    "site_id": "fixture-only:marea.sendero.lower_shelf.observation_micro_site.257.a",
+    "site_class": "OBSERVATION_MICRO_SITE",
+    "canon_site": false,
+    "territory_implied": false,
+    "nest_implied": false,
+    "ownership_implied": false
+  },
+  "sources": [
+    {
+      "source_class": "PERSISTENT_MEMBER",
+      "internal_source_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "already_counted": true
+    },
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-257",
+      "already_counted": true,
+      "canon_actor_created": false
+    }
+  ],
+  "windows": [
+    {"id": "257-A-first-use"},
+    {"id": "257-B-nondetection"},
+    {"id": "257-C-turnover"},
+    {"id": "257-D-false-alias-attempt"},
+    {"id": "257-E-return"},
+    {"id": "257-F-restart"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "SITE_USE_RECORDED",
+      "site_id": "fixture-only:marea.sendero.lower_shelf.observation_micro_site.257.a",
+      "internal_source_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "source_already_counted": true,
+      "episode_id": "siteuse.257.001",
+      "population_delta": 0
+    },
+    {
+      "seq": 2,
+      "type": "PUBLIC_OBSERVATION_RECORDED",
+      "site_id": "fixture-only:marea.sendero.lower_shelf.observation_micro_site.257.a",
+      "species_id": "cobblemon:fletchling",
+      "provenance_root": "obs.257.001",
+      "public_identity_state": "UNRESOLVED",
+      "internal_source_exposed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 3,
+      "type": "SITE_NONDETECTION_RECORDED",
+      "site_id": "fixture-only:marea.sendero.lower_shelf.observation_micro_site.257.a",
+      "reason": "NO_PRESENTATION_IN_OBSERVATION_WINDOW",
+      "absence_inferred": false,
+      "death_inferred": false,
+      "emigration_inferred": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 4,
+      "type": "SITE_USE_RECORDED",
+      "site_id": "fixture-only:marea.sendero.lower_shelf.observation_micro_site.257.a",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-257",
+      "source_already_counted": true,
+      "episode_id": "siteuse.257.002",
+      "population_delta": 0
+    },
+    {
+      "seq": 5,
+      "type": "PUBLIC_OBSERVATION_RECORDED",
+      "site_id": "fixture-only:marea.sendero.lower_shelf.observation_micro_site.257.a",
+      "species_id": "cobblemon:fletchling",
+      "provenance_root": "obs.257.002",
+      "public_identity_state": "POSSIBLE_SAME_INDIVIDUAL",
+      "reason": "SAME_SITE_PLUS_NONDISCRIMINATIVE_COMPATIBILITY",
+      "internal_source_exposed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 6,
+      "type": "IDENTITY_ALIAS_ATTEMPT",
+      "basis": "SAME_SITE_RECURRENCE_ONLY",
+      "requested_alias_to": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "result": "REJECTED_INSUFFICIENT_DISCRIMINATIVE_EVIDENCE",
+      "auto_merge_performed": false,
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 7,
+      "type": "SITE_USE_RECORDED",
+      "site_id": "fixture-only:marea.sendero.lower_shelf.observation_micro_site.257.a",
+      "internal_source_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "source_already_counted": true,
+      "episode_id": "siteuse.257.003",
+      "population_delta": 0
+    },
+    {
+      "seq": 8,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "site_use_history_preserved": true,
+      "distinct_internal_sources_preserved": 2,
+      "auto_aliases_after_restart": 0
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "site_use_episodes": 3,
+    "distinct_counted_sources_using_site": 2,
+    "same_site_auto_aliases": 0,
+    "nondetection_demographic_writes": 0,
+    "internal_source_leaks": 0,
+    "site_use_history_preserved": true
+  }
+}
