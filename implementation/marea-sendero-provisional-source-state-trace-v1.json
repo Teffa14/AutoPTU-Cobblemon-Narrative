@@ -1,0 +1,193 @@
+{
+  "fixture_id": "ouros.marea.sendero.provisional_source_state.pass259.v1",
+  "schema": "ouros.ecology.provisional_counted_source_state_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 259,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "battle_dependency_categories": {
+    "targeting_footprints_range_los": "VERIFIED",
+    "base_movement_legality": "VERIFIED",
+    "complete_movement": "PARTIAL",
+    "core_calculations": "VERIFIED",
+    "action_economy_initiative": "VERIFIED",
+    "full_turn_round_lifecycle": "PARTIAL",
+    "full_stateful_damage_pipeline": "PARTIAL",
+    "status_lifecycle": "PARTIAL",
+    "terrain_weather_hazards_zones_reactions": "MIXED_PARTIAL_BLOCKING",
+    "move_specific_behavior": "PARTIAL",
+    "abilities": "PARTIAL",
+    "items": "PARTIAL",
+    "trainer_features_perks": "PARTIAL",
+    "ai_legal_action_infrastructure": "VERIFIED",
+    "ai_tactical_policy": "BLOCKING",
+    "minecraft_cobblemon_craftics_adapter_playback": "PARTIAL_BLOCKING"
+  },
+  "sources": [
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-259-a",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor": false
+    },
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-259-b",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor": false
+    }
+  ],
+  "windows": [
+    {"id": "259-A-open-ephemeral"},
+    {"id": "259-B-expire-ephemeral"},
+    {"id": "259-C-open-durable-candidate"},
+    {"id": "259-D-reject-sighting-count-promotion"},
+    {"id": "259-E-require-promotion"},
+    {"id": "259-F-pass258-resolution"},
+    {"id": "259-G-expired-source-fresh-basis-guard"},
+    {"id": "259-H-restart"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "PROVISIONAL_EPISODE_OPENED",
+      "transaction_id": "provisional.259.open.a",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-259-a",
+      "episode_id": "fixture-only:episode.259.a",
+      "source_was_already_counted": true,
+      "continuity_basis": "RECENT_PROJECTION_CORRELATION",
+      "classification": "EPHEMERAL_ONLY",
+      "state_classes": ["RECENT_SITE_USE", "RECENT_OBSERVATION_ROOT"],
+      "population_delta": 0,
+      "demographic_event": false,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 2,
+      "type": "PUBLIC_OBSERVATION_RECORDED",
+      "provenance_root": "obs.259.a.001",
+      "public_identity_state": "UNRESOLVED",
+      "internal_source_exposed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 3,
+      "type": "PROVISIONAL_EPISODE_EXPIRED",
+      "transaction_id": "provisional.259.expire.a",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-259-a",
+      "episode_id": "fixture-only:episode.259.a",
+      "old_classification": "EPHEMERAL_ONLY",
+      "new_state": "EXPIRED_TO_AGGREGATE",
+      "public_observation_history_preserved": true,
+      "source_count_contribution_preserved": true,
+      "private_linkage_closed": true,
+      "population_delta": 0,
+      "demographic_event": false
+    },
+    {
+      "seq": 4,
+      "type": "PROVISIONAL_EPISODE_OPENED",
+      "transaction_id": "provisional.259.open.b",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-259-b",
+      "episode_id": "fixture-only:episode.259.b",
+      "source_was_already_counted": true,
+      "continuity_basis": "INTERNAL_SOURCE_CONTINUITY",
+      "classification": "DURABLE_CANDIDATE",
+      "state_classes": ["INDIVIDUAL_DISTURBANCE_RESPONSE", "RECENT_OBSERVATION_ROOT"],
+      "population_delta": 0,
+      "demographic_event": false,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 5,
+      "type": "PROMOTION_EVALUATION",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-259-b",
+      "episode_id": "fixture-only:episode.259.b",
+      "basis": "REPEATED_SIGHTINGS_AND_SAME_SITE_ONLY",
+      "durable_consequence_present": true,
+      "admissible_internal_continuity_present": false,
+      "result": "REJECTED_INSUFFICIENT_CONTINUITY",
+      "promotion_committed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 6,
+      "type": "PROMOTION_EVALUATION",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-259-b",
+      "episode_id": "fixture-only:episode.259.b",
+      "basis": "INTERNAL_SOURCE_CONTINUITY_PLUS_DURABLE_INDIVIDUAL_HISTORY",
+      "durable_consequence_present": true,
+      "admissible_internal_continuity_present": true,
+      "result": "PROMOTION_REQUIRED",
+      "population_delta": 0
+    },
+    {
+      "seq": 7,
+      "type": "COUNTED_SOURCE_RESOLUTION_COMMITTED",
+      "delegated_contract": "design/counted-source-resolution-contract.md",
+      "transaction_id": "resolve.259.tx.001",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-259-b",
+      "target_persistent_ref": "fixture-only:resolved-counted-fletchling-259-b",
+      "source_was_already_counted": true,
+      "source_lineage_locked": true,
+      "anonymous_source_delta": -1,
+      "persistent_source_delta": 1,
+      "population_delta": 0,
+      "demographic_event": false,
+      "old_source_state": "RETIRED_RESOLVED",
+      "history_refs_preserved": ["fixture-only:episode.259.b"],
+      "public_identity_promoted": false,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 8,
+      "type": "PROVISIONAL_REOPEN_ATTEMPT",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-259-a",
+      "previous_episode_id": "fixture-only:episode.259.a",
+      "fresh_continuity_basis_present": false,
+      "result": "REJECTED_EXPIRED_LINKAGE_CANNOT_RESURRECT",
+      "episode_opened": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 9,
+      "type": "PUBLIC_KNOWLEDGE_CHECK",
+      "public_identity_state": "UNRESOLVED",
+      "internal_resolution_exposed": false,
+      "internal_episode_ids_exposed": false,
+      "automatic_confirmation": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 10,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "expired_episode_state_preserved": true,
+      "resolved_source_retirement_preserved": true,
+      "resolution_transaction_preserved": true,
+      "durable_history_preserved_on_persistent_actor": true,
+      "public_observation_history_preserved": true,
+      "autoptu_handoffs_after_restart": 0
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "net_population_delta": 0,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "expired_provisional_episodes": 1,
+    "promotion_required_evaluations": 1,
+    "resolution_commits": 1,
+    "persistent_sources_created_from_existing_count": 1,
+    "expired_episode_resurrections": 0,
+    "internal_source_leaks": 0,
+    "public_observation_history_preserved": true
+  }
+}
