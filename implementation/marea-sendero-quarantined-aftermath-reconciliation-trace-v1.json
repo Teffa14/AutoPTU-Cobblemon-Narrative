@@ -1,0 +1,113 @@
+{
+  "schema": "OUROS_ECOLOGY_TRACE_V1",
+  "trace_id": "marea-sendero-quarantined-aftermath-reconciliation-264",
+  "status": "FIXTURE_ONLY",
+  "canon_population_ref": "marea.sendero.fletchling",
+  "population_before": 12,
+  "population_after": 12,
+  "canon_persistent_subject": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+  "events": [
+    {
+      "step": 1,
+      "kind": "SEMANTIC_RESULT_QUARANTINED",
+      "result_type": "PERSISTENT_INJURY",
+      "result_identity": "fixture-only:autoptu-result-264-injury-a",
+      "subject_binding": "VALID_PRESERVED_BINDING",
+      "required_capabilities": ["full turn/round lifecycle", "full stateful damage pipeline"],
+      "live_readiness": ["PARTIAL", "PARTIAL"],
+      "quarantine_state": "QUARANTINED_OPEN",
+      "reason": "UNVERIFIED_EXACT_CAPABILITY_PATH",
+      "canon_injury_created": false,
+      "population_delta": 0
+    },
+    {
+      "step": 2,
+      "kind": "IDENTICAL_TRANSPORT_RETRY",
+      "same_result_identity": true,
+      "same_semantic_content": true,
+      "admission_generation_changed": false,
+      "lineage_generation_changed": false,
+      "result": "REVIEW_BLOCKED_NO_CHANGE",
+      "quarantine_state": "QUARANTINED_OPEN"
+    },
+    {
+      "step": 3,
+      "kind": "FIELD_OBSERVATION",
+      "public_observation": "APPARENT_MOVEMENT_IMPAIRMENT",
+      "knowledge_effect": "OBSERVATION_RECORDED",
+      "mechanical_truth_created": false,
+      "quarantine_released": false,
+      "private_result_id_exposed": false
+    },
+    {
+      "step": 4,
+      "kind": "CAPABILITY_REVIEW",
+      "evidence_change": "BROAD_FAMILY_LABEL_ONLY",
+      "exact_admission_record_present": false,
+      "result": "REVIEW_BLOCKED_NO_EXACT_PATH_EVIDENCE",
+      "quarantine_state": "QUARANTINED_OPEN",
+      "canon_injury_created": false
+    },
+    {
+      "step": 5,
+      "kind": "ADMISSION_EVIDENCE_UPDATE",
+      "admission_record": "fixture-only:SEMANTIC_RESULT_ADMISSION_V1-264-injury-path",
+      "admission_scope": "FIXTURE_ONLY",
+      "exact_result_type_match": true,
+      "exact_producer_revision_match": true,
+      "exact_rules_profile_match": true,
+      "exact_path_match": true,
+      "production_admission_claimed": false,
+      "quarantine_state": "RECONCILIATION_ELIGIBLE"
+    },
+    {
+      "step": 6,
+      "kind": "RECONCILIATION",
+      "review_generation": 2,
+      "original_envelope_mutated": false,
+      "all_fixture_contract_gates_pass": true,
+      "result": "ADMITTED_COMMITTED_FIXTURE_ONLY",
+      "mapper_invocations": 1,
+      "fixture_injury_record_created": true,
+      "canon_injury_created": false,
+      "population_delta": 0
+    },
+    {
+      "step": 7,
+      "kind": "POST_RECONCILIATION_REPLAY",
+      "same_result_identity": true,
+      "result": "IDEMPOTENT_NO_OP",
+      "mapper_invocations_added": 0
+    },
+    {
+      "step": 8,
+      "kind": "SEMANTIC_RESULT_QUARANTINED",
+      "result_type": "PERSISTENT_STATUS",
+      "result_identity": "fixture-only:autoptu-result-264-status-a",
+      "required_capabilities": ["status lifecycle"],
+      "live_readiness": ["PARTIAL"],
+      "quarantine_state": "QUARANTINED_OPEN",
+      "reason": "UNVERIFIED_EXACT_CAPABILITY_PATH",
+      "canon_status_created": false
+    },
+    {
+      "step": 9,
+      "kind": "RESTART",
+      "restored": [
+        "reconciled_receipt",
+        "reconciliation_provenance",
+        "unresolved_status_quarantine",
+        "field_observation_history"
+      ],
+      "reconciled_mapper_invocations": 1,
+      "population": 12
+    }
+  ],
+  "demographic_events": [],
+  "autoptu_rule_execution_claimed": false,
+  "production_semantic_export_claimed": false,
+  "production_transport_claimed": false,
+  "production_admission_claimed": false,
+  "canon_new_actor_created": false,
+  "canon_new_state_created": false
+}
