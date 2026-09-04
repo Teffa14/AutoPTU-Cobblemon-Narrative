@@ -1,0 +1,116 @@
+{
+  "schema": "OUROS_ECOLOGY_TRACE_V1",
+  "trace_id": "marea-sendero-battle-subject-binding-263",
+  "status": "FIXTURE_ONLY",
+  "canon_population_ref": "marea.sendero.fletchling",
+  "population_before": 12,
+  "population_after": 12,
+  "canon_persistent_subject": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+  "private_fixture_values": {
+    "battle_session_id": "fixture-only:battle-session-263-a",
+    "battle_subject_ref": "fixture-only:opaque-subject-263-a",
+    "presentation_ref": "fixture-only:presentation-263-a"
+  },
+  "events": [
+    {
+      "step": 1,
+      "kind": "BINDING_ATTEMPT",
+      "candidate_key_type": "MINECRAFT_ENTITY_UUID",
+      "result": "REJECT_NONAUTHORITATIVE_SUBJECT_KEY",
+      "population_delta": 0
+    },
+    {
+      "step": 2,
+      "kind": "BATTLE_SUBJECT_BINDING_CREATED",
+      "binding_schema": "BATTLE_SUBJECT_BINDING_V1",
+      "subject_source": "CANON_PERSISTENT_SUBJECT",
+      "binding_state": "ACTIVE",
+      "rules_profile_id": "project-selected-ptu-profile",
+      "player_facing_private_id_exposure": false,
+      "population_delta": 0
+    },
+    {
+      "step": 3,
+      "kind": "SEMANTIC_RESULT_INGRESS",
+      "result_type": "BATTLE_HANDOFF_CORRELATION_RECEIPT",
+      "subject_binding": "VALID_SAME_SESSION",
+      "capability_admission": "INTEGRATION_ONLY_FIXTURE",
+      "result": "ACCEPTED_RECEIPT_ONLY",
+      "mutations": {
+        "hp": false,
+        "injury": false,
+        "status": false,
+        "population": false
+      }
+    },
+    {
+      "step": 4,
+      "kind": "SEMANTIC_RESULT_REPLAY",
+      "result_type": "BATTLE_HANDOFF_CORRELATION_RECEIPT",
+      "same_result_identity": true,
+      "same_semantic_content": true,
+      "result": "IDEMPOTENT_NO_OP"
+    },
+    {
+      "step": 5,
+      "kind": "SEMANTIC_RESULT_INGRESS",
+      "result_type": "BATTLE_HANDOFF_CORRELATION_RECEIPT",
+      "battle_session_id": "fixture-only:wrong-session-263",
+      "battle_subject_ref": "fixture-only:opaque-subject-263-a",
+      "result": "REJECT_SUBJECT_SESSION_MISMATCH"
+    },
+    {
+      "step": 6,
+      "kind": "SEMANTIC_RESULT_INGRESS",
+      "result_type": "PERSISTENT_INJURY",
+      "subject_binding": "VALID_SAME_SESSION",
+      "required_capabilities": ["full turn/round lifecycle", "full stateful damage pipeline"],
+      "live_readiness": ["PARTIAL", "PARTIAL"],
+      "result": "QUARANTINE_UNVERIFIED_CAPABILITY_PATH",
+      "canon_injury_created": false
+    },
+    {
+      "step": 7,
+      "kind": "SEMANTIC_RESULT_INGRESS",
+      "result_type": "PERSISTENT_STATUS",
+      "subject_binding": "VALID_SAME_SESSION",
+      "required_capabilities": ["status lifecycle"],
+      "live_readiness": ["PARTIAL"],
+      "result": "QUARANTINE_UNVERIFIED_CAPABILITY_PATH",
+      "canon_status_created": false
+    },
+    {
+      "step": 8,
+      "kind": "DURABLE_HANDOFF_ATTEMPT",
+      "subject_source": "fixture-only:unresolved-counted-fletchling-source-263",
+      "source_already_counted_in_population": true,
+      "lineage_proof_present": false,
+      "result": "STABLE_SUBJECT_REQUIRED_FOR_DURABLE_AFTERMATH",
+      "promotion_committed": false,
+      "population_delta": 0
+    },
+    {
+      "step": 9,
+      "kind": "RESTART",
+      "restored": ["active_battle_binding", "accepted_receipt", "quarantine_receipts"],
+      "population": 12
+    },
+    {
+      "step": 10,
+      "kind": "BATTLE_FINALIZATION",
+      "binding_state": "RETIRED",
+      "result": "FINALIZED_WITH_QUARANTINES_RECORDED"
+    },
+    {
+      "step": 11,
+      "kind": "LATE_RESULT_ATTEMPT",
+      "battle_subject_ref": "fixture-only:opaque-subject-263-a",
+      "result": "REJECT_RETIRED_BATTLE_SUBJECT"
+    }
+  ],
+  "demographic_events": [],
+  "autoptu_rule_execution_claimed": false,
+  "production_transport_claimed": false,
+  "canon_new_actor_created": false,
+  "canon_new_state_created": false
+}
