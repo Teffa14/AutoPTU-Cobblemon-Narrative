@@ -1,0 +1,62 @@
+{
+  "fixture_id": "marea-sendero-shared-resource-multi-species-trace-v1",
+  "pass": 246,
+  "status": "PROPOSED_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "site_id": "ouros.marea.sendero_vidrio",
+  "purpose": "Prove cross-population and finite-resource ledger isolation using canon Fletchling plus a proposed-only Squawkabilly population without promoting the candidate species or resource node to canon.",
+  "canon_scope": {
+    "canon_population_refs": ["ouros.marea.wild.sendero_lower_shelf.fletchling.v1"],
+    "proposed_only_population_refs": ["fixture.marea.sendero.squawkabilly.v1"],
+    "proposed_only_resource_refs": ["fixture.marea.sendero.lower_shelf.forage_patch.246"],
+    "creates_new_canon": false
+  },
+  "starting_state": {
+    "populations": {
+      "ouros.marea.wild.sendero_lower_shelf.fletchling.v1": {"species": "fletchling", "total": 12, "resource_pressure": 0.20},
+      "fixture.marea.sendero.squawkabilly.v1": {"species": "squawkabilly", "total": 5, "resource_pressure": 0.10}
+    },
+    "actors": {
+      "ouros.marea.encounter.sendero_lower_shelf.fletchling.0": {
+        "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+        "encounter_history_count": 0,
+        "avoidance_pressure": 0.20
+      }
+    },
+    "resources": {
+      "fixture.marea.sendero.lower_shelf.forage_patch.246": {"available_units": 8, "depleted": false}
+    }
+  },
+  "windows": [
+    {"id": "S0_BASELINE", "input_events": []},
+    {"id": "S1_SHARED_RESOURCE_OBSERVED", "input_events": [
+      {"event_type": "RESOURCE_USE_OBSERVED", "resource_id": "fixture.marea.sendero.lower_shelf.forage_patch.246", "population_id": "fixture.marea.sendero.squawkabilly.v1", "observed_units": 3, "consumption_confirmed": false}
+    ]},
+    {"id": "S2_CONFIRMED_SQUAWKABILLY_CONSUMPTION", "input_events": [
+      {"event_type": "RESOURCE_CONSUMPTION_CONFIRMED", "transaction_id": "tx.246.resource.001", "resource_id": "fixture.marea.sendero.lower_shelf.forage_patch.246", "consumer_population_id": "fixture.marea.sendero.squawkabilly.v1", "units": 3}
+    ]},
+    {"id": "S3_FLETCHLING_LOCAL_RESPONSE", "input_events": [
+      {"event_type": "ACTOR_PRESSURE_DELTA", "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0", "avoidance_pressure_delta": 0.08, "reason": "CROWDING_AT_SHARED_RESOURCE"},
+      {"event_type": "POPULATION_RESOURCE_PRESSURE_DELTA", "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "resource_pressure_delta": 0.15, "reason": "REDUCED_ACCESS_TO_SHARED_PATCH"}
+    ]},
+    {"id": "S4_HISTORY_IS_ACTOR_SCOPED", "input_events": [
+      {"event_type": "ENCOUNTER_HISTORY_APPEND", "actor_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0", "history_kind": "RESOURCE_PATCH_DISPLACEMENT_OBSERVED"}
+    ]},
+    {"id": "S5_SECOND_CONSUMPTION", "input_events": [
+      {"event_type": "RESOURCE_CONSUMPTION_CONFIRMED", "transaction_id": "tx.246.resource.002", "resource_id": "fixture.marea.sendero.lower_shelf.forage_patch.246", "consumer_population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1", "units": 2}
+    ]},
+    {"id": "S6_NO_DEMOGRAPHIC_WRITE", "input_events": [
+      {"event_type": "POPULATION_RESOURCE_PRESSURE_DELTA", "population_id": "fixture.marea.sendero.squawkabilly.v1", "resource_pressure_delta": 0.12, "reason": "PATCH_REMAINING_FIVE_TO_THREE"}
+    ]},
+    {"id": "S7_RESTART", "input_events": [{"event_type": "SERVER_RESTART"}]}
+  ],
+  "regression_invariants": [
+    "resource observations do not consume resources without confirmed consumption authority",
+    "resource consumption never changes population totals by itself",
+    "actor encounter history is scoped to that actor",
+    "individual pressure does not leak into another population or actor",
+    "shared resource depletion may change pressures in multiple ledgers only through explicit scoped events",
+    "proposed species and resource fixture data never become canon through replay",
+    "server restart preserves population, resource and actor ecology state"
+  ]
+}
