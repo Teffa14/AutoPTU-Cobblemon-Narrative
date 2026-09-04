@@ -1,0 +1,155 @@
+{
+  "schema": "ouros.ecology.cobblemon_spawn_admission_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "pass": 250,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "persistent_actor": {
+    "actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "species_id": "cobblemon:fletchling",
+    "form_id": "standard"
+  },
+  "verified_adapter_primitives": {
+    "entity_spawn_event": "CobblemonEvents.ENTITY_SPAWN",
+    "pokemon_entity_spawn_stream": "CobblemonEvents.POKEMON_ENTITY_SPAWN",
+    "entity_spawn_cancelable": true,
+    "spawn_rule_filter_supported": true,
+    "version_binding_required": true
+  },
+  "events": [
+    {
+      "seq": 1,
+      "type": "SPAWN_RULE_EVALUATED",
+      "candidate_class": "NATURAL_WILD",
+      "species_id": "cobblemon:fletchling",
+      "managed_scope": true,
+      "decision": "DENY_UNMANAGED_NATURAL_DIRECT",
+      "population_delta": 0
+    },
+    {
+      "seq": 2,
+      "type": "PROJECTION_ENVELOPE_APPROVED",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "decision": "DIRECT_ENTITY"
+    },
+    {
+      "seq": 3,
+      "type": "PROJECTION_LEASE_RESERVED",
+      "lease_id": "lease.250.direct.001",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "active": true
+    },
+    {
+      "seq": 4,
+      "type": "ADMISSION_TOKEN_ISSUED",
+      "token_id": "token.250.001",
+      "lease_id": "lease.250.direct.001",
+      "source_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "species_id": "cobblemon:fletchling",
+      "form_id": "standard",
+      "scope_id": "ouros.marea.sendero.lower_shelf",
+      "consumed": false
+    },
+    {
+      "seq": 5,
+      "type": "COBBLEMON_MATERIALIZATION_REQUESTED",
+      "request_correlation_id": "materialize.250.001",
+      "token_id": "token.250.001",
+      "species_id": "cobblemon:fletchling"
+    },
+    {
+      "seq": 6,
+      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
+      "admission_class": "OUROS_MANAGED_DIRECT",
+      "token_id": "token.250.001",
+      "species_id": "cobblemon:fletchling",
+      "minecraft_uuid": "00000000-0000-0000-0000-000000250001",
+      "decision": "ADMIT",
+      "cancel_event": false,
+      "ecology_write_authorized": false
+    },
+    {
+      "seq": 7,
+      "type": "ADMISSION_TOKEN_CONSUMED",
+      "token_id": "token.250.001"
+    },
+    {
+      "seq": 8,
+      "type": "UUID_CORRELATED_TO_LEASE",
+      "lease_id": "lease.250.direct.001",
+      "minecraft_uuid": "00000000-0000-0000-0000-000000250001"
+    },
+    {
+      "seq": 9,
+      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
+      "admission_class": "UNCONTROLLED_NATURAL",
+      "species_id": "cobblemon:fletchling",
+      "minecraft_uuid": "00000000-0000-0000-0000-000000250099",
+      "decision": "CANCEL_BACKSTOP",
+      "cancel_event": true,
+      "ecology_write_authorized": false,
+      "persistent_actor_created": false,
+      "population_delta": 0,
+      "autoptu_eligible": false
+    },
+    {
+      "seq": 10,
+      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
+      "admission_class": "EXEMPT_OWNED_OR_SYSTEM_PRESENTATION",
+      "species_id": "cobblemon:fletchling",
+      "minecraft_uuid": "00000000-0000-0000-0000-000000250200",
+      "decision": "PASS_THROUGH_NON_WILD",
+      "cancel_event": false,
+      "wild_population_membership_created": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 11,
+      "type": "POKEMON_ENTITY_SPAWN_CALLBACK",
+      "admission_class": "UNKNOWN_OR_UNCLASSIFIED",
+      "species_id": "cobblemon:fletchling",
+      "minecraft_uuid": "00000000-0000-0000-0000-000000250300",
+      "decision": "CANCEL_OR_QUARANTINE_FAIL_CLOSED",
+      "ecology_write_authorized": false,
+      "persistent_actor_created": false,
+      "population_delta": 0,
+      "autoptu_eligible": false
+    },
+    {
+      "seq": 12,
+      "type": "COBBLEMON_ENTITY_DESPAWNED",
+      "minecraft_uuid": "00000000-0000-0000-0000-000000250001",
+      "lease_id": "lease.250.direct.001",
+      "demographic_effect": "NONE"
+    },
+    {
+      "seq": 13,
+      "type": "PROJECTION_LEASE_RELEASED",
+      "lease_id": "lease.250.direct.001",
+      "reason": "PRESENTATION_ENDED"
+    },
+    {
+      "seq": 14,
+      "type": "SERVER_RESTART",
+      "runtime_tokens_cleared": true,
+      "population_total_after_restart": 12,
+      "persistent_actor_survives": true
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "persistent_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "active_direct_leases": 0,
+    "live_admission_tokens": 0,
+    "admitted_managed_entities": 1,
+    "cancelled_uncontrolled_entities": 1,
+    "owned_or_system_passthrough_entities": 1,
+    "unknown_entities_with_ecology_authority": 0,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0
+  }
+}
