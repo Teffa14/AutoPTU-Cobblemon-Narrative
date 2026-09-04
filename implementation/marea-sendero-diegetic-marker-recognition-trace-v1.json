@@ -1,0 +1,165 @@
+{
+  "fixture_id": "ouros.marea.sendero.diegetic_marker_recognition.pass254.v1",
+  "schema": "ouros.ecology.diegetic_marker_recognition_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 254,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "windows": [
+    {"id": "254-A-probable-baseline"},
+    {"id": "254-B-clean-marker-observation"},
+    {"id": "254-C-registry-confirmation"},
+    {"id": "254-D-poor-unreadable-resighting"},
+    {"id": "254-E-marker-invalidated"},
+    {"id": "254-F-reconfirmation-requires-new-evidence"}
+  ],
+  "population": {
+    "population_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "hidden_truth": {
+    "persistent_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+    "marker_binding_is_fixture_only": true,
+    "marker_record_id": "fixture-marker-record.254.fletchling.001"
+  },
+  "marker_registry": [
+    {
+      "marker_record_id": "fixture-marker-record.254.fletchling.001",
+      "marker_type": "FIXTURE_ONLY_COLOR_BAND",
+      "observable_code": "BLUE-WHITE",
+      "species_or_form_scope": "cobblemon:fletchling",
+      "application_provenance": "fixture-only:authorized-field-study-254",
+      "validity_state": "ACTIVE",
+      "last_verified_time": "fixture-window-254-B",
+      "canon_authorized": false
+    }
+  ],
+  "public_payload_forbidden_fields": [
+    "persistent_actor_id",
+    "projection_lease_id",
+    "minecraft_uuid",
+    "internal_population_source_id",
+    "hidden_population_slot"
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "IDENTITY_HYPOTHESIS_IMPORTED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "state": "PROBABLE_SAME_INDIVIDUAL",
+      "source_pass": 253,
+      "population_delta": 0
+    },
+    {
+      "seq": 2,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.254.001",
+      "provenance_root": "root.254.001",
+      "hidden_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "public_evidence": {
+        "species": "Fletchling",
+        "place_band": "lower_sendero_shelf",
+        "marker_type": "FIXTURE_ONLY_COLOR_BAND",
+        "observable_marker_code": "BLUE-WHITE",
+        "marker_read_quality": "HIGH",
+        "image_quality": "HIGH",
+        "observation_angle": "CLEAR_SIDE_VIEW"
+      },
+      "population_delta": 0
+    },
+    {
+      "seq": 3,
+      "type": "MARKER_REGISTRY_LOOKUP",
+      "observation_id": "obs.254.001",
+      "observable_marker_code": "BLUE-WHITE",
+      "active_candidate_count": 1,
+      "public_marker_record_id": "fixture-marker-record.254.fletchling.001",
+      "hidden_actor_id_exposed": false
+    },
+    {
+      "seq": 4,
+      "type": "IDENTITY_HYPOTHESIS_UPDATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "from": "PROBABLE_SAME_INDIVIDUAL",
+      "to": "CONFIRMED_BY_DIEGETIC_MARKER",
+      "reason": "ONE_ACTIVE_REGISTRY_MATCH_HIGH_QUALITY_OBSERVATION",
+      "supporting_root": "root.254.001",
+      "marker_record_id": "fixture-marker-record.254.fletchling.001",
+      "public_actor_identity_exposed": false,
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 5,
+      "type": "FIELD_OBSERVATION_CAPTURED",
+      "observation_id": "obs.254.002",
+      "provenance_root": "root.254.002",
+      "hidden_actor_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "public_evidence": {
+        "species": "Fletchling",
+        "place_band": "lower_sendero_shelf",
+        "marker_visible": true,
+        "marker_read_quality": "LOW",
+        "observable_marker_code": null,
+        "image_quality": "LOW",
+        "observation_angle": "PARTIAL_REAR_VIEW"
+      },
+      "population_delta": 0
+    },
+    {
+      "seq": 6,
+      "type": "IDENTITY_HYPOTHESIS_EVALUATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "state_before": "CONFIRMED_BY_DIEGETIC_MARKER",
+      "state_after": "CONFIRMED_BY_DIEGETIC_MARKER",
+      "reason": "POOR_RESIGHT_DOES_NOT_OVERRIDE_EXISTING_VALID_CONFIRMATION",
+      "new_confirmation_created": false
+    },
+    {
+      "seq": 7,
+      "type": "MARKER_VALIDITY_CHANGED",
+      "marker_record_id": "fixture-marker-record.254.fletchling.001",
+      "from": "ACTIVE",
+      "to": "REPORTED_LOST",
+      "provenance_root": "root.254.003",
+      "population_delta": 0
+    },
+    {
+      "seq": 8,
+      "type": "IDENTITY_HYPOTHESIS_UPDATED",
+      "hypothesis_id": "hyp.253.fletchling.local.001",
+      "from": "CONFIRMED_BY_DIEGETIC_MARKER",
+      "to": "PROBABLE_SAME_INDIVIDUAL",
+      "reason": "MARKER_NO_LONGER_ACTIVE",
+      "historical_confirmation_preserved": true,
+      "population_delta": 0,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 9,
+      "type": "TRAINER_OBSERVATION_MODIFIER_PROPOSED",
+      "modifier_source": "PTU_SKILL_STUNT_OR_JOURNEY_OF_SKILL",
+      "engine_support_state": "UNVERIFIED_FOR_THIS_USE",
+      "effect_applied": false,
+      "reason": "TRAINER_FEATURES_PERKS_CATEGORY_NOT_VERIFIED_FOR_IDENTITY_OBSERVATION"
+    },
+    {
+      "seq": 10,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "marker_registry_state_after_restart": "REPORTED_LOST",
+      "hypothesis_state_after_restart": "PROBABLE_SAME_INDIVIDUAL"
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "current_hypothesis_state": "PROBABLE_SAME_INDIVIDUAL",
+    "historical_marker_confirmation_preserved": true,
+    "marker_validity_state": "REPORTED_LOST",
+    "trainer_feature_modifier_applied": false,
+    "hidden_actor_identity_exposed": false
+  }
+}
