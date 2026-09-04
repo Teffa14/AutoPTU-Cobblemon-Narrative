@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import sys
 import unittest
 from pathlib import Path
 
@@ -11,6 +12,7 @@ MODULE_PATH = ROOT / "tools" / "replay_ecology_cross_trace.py"
 SPEC = importlib.util.spec_from_file_location("replay_ecology_cross_trace", MODULE_PATH)
 assert SPEC and SPEC.loader
 replayer = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = replayer
 SPEC.loader.exec_module(replayer)
 TRACE_PATH = ROOT / "implementation" / "marea-sendero-persistent-actor-cross-fixture-trace-v1.json"
 SNAPSHOT_PATH = ROOT / "implementation" / "marea-sendero-persistent-actor-final-snapshot-v1.json"
