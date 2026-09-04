@@ -1,0 +1,139 @@
+{
+  "fixture_id": "ouros.marea.sendero.counted_source_resolution.pass258.v1",
+  "schema": "ouros.ecology.counted_source_resolution_fixture.v1",
+  "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
+  "pass": 258,
+  "scope_id": "ouros.marea.sendero.lower_shelf",
+  "population": {
+    "population_id": "ouros.marea.wild.sendero_lower_shelf.fletchling.v1",
+    "species_id": "cobblemon:fletchling",
+    "total": 12
+  },
+  "sources_before": [
+    {
+      "source_class": "PERSISTENT_MEMBER",
+      "internal_source_ref": "ouros.marea.encounter.sendero_lower_shelf.fletchling.0",
+      "already_counted": true,
+      "canon_actor": true
+    },
+    {
+      "source_class": "UNRESOLVED_POOL_SLOT",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-258",
+      "already_counted": true,
+      "contribution_to_population_total": 1,
+      "canon_actor_created": false
+    }
+  ],
+  "resolution_target": {
+    "persistent_ref": "fixture-only:resolved-counted-fletchling-258",
+    "canon_actor": false,
+    "created_from_existing_count": true
+  },
+  "windows": [
+    {"id": "258-A-partial-history"},
+    {"id": "258-B-insufficient-resolution-attempt"},
+    {"id": "258-C-internal-lineage-resolution"},
+    {"id": "258-D-idempotent-replay"},
+    {"id": "258-E-retired-source-guard"},
+    {"id": "258-F-restart"}
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "PUBLIC_OBSERVATION_RECORDED",
+      "species_id": "cobblemon:fletchling",
+      "provenance_root": "obs.258.001",
+      "public_identity_state": "POSSIBLE_SAME_INDIVIDUAL",
+      "internal_source_exposed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 2,
+      "type": "DURABLE_INTERNAL_HISTORY_PENDING",
+      "internal_source_ref": "fixture-only:unresolved-counted-fletchling-source-258",
+      "history_class": "INDIVIDUAL_DISTURBANCE_RESPONSE",
+      "history_id": "fixture-only:history.258.001",
+      "source_already_counted": true,
+      "population_delta": 0
+    },
+    {
+      "seq": 3,
+      "type": "COUNTED_SOURCE_RESOLUTION_ATTEMPT",
+      "basis": "SAME_SITE_RECURRENCE_ONLY",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-258",
+      "result": "REJECTED_INSUFFICIENT_DISCRIMINATIVE_EVIDENCE",
+      "transaction_committed": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 4,
+      "type": "COUNTED_SOURCE_RESOLUTION_COMMITTED",
+      "transaction_id": "resolve.258.tx.001",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-258",
+      "target_persistent_ref": "fixture-only:resolved-counted-fletchling-258",
+      "basis": "INTERNAL_SOURCE_CONTINUITY",
+      "source_lineage_locked": true,
+      "source_was_already_counted": true,
+      "anonymous_source_delta": -1,
+      "persistent_source_delta": 1,
+      "population_delta": 0,
+      "demographic_event": false,
+      "old_source_state": "RETIRED_RESOLVED",
+      "history_refs_preserved": ["fixture-only:history.258.001"],
+      "public_identity_promoted": false,
+      "autoptu_handoff": false
+    },
+    {
+      "seq": 5,
+      "type": "COUNTED_SOURCE_RESOLUTION_REPLAY",
+      "transaction_id": "resolve.258.tx.001",
+      "same_payload": true,
+      "result": "IDEMPOTENT_NO_OP",
+      "additional_persistent_sources_created": 0,
+      "population_delta": 0
+    },
+    {
+      "seq": 6,
+      "type": "PROJECTION_LEASE_ATTEMPT",
+      "source_ref": "fixture-only:unresolved-counted-fletchling-source-258",
+      "source_state": "RETIRED_RESOLVED",
+      "result": "REJECTED_RETIRED_SOURCE",
+      "lease_created": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 7,
+      "type": "PUBLIC_KNOWLEDGE_CHECK",
+      "public_identity_state": "POSSIBLE_SAME_INDIVIDUAL",
+      "internal_resolution_exposed": false,
+      "automatic_confirmation": false,
+      "population_delta": 0
+    },
+    {
+      "seq": 8,
+      "type": "SERVER_RESTART",
+      "population_total_after_restart": 12,
+      "source_lineage_mapping_preserved": true,
+      "retired_source_state_preserved": true,
+      "transaction_id_preserved": true,
+      "history_refs_preserved": true,
+      "public_identity_state_after_restart": "POSSIBLE_SAME_INDIVIDUAL",
+      "autoptu_handoffs_after_restart": 0
+    }
+  ],
+  "expected_final": {
+    "population_total": 12,
+    "demographic_events": 0,
+    "autoptu_handoffs": 0,
+    "anonymous_sources_consumed": 1,
+    "persistent_sources_created_from_existing_count": 1,
+    "net_population_delta": 0,
+    "resolution_commits": 1,
+    "idempotent_replays": 1,
+    "retired_source_leases": 0,
+    "public_identity_state": "POSSIBLE_SAME_INDIVIDUAL",
+    "internal_source_leaks": 0,
+    "lineage_preserved_after_restart": true
+  }
+}
