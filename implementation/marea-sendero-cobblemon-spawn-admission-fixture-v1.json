@@ -1,8 +1,16 @@
 {
+  "fixture_id": "ouros.marea.sendero.cobblemon_spawn_admission.pass250.v1",
   "schema": "ouros.ecology.cobblemon_spawn_admission_fixture.v1",
   "status": "NON_CANON_IMPLEMENTATION_FIXTURE",
+  "scenario_is_canon": false,
   "pass": 250,
   "scope_id": "ouros.marea.sendero.lower_shelf",
+  "windows": [
+    {"id": "250-A-unmanaged-natural-filter"},
+    {"id": "250-B-managed-direct-admission"},
+    {"id": "250-C-runtime-backstop-and-exempt-pass-through"},
+    {"id": "250-D-despawn-release-restart"}
+  ],
   "population": {
     "population_id": "ouros.marea.encounter.sendero_lower_shelf.fletchling",
     "species_id": "cobblemon:fletchling",
