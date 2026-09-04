@@ -22,6 +22,18 @@ class SpawnAdmissionReplayTest(unittest.TestCase):
     def test_fixture_replays_to_expected_snapshot(self):
         self.assertEqual(module.validate(copy.deepcopy(self.trace)), self.trace["expected_final"])
 
+    def test_verified_event_scope_is_bestspawner_only(self):
+        broken = copy.deepcopy(self.trace)
+        broken["verified_adapter_primitives"]["entity_spawn_event_scope"] = "ALL_POKEMON_ENTITIES"
+        with self.assertRaises(module.ReplayError):
+            module.validate(broken)
+
+    def test_cancellation_must_precede_world_insertion_on_verified_path(self):
+        broken = copy.deepcopy(self.trace)
+        broken["verified_adapter_primitives"]["cancellation_before_world_add_verified_for_single_entity_spawn_action"] = False
+        with self.assertRaises(module.ReplayError):
+            module.validate(broken)
+
     def test_managed_direct_requires_prior_lease(self):
         broken = copy.deepcopy(self.trace)
         broken["events"] = [event for event in broken["events"] if event["type"] != "PROJECTION_LEASE_RESERVED"]
@@ -35,39 +47,36 @@ class SpawnAdmissionReplayTest(unittest.TestCase):
         with self.assertRaises(module.ReplayError):
             module.validate(broken)
 
-    def test_uncontrolled_natural_must_be_cancelled(self):
+    def test_uncontrolled_bestspawner_candidate_must_be_cancelled(self):
         broken = copy.deepcopy(self.trace)
-        callback = next(event for event in broken["events"] if event.get("admission_class") == "UNCONTROLLED_NATURAL")
+        callback = next(
+            event for event in broken["events"]
+            if event.get("admission_class") == "UNCONTROLLED_BESTSPAWNER_WILD"
+        )
         callback["cancel_event"] = False
         with self.assertRaises(module.ReplayError):
             module.validate(broken)
 
-    def test_uncontrolled_natural_cannot_create_persistent_actor(self):
+    def test_uncontrolled_bestspawner_candidate_cannot_create_persistent_actor(self):
         broken = copy.deepcopy(self.trace)
-        callback = next(event for event in broken["events"] if event.get("admission_class") == "UNCONTROLLED_NATURAL")
+        callback = next(
+            event for event in broken["events"]
+            if event.get("admission_class") == "UNCONTROLLED_BESTSPAWNER_WILD"
+        )
         callback["persistent_actor_created"] = True
         with self.assertRaises(module.ReplayError):
             module.validate(broken)
 
-    def test_owned_or_system_presentation_must_not_be_blanket_cancelled(self):
-        broken = copy.deepcopy(self.trace)
-        callback = next(
-            event
-            for event in broken["events"]
-            if event.get("admission_class") == "EXEMPT_OWNED_OR_SYSTEM_PRESENTATION"
-        )
-        callback["cancel_event"] = True
-        with self.assertRaises(module.ReplayError):
-            module.validate(broken)
+    def test_owned_send_out_is_not_modeled_as_bestspawner_callback(self):
+        event = next(event for event in self.trace["events"] if event["type"] == "NON_BESTSPAWNER_PRESENTATION_PATH")
+        self.assertEqual(event["presentation_class"], "OWNED_PARTY_SEND_OUT")
+        self.assertEqual(event["decision"], "OUTSIDE_WILD_SPAWN_GATE")
+        self.assertNotIn("admission_class", event)
 
     def test_owned_presentation_cannot_join_wild_population(self):
         broken = copy.deepcopy(self.trace)
-        callback = next(
-            event
-            for event in broken["events"]
-            if event.get("admission_class") == "EXEMPT_OWNED_OR_SYSTEM_PRESENTATION"
-        )
-        callback["wild_population_membership_created"] = True
+        event = next(event for event in broken["events"] if event["type"] == "NON_BESTSPAWNER_PRESENTATION_PATH")
+        event["wild_population_membership_created"] = True
         with self.assertRaises(module.ReplayError):
             module.validate(broken)
 
@@ -78,6 +87,16 @@ class SpawnAdmissionReplayTest(unittest.TestCase):
         duplicate["seq"] = 7.5
         duplicate["minecraft_uuid"] = "00000000-0000-0000-0000-000000250002"
         broken["events"].append(duplicate)
+        with self.assertRaises(module.ReplayError):
+            module.validate(broken)
+
+    def test_unknown_bestspawner_candidate_must_fail_closed(self):
+        broken = copy.deepcopy(self.trace)
+        callback = next(
+            event for event in broken["events"]
+            if event.get("admission_class") == "UNKNOWN_BESTSPAWNER_CANDIDATE"
+        )
+        callback["cancel_event"] = False
         with self.assertRaises(module.ReplayError):
             module.validate(broken)
 
