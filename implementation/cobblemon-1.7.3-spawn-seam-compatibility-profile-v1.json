@@ -1,0 +1,148 @@
+{
+  "profile_id": "ouros.adapter.cobblemon.spawn_seam.compatibility.1_7_3.v1",
+  "status": "NON_CANON_IMPLEMENTATION_PROFILE",
+  "pass": 251,
+  "upstream": {
+    "project": "cable-mc/cobblemon",
+    "tag": "1.7.3",
+    "release_date": "2026-01-31",
+    "ouros_runtime_dependency_pin_verified": false
+  },
+  "verified_primitives": [
+    {
+      "id": "entity_spawn_observable",
+      "symbol": "CobblemonEvents.ENTITY_SPAWN",
+      "type": "CancelableObservable<SpawnEvent<*>>",
+      "scope": "BestSpawner path",
+      "confidence": "SOURCE_VERIFIED"
+    },
+    {
+      "id": "pokemon_entity_spawn_projection",
+      "symbol": "CobblemonEvents.POKEMON_ENTITY_SPAWN",
+      "type": "filtered ENTITY_SPAWN stream",
+      "scope": "PokemonEntity instances on the BestSpawner path",
+      "confidence": "SOURCE_VERIFIED"
+    },
+    {
+      "id": "spawn_event_cancel_semantics",
+      "symbol": "SpawnEvent<T : Entity>",
+      "scope": "BestSpawner path",
+      "effect": "cancellation prevents spawn",
+      "confidence": "SOURCE_VERIFIED"
+    },
+    {
+      "id": "single_entity_ordering",
+      "symbol": "SingleEntitySpawnAction.run",
+      "ordering": [
+        "createEntity",
+        "set_position",
+        "post ENTITY_SPAWN",
+        "if event succeeds emit/finalize",
+        "world.addFreshEntity"
+      ],
+      "cancellation_before_world_add": true,
+      "confidence": "SOURCE_VERIFIED"
+    },
+    {
+      "id": "pokemon_spawn_action",
+      "symbol": "PokemonSpawnAction",
+      "extends": "SingleEntitySpawnAction<PokemonEntity>",
+      "confidence": "SOURCE_VERIFIED"
+    },
+    {
+      "id": "spawn_rule_filter",
+      "symbol": "spawn_rules.filter/location",
+      "effect": "early candidate/location suppression",
+      "confidence": "DOCUMENTATION_VERIFIED"
+    },
+    {
+      "id": "party_send_lifecycle",
+      "symbol": "CobblemonEvents.POKEMON_SENT_PRE/POKEMON_SENT_POST",
+      "effect": "separate owned party send-out lifecycle surface",
+      "confidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "explicit_non_claims": [
+    "POKEMON_ENTITY_SPAWN observes every PokemonEntity created by every system",
+    "owned party send-outs traverse BestSpawner",
+    "entity load/restore traverses BestSpawner",
+    "commands traverse BestSpawner",
+    "third-party integrations traverse BestSpawner",
+    "SpawnCause is sufficient to classify every presentation origin",
+    "Cobblemon 1.7.3 is the actual Ouros runtime dependency pin"
+  ],
+  "ouros_admission_path": [
+    "projection_envelope_eligible",
+    "select_counted_source",
+    "reserve_projection_lease",
+    "issue_one_use_admission_token",
+    "request_versioned_bestspawner_materialization",
+    "receive_bestspawner_pokemon_spawn_callback",
+    "validate_token_species_form_scope",
+    "consume_token",
+    "allow_event_success",
+    "correlate_world_uuid_to_lease"
+  ],
+  "fail_closed_rules": [
+    "generic BestSpawner wild candidate in managed scope without token is cancelled",
+    "unknown BestSpawner candidate in managed scope is cancelled unless an explicit integration contract says otherwise",
+    "cancelled candidate creates no demographic event",
+    "cancelled candidate creates no AutoPTU eligibility",
+    "non-BestSpawner physical presence creates no wild membership by inference"
+  ],
+  "path_matrix": [
+    {
+      "path": "BESTSPAWNER_GENERIC_NATURAL",
+      "event_surface": "POKEMON_ENTITY_SPAWN",
+      "status": "SOURCE_VERIFIED",
+      "ouros_policy": "filter early and cancel backstop in managed ecological scope"
+    },
+    {
+      "path": "OUROS_REQUESTED_BESTSPAWNER_PROJECTION",
+      "event_surface": "POKEMON_ENTITY_SPAWN",
+      "status": "CONTRACT_DEFINED_RUNTIME_UNVERIFIED",
+      "ouros_policy": "require lease plus one-use admission token"
+    },
+    {
+      "path": "OWNED_PARTY_SEND_OUT",
+      "event_surface": "POKEMON_SENT_PRE/POST",
+      "status": "SEPARATE_SURFACE_SOURCE_VERIFIED",
+      "ouros_policy": "preserve owned presentation; never infer wild membership"
+    },
+    {
+      "path": "ENTITY_LOAD_OR_RESTORE",
+      "event_surface": "POKEMON_ENTITY_LOAD and save/load surfaces exist but path semantics not frozen here",
+      "status": "UNRESOLVED",
+      "ouros_policy": "no wild-authority inference; dedicated reconciliation required"
+    },
+    {
+      "path": "COMMAND_CREATED",
+      "event_surface": null,
+      "status": "UNRESOLVED",
+      "ouros_policy": "no wild-authority inference"
+    },
+    {
+      "path": "FISHING_BAIT_SNACK",
+      "event_surface": "dedicated Cobblemon pre/modify/post events exist for several subpaths",
+      "status": "UNRESOLVED_FOR_OUROS",
+      "ouros_policy": "verify each lifecycle before integration"
+    },
+    {
+      "path": "THIRD_PARTY_INTEGRATION",
+      "event_surface": null,
+      "status": "UNRESOLVED",
+      "ouros_policy": "quarantine ecological authority until explicit adapter contract"
+    }
+  ],
+  "upgrade_gate": {
+    "required_on_version_change": [
+      "event symbols compile",
+      "SpawnEvent scope remains BestSpawner-specific or contract is revised",
+      "cancellation still occurs before world insertion on managed spawn path",
+      "PokemonSpawnAction still traverses the validated single-entity path",
+      "spawn-rule filter/location semantics remain compatible",
+      "owned send-out remains distinguishable from wild spawning",
+      "all path-specific regression fixtures pass"
+    ]
+  }
+}
