@@ -40,7 +40,8 @@ NPC AI must also work for non-ecology goals such as work, travel, training, comm
 - while AutoPTU owns resolution, the world planner must not compete with it;
 - deterministic replay is required for identical agent state;
 - generic crowds may remain aggregate; persistence is required only when an individual matters;
-- event-driven wake-up is preferred over global per-tick replanning for persistent world agents.
+- event-driven wake-up is preferred over global per-tick replanning for persistent world agents;
+- information recipients must be explicit; shared faction membership never implies broadcast knowledge.
 
 ## Current executable foundation
 
@@ -86,7 +87,7 @@ Pass 283 event-driven information propagation layer:
 - `implementation/global-npc-information-propagation-fixture-v1.json`
 - `tests/test_global_npc_information_network.py`
 
-Semantic-time message queues, channel latency/availability, due-only processing, deterministic delivery order, provenance-preserving relays, same-root suppression, local projection acknowledgement and idempotent in-process delivery have executable coverage. Delivery results now expose sender/receiver identity for selective downstream routing.
+Semantic-time message queues, channel latency/availability, due-only processing, deterministic delivery order, provenance-preserving relays, same-root suppression, local projection acknowledgement and idempotent in-process delivery have executable coverage. Delivery results expose sender/receiver identity for selective downstream routing.
 
 Pass 284 event-triggered replanning layer:
 - `design/global-npc-event-triggered-replanning-contract.md`
@@ -96,6 +97,14 @@ Pass 284 event-triggered replanning layer:
 
 Meaningful semantic changes can wake only affected named agents. Multiple simultaneous triggers for one agent coalesce into one agenda reevaluation while preserving cause/provenance. Replan triggers persist across snapshot/restore and completed triggers do not replay. Successful information delivery can update private knowledge and make a new world intent eligible without polling every NPC.
 
-The immediate next slices should deepen durable persistence of the Pass 283 information-delivery queue, scalable audience/recipient resolution, event budgets/backpressure, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
+Pass 285 audience / recipient resolution layer:
+- `design/global-npc-audience-recipient-resolution-contract.md`
+- `tools/global_npc_audience.py`
+- `implementation/global-npc-audience-resolution-fixture-v1.json`
+- `tests/test_global_npc_audience.py`
+
+A sender can now rank explicit communication recipients from directional relationships, explicit institutional receiving duties, reachability, proximity/contact opportunity, topic relevance and role relevance under a deterministic fanout budget. Shared faction membership alone contributes no audience and cannot broadcast private knowledge.
+
+The immediate next slices should deepen durable persistence of the Pass 283 information-delivery queue, direct audience-to-envelope integration, event budgets/backpressure, explicit broadcast/publication channels, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
