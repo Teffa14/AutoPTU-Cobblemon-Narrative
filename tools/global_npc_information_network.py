@@ -3,9 +3,10 @@ from __future__ import annotations
 import heapq
 import json
 import sys
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path
+from typing import Mapping
 
 from tools.global_npc_memory import (
     KnowledgeLedger,
@@ -13,6 +14,9 @@ from tools.global_npc_memory import (
     record_direct_observation,
     transmit_claim,
 )
+
+
+QUEUE_SNAPSHOT_SCHEMA = "OUROS_NPC_INFORMATION_QUEUE_V1"
 
 
 class DeliveryStatus(str, Enum):
@@ -94,32 +98,54 @@ class InformationEventQueue:
         self.statuses[event_id] = DeliveryStatus.QUEUED
         return envelope
 
+    def _process_envelope(self, envelope: InformationEnvelope, semantic_minute: int) -> dict:
+        if envelope.event_id in self.delivered_event_ids:
+            return {
+                "event_id": envelope.event_id,
+                "receiver_id": envelope.receiver_id,
+                "status": DeliveryStatus.DELIVERED.value,
+                "duplicate": True,
+            }
+        channel = self.channels[envelope.channel_id]
+        if not channel.available:
+            self.statuses[envelope.event_id] = DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE
+            return {
+                "event_id": envelope.event_id,
+                "receiver_id": envelope.receiver_id,
+                "status": DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE.value,
+            }
+        if channel.requires_local_projection:
+            self.statuses[envelope.event_id] = DeliveryStatus.WAITING_LOCAL_ACK
+            self.awaiting_local_ack[envelope.event_id] = envelope
+            return {
+                "event_id": envelope.event_id,
+                "receiver_id": envelope.receiver_id,
+                "status": DeliveryStatus.WAITING_LOCAL_ACK.value,
+            }
+        return self._deliver(envelope, semantic_minute)
+
     def process_due(self, semantic_minute: int) -> list[dict]:
         results: list[dict] = []
         while self.pending and self.pending[0][0] <= semantic_minute:
             _, _, envelope = heapq.heappop(self.pending)
-            if envelope.event_id in self.delivered_event_ids:
-                continue
-            channel = self.channels[envelope.channel_id]
-            if not channel.available:
-                self.statuses[envelope.event_id] = DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE
-                results.append({
-                    "event_id": envelope.event_id,
-                    "receiver_id": envelope.receiver_id,
-                    "status": DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE.value,
-                })
-                continue
-            if channel.requires_local_projection:
-                self.statuses[envelope.event_id] = DeliveryStatus.WAITING_LOCAL_ACK
-                self.awaiting_local_ack[envelope.event_id] = envelope
-                results.append({
-                    "event_id": envelope.event_id,
-                    "receiver_id": envelope.receiver_id,
-                    "status": DeliveryStatus.WAITING_LOCAL_ACK.value,
-                })
-                continue
-            results.append(self._deliver(envelope, semantic_minute))
+            results.append(self._process_envelope(envelope, semantic_minute))
         return results
+
+    def process_due_budgeted(self, semantic_minute: int, *, max_events: int) -> dict:
+        if max_events < 0:
+            raise ValueError("max_events must be non-negative")
+        results: list[dict] = []
+        processed = 0
+        while processed < max_events and self.pending and self.pending[0][0] <= semantic_minute:
+            _, _, envelope = heapq.heappop(self.pending)
+            results.append(self._process_envelope(envelope, semantic_minute))
+            processed += 1
+        deferred_due = sum(1 for minute, _, _ in self.pending if minute <= semantic_minute)
+        return {
+            "deliveries": results,
+            "processed_count": processed,
+            "deferred_due_count": deferred_due,
+        }
 
     def acknowledge_local_delivery(self, event_id: str, semantic_minute: int, *, accepted: bool) -> dict:
         envelope = self.awaiting_local_ack.pop(event_id)
@@ -159,6 +185,47 @@ class InformationEventQueue:
             "claim_id": claim.claim_id,
             "provenance_root": claim.provenance_root,
         }
+
+    def snapshot(self) -> dict:
+        return {
+            "schema": QUEUE_SNAPSHOT_SCHEMA,
+            "pending": [
+                asdict(envelope)
+                for _, _, envelope in sorted(self.pending, key=lambda item: (item[0], item[1]))
+            ],
+            "statuses": {event_id: status.value for event_id, status in sorted(self.statuses.items())},
+            "delivered_event_ids": sorted(self.delivered_event_ids),
+            "awaiting_local_ack": [
+                asdict(envelope)
+                for _, envelope in sorted(self.awaiting_local_ack.items())
+            ],
+        }
+
+    @classmethod
+    def restore(
+        cls,
+        snapshot: Mapping[str, object],
+        *,
+        channels: dict[str, CommunicationChannel],
+        ledgers: dict[str, KnowledgeLedger],
+    ) -> "InformationEventQueue":
+        if snapshot.get("schema") != QUEUE_SNAPSHOT_SCHEMA:
+            raise ValueError("unsupported information queue snapshot schema")
+        queue = cls(channels=channels, ledgers=ledgers)
+        for raw in snapshot.get("pending", []):
+            envelope = InformationEnvelope(**dict(raw))
+            if envelope.channel_id not in channels:
+                raise KeyError(f"snapshot references unknown channel: {envelope.channel_id}")
+            heapq.heappush(queue.pending, (envelope.delivery_minute, envelope.event_id, envelope))
+        queue.statuses = {
+            str(event_id): DeliveryStatus(str(status))
+            for event_id, status in dict(snapshot.get("statuses", {})).items()
+        }
+        queue.delivered_event_ids = {str(value) for value in snapshot.get("delivered_event_ids", [])}
+        for raw in snapshot.get("awaiting_local_ack", []):
+            envelope = InformationEnvelope(**dict(raw))
+            queue.awaiting_local_ack[envelope.event_id] = envelope
+        return queue
 
 
 def replay_fixture(path: str | Path) -> dict:
@@ -204,6 +271,11 @@ def replay_fixture(path: str | Path) -> dict:
             results.append({"event_id": event["event_id"], "status": DeliveryStatus.QUEUED.value, "delivery_minute": envelope.delivery_minute})
         elif kind == "advance":
             results.append({"event_id": event["event_id"], "deliveries": queue.process_due(event["semantic_minute"])})
+        elif kind == "advance_budgeted":
+            results.append({"event_id": event["event_id"]} | queue.process_due_budgeted(event["semantic_minute"], max_events=event["max_events"]))
+        elif kind == "restart":
+            queue = InformationEventQueue.restore(queue.snapshot(), channels=channels, ledgers=ledgers)
+            results.append({"event_id": event["event_id"], "status": "RESTORED"})
         elif kind == "ack":
             results.append(queue.acknowledge_local_delivery(event["target_event_id"], event["semantic_minute"], accepted=event["accepted"]) | {"fixture_event_id": event["event_id"]})
         elif kind == "assess":
