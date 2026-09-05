@@ -1,13 +1,24 @@
 # Ouros Ecology Development Program
 
-Status: OUROS PROJECT DIRECTIVE
+Status: ACTIVE OUROS SUBSYSTEM DIRECTIVE
 Date: 2026-09-03
+Focus amendment: 2026-09-05
 
-## Active focus
+## Focus amendment — 2026-09-05
 
-From Pass 227 onward, and until this program is explicitly declared complete, every new Ouros lore, research, species, encounter-ecology and related world-state pass must primarily advance Pokémon ecology and species behaviour.
+The ecology program remains mandatory and unfinished, but it is no longer the exclusive project-wide pass target.
 
-Unrelated lore systems remain valid but are not the primary pass target while this directive is active. A pass may touch NPCs, settlements, quests, weather, exploration or battles only when the main purpose is to improve, expose, validate or implement ecology.
+`CURRENT_FOCUS.md` now makes global NPC / world-agent AI the primary implementation focus. This amendment supersedes earlier wording below that required every new Ouros pass to primarily advance ecology.
+
+Marea/Sendero remain valuable ecology regression sites. They are not the source of global NPC behaviour, institutional logic or general world-agent AI.
+
+New ecology work should close real ecology implementation gaps or validate reusable global systems. Do not create additional Marea-specific NPC/governance layers merely to satisfy this program.
+
+## Active ecology subsystem
+
+From Pass 227 onward this program established Pokémon ecology and species behaviour as a mandatory persistent-world subsystem. That work remains valid and must continue until its completion gates are satisfied.
+
+Ecology can be the primary target of a pass when it closes a real ecology gap. Other world systems may now be primary targets when required by `CURRENT_FOCUS.md`, especially the global NPC/world-agent layer that consumes ecological observations and world events.
 
 ## Objective
 
@@ -101,18 +112,28 @@ persistent ecology state
 
 Generic Cobblemon spawning does not create population truth. A canonical persistent individual must never be duplicated by a generic spawn row. Minecraft visual contact, velocity or vanilla damage cannot replace AutoPTU adjudication.
 
-## Pass requirements
+## Global NPC integration
 
-Every pass while this directive is active should, where relevant:
+Ecology publishes world facts, observations, evidence and events. It does not own the universal NPC decision model.
+
+Global NPC/world-agent AI is defined by `design/global-npc-world-agent-ai-contract.md`.
+
+An NPC may react to ecological state only when the relevant observation, communication or accessible record enters that NPC's knowledge. The NPC planner must not read the hidden ecology ledger directly.
+
+The same NPC planner must also support non-ecology goals. Local ecological content may provide inputs to that planner but must not fork it by region.
+
+## Ecology pass requirements
+
+When a pass is primarily ecological, it should where relevant:
 
 1. inspect current repo state and existing ecology work;
 2. answer one bounded ecology question;
-3. add new source-backed research;
+3. add new source-backed research when evidence is required;
 4. compare official Pokémon evidence with PTU/Caelo/Kairos where applicable;
 5. enrich with real ecology when useful;
-6. make a concrete Ouros design/data change;
-7. ground it in Marea/Sendero or another existing ecosystem rather than creating unrelated regions;
-8. map it to Cobblemon/Minecraft;
+6. make a concrete Ouros design/data/code change;
+7. validate against an existing ecosystem or region-neutral fixture without treating Marea/Sendero as mandatory;
+8. map it to Cobblemon/Minecraft where presentation is involved;
 9. audit AutoPTU dependencies if structured mechanics can occur;
 10. record unresolved ecology questions and the next highest-value gap.
 
@@ -138,23 +159,25 @@ Do not create a pass whose only result is a generic lore essay.
 - 242: AutoPTU ecological encounter handoff matrix.
 - 243+: implementation fixtures, integration tests and gap closure until completion.
 
-The sequence may split or repeat when evidence requires it.
+This sequence is historical. It no longer authorizes endless region-specific NPC/institutional passes when a global subsystem is the actual missing layer.
 
 ## Completion gates
 
-Ecology remains the active workstream until all of these are satisfied or explicitly waived:
+Ecology remains unfinished until all of these are satisfied or explicitly waived:
 
-- all mandatory system areas have ownership/data contracts;
+- all mandatory ecology system areas have ownership/data contracts;
 - the source-research pipeline is repeatable;
-- at least one Marea ecosystem works end-to-end with multiple species and resources;
+- at least one ecosystem works end-to-end with multiple species and resources;
 - ecology reliably affects visible Cobblemon presence/behaviour;
 - persistent individuals cannot be cloned by generic spawning;
 - representative ecological encounters hand off to/from AutoPTU correctly;
 - population, observation and player-caused ecological state persist across server/world lifecycle;
 - regression fixtures protect the core invariants.
 
+These gates do not require ecology to remain the only active Ouros development focus.
+
 ## Definition of done
 
 A player must be able to enter a habitat and have the presence, absence, hiding, feeding, nesting, competition, hunting, fleeing, tolerance and movement of Pokémon explained from persistent ecological state plus species and individual behaviour. Those explanations must survive observation, player intervention, Cobblemon projection and AutoPTU encounters without authority violations.
 
-Until then, ecology is the default Ouros pass workstream.
+Ecology remains a mandatory living-world subsystem until then, while global NPC/world-agent AI and other explicitly prioritized world systems may advance in parallel.
