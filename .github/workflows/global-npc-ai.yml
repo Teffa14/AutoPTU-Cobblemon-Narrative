@@ -38,6 +38,6 @@ jobs:
       - name: Replay global NPC agenda fixture
         run: python tools/global_npc_ai.py implementation/global-npc-goal-need-schedule-fixture-v1.json
       - name: Replay global NPC social fixture
-        run: python tools/global_npc_social.py implementation/global-npc-social-relationship-faction-fixture-v1.json
+        run: python -m tools.global_npc_social implementation/global-npc-social-relationship-faction-fixture-v1.json
       - name: Run global NPC AI regressions
         run: python -m unittest discover -s tests -p 'test_global_npc_*.py' -v
