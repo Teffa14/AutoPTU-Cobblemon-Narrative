@@ -16,6 +16,7 @@ on:
       - 'tools/global_npc_publication.py'
       - 'tools/global_npc_publication_revision.py'
       - 'tools/global_npc_publication_revision_runtime.py'
+      - 'tools/global_npc_world_checkpoint.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
@@ -26,6 +27,7 @@ on:
       - 'implementation/global-npc-audience-*.json'
       - 'implementation/global-npc-communication-*.json'
       - 'implementation/global-npc-world-event-*.json'
+      - 'implementation/global-npc-world-checkpoint-*.json'
       - 'implementation/global-npc-publication-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
@@ -45,6 +47,7 @@ on:
       - 'tools/global_npc_publication.py'
       - 'tools/global_npc_publication_revision.py'
       - 'tools/global_npc_publication_revision_runtime.py'
+      - 'tools/global_npc_world_checkpoint.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
@@ -55,6 +58,7 @@ on:
       - 'implementation/global-npc-audience-*.json'
       - 'implementation/global-npc-communication-*.json'
       - 'implementation/global-npc-world-event-*.json'
+      - 'implementation/global-npc-world-checkpoint-*.json'
       - 'implementation/global-npc-publication-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
@@ -95,5 +99,7 @@ jobs:
         run: python -m tools.global_npc_publication_revision implementation/global-npc-publication-revision-fixture-v1.json
       - name: Replay global NPC publication revision runtime fixture
         run: python -m tools.global_npc_publication_revision_runtime implementation/global-npc-publication-revision-runtime-fixture-v1.json
+      - name: Replay global NPC atomic world checkpoint fixture
+        run: python -m tools.global_npc_world_checkpoint implementation/global-npc-world-checkpoint-fixture-v1.json
       - name: Run global NPC AI regressions
         run: python -m unittest discover -s tests -p 'test_global_npc_*.py' -v

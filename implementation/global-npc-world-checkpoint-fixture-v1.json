@@ -1,0 +1,42 @@
+{
+  "fixture_id": "global-npc-world-checkpoint-v1",
+  "agents": [
+    {"agent_id": "dispatcher", "region_ref": "synthetic_north", "location_ref": "relay_hall"},
+    {"agent_id": "courier", "region_ref": "synthetic_north", "location_ref": "road_gate"},
+    {"agent_id": "bystander", "region_ref": "synthetic_north", "location_ref": "market_square"}
+  ],
+  "channels": [
+    {"channel_id": "dispatch_wire", "kind": "REMOTE_MESSAGE", "latency_minutes": 5}
+  ],
+  "events": [
+    {
+      "event_id": "observe-closure",
+      "kind": "observe",
+      "agent_id": "dispatcher",
+      "claim_id": "claim-route-closed",
+      "subject": "route:synthetic-pass",
+      "value": "CLOSED",
+      "semantic_minute": 10,
+      "confidence": 95
+    },
+    {
+      "event_id": "schedule-warning",
+      "kind": "schedule",
+      "delivery_event_id": "delivery-route-warning",
+      "message_id": "message-route-warning",
+      "sender_id": "dispatcher",
+      "receiver_id": "courier",
+      "source_claim_id": "claim-route-closed",
+      "new_claim_id": "courier-route-warning",
+      "channel_id": "dispatch_wire",
+      "semantic_minute": 11
+    },
+    {"event_id": "restart-before-delivery", "kind": "checkpoint_restart", "semantic_minute": 13},
+    {"event_id": "before-due", "kind": "cycle", "semantic_minute": 15, "delivery_budget": 4},
+    {"event_id": "deliver-after-restart", "kind": "cycle", "semantic_minute": 16, "delivery_budget": 4},
+    {"event_id": "restart-after-delivery", "kind": "checkpoint_restart", "semantic_minute": 16},
+    {"event_id": "repeat-cycle", "kind": "cycle", "semantic_minute": 16, "delivery_budget": 4},
+    {"event_id": "inspect-courier", "kind": "inspect", "agent_id": "courier"},
+    {"event_id": "inspect-bystander", "kind": "inspect", "agent_id": "bystander"}
+  ]
+}
