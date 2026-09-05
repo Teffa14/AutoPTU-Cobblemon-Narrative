@@ -1,0 +1,135 @@
+{
+  "fixture_id": "GLOBAL_NPC_PUBLICATION_REVISION_RUNTIME_V1",
+  "agents": [
+    {"agent_id": "agent.amber", "region_ref": "fixture.region", "location_ref": "fixture.old"},
+    {"agent_id": "agent.birch", "region_ref": "fixture.region", "location_ref": "fixture.old"},
+    {"agent_id": "agent.cinder", "region_ref": "fixture.region", "location_ref": "fixture.new"},
+    {"agent_id": "agent.delta", "region_ref": "fixture.region", "location_ref": "fixture.remote"}
+  ],
+  "channels": [
+    {
+      "channel_id": "channel.public",
+      "kind": "PUBLIC_SERVICE",
+      "latency_minutes": 2,
+      "available": true,
+      "requires_local_projection": false
+    }
+  ],
+  "audience_members": [
+    {
+      "agent_id": "agent.amber",
+      "scope_ids": ["scope.old", "scope.new"],
+      "service_ids": ["service.civic"],
+      "topic_ids": ["topic.route"],
+      "receiving_enabled": true
+    },
+    {
+      "agent_id": "agent.birch",
+      "scope_ids": ["scope.old"],
+      "service_ids": ["service.civic"],
+      "topic_ids": ["topic.route"],
+      "receiving_enabled": true
+    },
+    {
+      "agent_id": "agent.cinder",
+      "scope_ids": ["scope.new"],
+      "service_ids": ["service.civic"],
+      "topic_ids": ["topic.route"],
+      "receiving_enabled": true
+    },
+    {
+      "agent_id": "agent.delta",
+      "scope_ids": ["scope.remote"],
+      "service_ids": ["service.civic"],
+      "topic_ids": ["topic.route"],
+      "receiving_enabled": true
+    }
+  ],
+  "publications": [
+    {
+      "publication_id": "publication.route.v1",
+      "publisher_id": "publisher.civic",
+      "source_claim_id": "claim.route.closed",
+      "service_id": "service.civic",
+      "channel_id": "channel.public",
+      "published_minute": 100,
+      "scope_ids": ["scope.old"],
+      "topic_id": "topic.route",
+      "revision_kind": "ORIGINAL",
+      "revision_rationale": "initial report"
+    },
+    {
+      "publication_id": "publication.route.v2",
+      "publisher_id": "publisher.civic",
+      "source_claim_id": "claim.route.open",
+      "service_id": "service.civic",
+      "channel_id": "channel.public",
+      "published_minute": 130,
+      "scope_ids": ["scope.new"],
+      "topic_id": "topic.route",
+      "supersedes_publication_id": "publication.route.v1",
+      "revision_kind": "CORRECTION",
+      "revision_rationale": "later verified state"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "observe.original",
+      "kind": "observe",
+      "agent_id": "publisher.civic",
+      "claim_id": "claim.route.closed",
+      "subject": "route.alpha.status",
+      "value": "CLOSED",
+      "semantic_minute": 100,
+      "confidence": 95
+    },
+    {
+      "event_id": "publish.original",
+      "kind": "publish",
+      "publication_id": "publication.route.v1",
+      "semantic_minute": 100,
+      "max_receivers": 10
+    },
+    {
+      "event_id": "cycle.original",
+      "kind": "cycle",
+      "semantic_minute": 102,
+      "delivery_budget": 10
+    },
+    {
+      "event_id": "observe.correction",
+      "kind": "observe",
+      "agent_id": "publisher.civic",
+      "claim_id": "claim.route.open",
+      "subject": "route.alpha.status",
+      "value": "OPEN",
+      "semantic_minute": 130,
+      "confidence": 95
+    },
+    {
+      "event_id": "publish.correction",
+      "kind": "publish",
+      "publication_id": "publication.route.v2",
+      "semantic_minute": 130,
+      "max_receivers": 10
+    },
+    {
+      "event_id": "restart.runtime",
+      "kind": "restart_runtime"
+    },
+    {
+      "event_id": "cycle.correction",
+      "kind": "cycle",
+      "semantic_minute": 132,
+      "delivery_budget": 10
+    },
+    {"event_id": "lineage.amber", "kind": "assess_lineage", "agent_id": "agent.amber", "publication_id": "publication.route.v2"},
+    {"event_id": "lineage.birch", "kind": "assess_lineage", "agent_id": "agent.birch", "publication_id": "publication.route.v2"},
+    {"event_id": "lineage.cinder", "kind": "assess_lineage", "agent_id": "agent.cinder", "publication_id": "publication.route.v2"},
+    {"event_id": "lineage.delta", "kind": "assess_lineage", "agent_id": "agent.delta", "publication_id": "publication.route.v2"},
+    {"event_id": "belief.amber", "kind": "assess_belief", "agent_id": "agent.amber", "subject": "route.alpha.status"},
+    {"event_id": "belief.birch", "kind": "assess_belief", "agent_id": "agent.birch", "subject": "route.alpha.status"},
+    {"event_id": "belief.cinder", "kind": "assess_belief", "agent_id": "agent.cinder", "subject": "route.alpha.status"},
+    {"event_id": "belief.delta", "kind": "assess_belief", "agent_id": "agent.delta", "subject": "route.alpha.status"}
+  ]
+}
