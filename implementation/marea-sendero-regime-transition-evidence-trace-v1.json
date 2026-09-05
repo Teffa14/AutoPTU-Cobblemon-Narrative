@@ -1,0 +1,118 @@
+{
+  "fixture": "marea-sendero-regime-transition-evidence-trace-v1",
+  "pass": 273,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false,
+    "regime_transition_is_canon": false,
+    "hysteresis_is_canon": false,
+    "feedback_is_canon": false,
+    "threshold_is_canon": false,
+    "intervention_is_canon": false,
+    "ptu_mechanic_promoted": false,
+    "caelo_rule_adopted": false
+  },
+  "trace": [
+    {
+      "event": "REFERENCE_AND_CESSATION_LOADED",
+      "population": 12,
+      "reference_state_ref": "fixture-only:sendero-reference-273",
+      "cessation_verified": true,
+      "regime_disposition": "PERSISTENT_SHIFT_OBSERVED"
+    },
+    {
+      "event": "PERSISTENT_SHIFT_REOBSERVED",
+      "population": 12,
+      "semantic_windows": 3,
+      "comparison_quality": "ADEQUATE_FOR_LOCAL_PATTERN",
+      "regime_disposition": "ALTERNATE_STATE_HYPOTHESIS",
+      "regime_transition_supported": false,
+      "hysteresis_supported": false
+    },
+    {
+      "event": "PERSISTENCE_ONLY_PROMOTION_ATTEMPT",
+      "result": "REJECT_PERSISTENCE_AS_REGIME_PROOF",
+      "regime_transition_supported": false,
+      "hysteresis_supported": false
+    },
+    {
+      "event": "ABRUPT_CHANGE_THRESHOLD_PROMOTION_ATTEMPT",
+      "result": "REJECT_ABRUPT_CHANGE_AS_THRESHOLD_PROOF",
+      "critical_threshold_supported": false
+    },
+    {
+      "event": "FIXTURE_FEEDBACK_CANDIDATE_DOCUMENTED",
+      "feedback_ref": "fixture-only:surface-retention-feedback-273",
+      "feedback_support": "OBSERVATION_CONSISTENT",
+      "regime_disposition": "ALTERNATE_STATE_HYPOTHESIS",
+      "regime_transition_supported": false
+    },
+    {
+      "event": "MATCHED_FEEDBACK_COMPARISON",
+      "feedback_ref": "fixture-only:surface-retention-feedback-273",
+      "feedback_support": "SUPPORTED_NARROWLY",
+      "regime_disposition": "FEEDBACK_MECHANISM_SUPPORTED",
+      "population": 12
+    },
+    {
+      "event": "REGIME_TRANSITION_GATE_REVIEW",
+      "cessation_verified": true,
+      "reference_valid": true,
+      "comparison_valid": true,
+      "persistent_contrasting_configuration": true,
+      "secondary_pressures_materially_assessed": true,
+      "regime_disposition": "REGIME_TRANSITION_SUPPORTED_NARROWLY",
+      "scope": "fixture-only:local-response-dimension-273",
+      "species_global_rule_created": false,
+      "population": 12
+    },
+    {
+      "event": "HYSTERESIS_WITHOUT_RETURN_ASYMMETRY_ATTEMPT",
+      "result": "REJECT_HYSTERESIS_WITHOUT_RETURN_PATH_EVIDENCE",
+      "hysteresis_supported": false
+    },
+    {
+      "event": "ORIGINAL_DRIVER_REVERSAL_TEST",
+      "driver_restored_to_reference_band": true,
+      "shifted_configuration_persists": true,
+      "return_path_asymmetry_support": "INSUFFICIENT_SINGLE_TEST",
+      "hysteresis_supported": false
+    },
+    {
+      "event": "FEEDBACK_TARGETED_INTERVENTION",
+      "intervention_ref": "fixture-only:feedback-disruption-273",
+      "targets_feedback_ref": "fixture-only:surface-retention-feedback-273",
+      "recovery_claimed": false,
+      "population": 12
+    },
+    {
+      "event": "MATCHED_RETURN_PATH_ASSESSMENT",
+      "comparison_windows": 3,
+      "feedback_support": "SUPPORTED_NARROWLY",
+      "return_path_asymmetry": "SUPPORTED",
+      "regime_disposition": "HYSTERESIS_SUPPORTED_NARROWLY",
+      "scope": "fixture-only:local-response-dimension-273",
+      "species_global_rule_created": false,
+      "population_recovery_claimed": false,
+      "population": 12
+    },
+    {
+      "event": "TACTICAL_SEMANTICS_INFERENCE_ATTEMPT",
+      "requested_semantics": ["HAZARD", "ZONE", "REACTION", "FORCED_MOVEMENT"],
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "event": "RESTART_RESTORE",
+      "transition_history_preserved": true,
+      "feedback_evidence_preserved": true,
+      "return_path_evidence_preserved": true,
+      "semantic_windows_preserved": true,
+      "population": 12,
+      "demographic_events": 0
+    }
+  ]
+}
