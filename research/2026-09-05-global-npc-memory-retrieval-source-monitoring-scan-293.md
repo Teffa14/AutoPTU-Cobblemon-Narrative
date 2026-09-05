@@ -42,6 +42,14 @@ Reusable structure: remembering that information was corrected matters separatel
 
 Not adopted: political/news domains or human belief probabilities.
 
+### Pokémon memory mechanic
+
+Source: https://bulbapedia.bulbagarden.net/wiki/Memory_Girl
+
+Reusable structure: main-series Pokémon already represents memories as persistent data associated with prior experiences and can preserve memory associated with different Trainers. The useful design lesson is that experience history can remain stored even when the current presentation exposes only a limited memory view.
+
+Not adopted: Memory Girl dialogue, byte layout, exact memory categories, Trainer-specific limits or any game-generation implementation detail.
+
 ### PTU campaign-log scan
 
 Source: https://www.reddit.com/r/PokemonTabletop/comments/xtwhxv
