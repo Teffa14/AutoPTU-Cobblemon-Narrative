@@ -69,8 +69,16 @@ Pass 281 travel layer:
 - `implementation/global-npc-travel-fixture-v1.json`
 - `tests/test_global_npc_travel.py`
 
-World-route planning, travel-time reservation, deterministic ETA, off-screen semantic movement, knowledge/permission-gated routes, replanning, no-teleport lateness, local projection boundaries and AutoPTU interruption handoff now have executable coverage.
+World-route planning, travel-time reservation, deterministic ETA, off-screen semantic movement, knowledge/permission-gated routes, replanning, no-teleport lateness, local projection boundaries and AutoPTU interruption handoff have executable coverage.
 
-The immediate next slices should deepen memory/claim confidence and revision, NPC-to-NPC communication/social propagation, resource/inventory-aware intents, dialogue/context projection, local Minecraft behavior acknowledgement and scalable event scheduling for large named casts. These systems must consume the same global agenda/travel/social state rather than fork per region.
+Pass 282 memory / belief / communication layer:
+- `design/global-npc-memory-belief-communication-contract.md`
+- `tools/global_npc_memory.py`
+- `implementation/global-npc-memory-belief-communication-fixture-v1.json`
+- `tests/test_global_npc_memory.py`
+
+Per-agent claim ledgers, explicit information transfer, report attenuation, provenance lineage, duplicate-source suppression, contradictory evidence and deterministic belief assessment now have executable coverage. Shared faction membership still does not create hive-mind knowledge.
+
+The immediate next slices should deepen memory revision/forgetting, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection, local Minecraft behavior acknowledgement and scalable event scheduling/broadcast propagation for large named casts. These systems must consume the same global agenda/travel/social/memory state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
