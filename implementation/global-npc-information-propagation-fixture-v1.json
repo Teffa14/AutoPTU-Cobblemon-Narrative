@@ -1,0 +1,36 @@
+{
+  "fixture_id": "GLOBAL_NPC_INFORMATION_PROPAGATION_V1",
+  "agents": [
+    {"agent_id": "agent.north"},
+    {"agent_id": "agent.east"},
+    {"agent_id": "agent.south"},
+    {"agent_id": "agent.west"}
+  ],
+  "channels": [
+    {"channel_id": "channel.direct", "kind": "DIRECT_MESSAGE", "latency_minutes": 10},
+    {"channel_id": "channel.relay", "kind": "PERSONAL_RELAY", "latency_minutes": 5},
+    {"channel_id": "channel.local", "kind": "FACE_TO_FACE", "latency_minutes": 0, "requires_local_projection": true},
+    {"channel_id": "channel.down", "kind": "REMOTE_LINK", "latency_minutes": 2, "available": false}
+  ],
+  "events": [
+    {"kind": "observe", "event_id": "observe-1", "agent_id": "agent.north", "claim_id": "claim.root.north", "subject": "route.delta", "value": "CLOSED", "semantic_minute": 0, "confidence": 90},
+    {"kind": "schedule", "event_id": "message-north-east", "message_id": "msg.north.east", "sender_id": "agent.north", "receiver_id": "agent.east", "source_claim_id": "claim.root.north", "claim_id": "claim.east.report", "channel_id": "channel.direct", "semantic_minute": 0, "receiver_trust_in_sender": 20},
+    {"kind": "assess", "event_id": "assess-east-before", "agent_id": "agent.east", "subject": "route.delta"},
+    {"kind": "advance", "event_id": "advance-9", "semantic_minute": 9},
+    {"kind": "assess", "event_id": "assess-east-still-unknown", "agent_id": "agent.east", "subject": "route.delta"},
+    {"kind": "advance", "event_id": "advance-10", "semantic_minute": 10},
+    {"kind": "schedule", "event_id": "message-east-south", "message_id": "msg.east.south", "sender_id": "agent.east", "receiver_id": "agent.south", "source_claim_id": "claim.east.report", "claim_id": "claim.south.relay", "channel_id": "channel.relay", "semantic_minute": 10},
+    {"kind": "schedule", "event_id": "message-north-south", "message_id": "msg.north.south", "sender_id": "agent.north", "receiver_id": "agent.south", "source_claim_id": "claim.root.north", "claim_id": "claim.south.direct", "channel_id": "channel.relay", "semantic_minute": 10},
+    {"kind": "advance", "event_id": "advance-15", "semantic_minute": 15},
+    {"kind": "assess", "event_id": "assess-south-one-root", "agent_id": "agent.south", "subject": "route.delta"},
+    {"kind": "observe", "event_id": "observe-independent", "agent_id": "agent.west", "claim_id": "claim.root.west", "subject": "route.delta", "value": "CLOSED", "semantic_minute": 16, "confidence": 80},
+    {"kind": "schedule", "event_id": "message-west-south", "message_id": "msg.west.south", "sender_id": "agent.west", "receiver_id": "agent.south", "source_claim_id": "claim.root.west", "claim_id": "claim.south.independent", "channel_id": "channel.relay", "semantic_minute": 16},
+    {"kind": "advance", "event_id": "advance-21", "semantic_minute": 21},
+    {"kind": "assess", "event_id": "assess-south-two-roots", "agent_id": "agent.south", "subject": "route.delta"},
+    {"kind": "schedule", "event_id": "message-south-west-local", "message_id": "msg.south.west.local", "sender_id": "agent.south", "receiver_id": "agent.west", "source_claim_id": "claim.south.relay", "claim_id": "claim.west.local", "channel_id": "channel.local", "semantic_minute": 22},
+    {"kind": "advance", "event_id": "advance-22", "semantic_minute": 22},
+    {"kind": "ack", "event_id": "ack-local", "target_event_id": "message-south-west-local", "semantic_minute": 23, "accepted": true},
+    {"kind": "schedule", "event_id": "message-north-west-down", "message_id": "msg.north.west.down", "sender_id": "agent.north", "receiver_id": "agent.west", "source_claim_id": "claim.root.north", "claim_id": "claim.west.failed", "channel_id": "channel.down", "semantic_minute": 24},
+    {"kind": "advance", "event_id": "advance-26", "semantic_minute": 26}
+  ]
+}
