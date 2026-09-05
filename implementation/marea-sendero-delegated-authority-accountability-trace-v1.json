@@ -1,0 +1,140 @@
+{
+  "fixture": "marea-sendero-delegated-authority-accountability-trace-v1",
+  "pass": 277,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false,
+    "sendero_institution_created_as_canon": false,
+    "jurisdiction_created_as_canon": false,
+    "ownership_created_as_canon": false,
+    "player_organization_granted_permanent_authority": false,
+    "ptu_mechanic_promoted": false,
+    "caelo_rule_adopted": false
+  },
+  "trace": [
+    {
+      "event": "PARENT_AUTHORITY_AND_FUNCTION_VERIFIED",
+      "population": 12,
+      "joint_jurisdiction_ref": "fixture-only:pass-276-authority-map-277",
+      "delegator_ref": "fixture-only:habitat-scope-holder-277",
+      "delegated_function": "OBSERVATION_AND_TEMPORARY_MARKER_MAINTENANCE",
+      "reserved_functions": ["RELOCATION_APPROVAL", "ACCESS_CLOSURE_APPROVAL"],
+      "disposition": "PROPOSED"
+    },
+    {
+      "event": "BOUNDED_DELEGATION_ACTIVATED",
+      "population": 12,
+      "delegate_ref": "fixture-only:temporary-field-steward-277",
+      "geographic_scope": "fixture-only:sendero-microhabitat-edge-277",
+      "ecological_process_scope": "fixture-only:local-observation-window-277",
+      "effective_horizon": "fixture-only:semantic-window-277-a",
+      "expiry_horizon": "fixture-only:semantic-window-277-d",
+      "renewal_required": true,
+      "subdelegation_policy": "PROHIBITED_UNLESS_EXPLICIT",
+      "reporting_obligations": ["OBSERVATION_PROVENANCE", "MARKER_CHANGE_LOG"],
+      "disposition": "ACTIVE_WITH_OBLIGATIONS"
+    },
+    {
+      "event": "PERMANENT_JURISDICTION_INFERENCE_ATTEMPT",
+      "completed_prior_assignments": 3,
+      "requested_inference": "TEMPORARY_FIELD_STEWARD_OWNS_OR_GOVERNS_SITE",
+      "result": "REJECT_REPEATED_PERFORMANCE_AS_PERMANENT_MANDATE",
+      "jurisdiction_transfer_created": false,
+      "ownership_created": false
+    },
+    {
+      "event": "UNAUTHORIZED_SUBDELEGATION_ATTEMPT",
+      "delegate_ref": "fixture-only:temporary-field-steward-277",
+      "proposed_subdelegate_ref": "fixture-only:helper-277",
+      "parent_permission_present": false,
+      "result": "REJECT_UNAUTHORIZED_SUBDELEGATION",
+      "subdelegate_authority_created": false
+    },
+    {
+      "event": "AUTHORIZED_FUNCTION_PERFORMED",
+      "population": 12,
+      "function": "TEMPORARY_MARKER_MAINTENANCE",
+      "within_scope": true,
+      "ecological_outcome_claimed": false,
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0,
+      "disposition": "ACTIVE_WITH_OBLIGATIONS"
+    },
+    {
+      "event": "REPORTING_DEFICIENCY_DETECTED",
+      "population": 12,
+      "required_obligation": "MARKER_CHANGE_LOG",
+      "ecological_observation_validity": "UNCHANGED_PENDING_OWN_EVIDENCE_REVIEW",
+      "bad_faith_inferred": false,
+      "ecological_failure_inferred": false,
+      "authority_scope_expanded": false,
+      "disposition": "CORRECTIVE_ACTION_REQUIRED"
+    },
+    {
+      "event": "CORRECTIVE_EVIDENCE_SUPPLIED",
+      "population": 12,
+      "missing_record_repaired": true,
+      "provenance_preserved": true,
+      "original_performance_timestamp_preserved": true,
+      "disposition": "ACTIVE_WITH_OBLIGATIONS"
+    },
+    {
+      "event": "AUTOMATIC_RENEWAL_ATTEMPT",
+      "successful_review_history": true,
+      "renewal_event_present": false,
+      "result": "REJECT_HISTORY_AS_AUTOMATIC_RENEWAL",
+      "term_extended": false
+    },
+    {
+      "event": "EXPLICIT_NARROW_RENEWAL",
+      "population": 12,
+      "renewal_authority_ref": "fixture-only:habitat-scope-holder-277",
+      "renewed_functions": ["OBSERVATION_AND_TEMPORARY_MARKER_MAINTENANCE"],
+      "reserved_functions_unchanged": true,
+      "new_expiry_horizon": "fixture-only:semantic-window-277-f",
+      "permanent_authority_created": false,
+      "disposition": "ACTIVE_WITH_OBLIGATIONS"
+    },
+    {
+      "event": "PARTIAL_REVOCATION_AFTER_SCOPE_DEFICIENCY",
+      "population": 12,
+      "evidence_ref": "fixture-only:reviewed-scope-deficiency-277",
+      "revoked_function": "TEMPORARY_MARKER_MAINTENANCE",
+      "remaining_function": "OBSERVATION",
+      "historical_valid_actions_erased": false,
+      "ecological_state_reversed": false,
+      "disposition": "PARTIALLY_REVOKED"
+    },
+    {
+      "event": "TACTICAL_SEMANTICS_INFERENCE_ATTEMPT",
+      "requested_semantics": ["BLOCKER", "INTERCEPTION", "REACTION", "FORCED_MOVEMENT"],
+      "authority_basis": "fixture-only:delegated-field-role-277",
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "event": "TERM_EXPIRY_WITHOUT_RENEWAL",
+      "population": 12,
+      "semantic_expiry_reached": true,
+      "automatic_renewal": false,
+      "future_delegated_actions_authorized": false,
+      "historical_records_preserved": true,
+      "disposition": "EXPIRED"
+    },
+    {
+      "event": "RESTART_RESTORE",
+      "population": 12,
+      "delegation_history_preserved": true,
+      "accountability_history_preserved": true,
+      "revocation_history_preserved": true,
+      "expiry_history_preserved": true,
+      "semantic_term_extended_by_restart": false,
+      "demographic_events": 0,
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    }
+  ]
+}
