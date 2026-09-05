@@ -1,0 +1,106 @@
+{
+  "fixture_id": "GLOBAL_NPC_WORLD_EVENT_COORDINATOR_V1",
+  "agents": [
+    {
+      "agent_id": "agent.witness",
+      "mode": "OFFSCREEN_NAMED",
+      "region_ref": "fixture.region.north",
+      "location_ref": "fixture.crossing.north"
+    },
+    {
+      "agent_id": "agent.courier",
+      "mode": "OFFSCREEN_NAMED",
+      "region_ref": "fixture.region.south",
+      "location_ref": "fixture.road.south"
+    },
+    {
+      "agent_id": "agent.bystander",
+      "mode": "OFFSCREEN_NAMED",
+      "region_ref": "fixture.region.south",
+      "location_ref": "fixture.square.south"
+    }
+  ],
+  "channels": [
+    {
+      "channel_id": "channel.private.relay",
+      "kind": "PRIVATE_MESSAGE",
+      "latency_minutes": 5,
+      "available": true
+    }
+  ],
+  "agendas": [
+    {
+      "agent_id": "agent.courier",
+      "goals": [
+        {
+          "goal_id": "finish-delivery",
+          "intent_kind": "CONTINUE_DELIVERY",
+          "priority": 4,
+          "target_ref": "fixture.depot.destination"
+        }
+      ],
+      "situational_intents": [
+        {
+          "intent_id": "detour-on-closure",
+          "kind": "REPLAN_ROUTE",
+          "base_priority": 9,
+          "urgency": 9,
+          "required_knowledge": ["claim.route.closed.courier"],
+          "target_ref": "fixture.road.detour"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "event_id": "observe.route.closed",
+      "kind": "observe",
+      "agent_id": "agent.witness",
+      "claim_id": "claim.route.closed.root",
+      "subject": "fixture.route.primary",
+      "value": "closed",
+      "semantic_minute": 10,
+      "confidence": 95
+    },
+    {
+      "event_id": "schedule.warning",
+      "kind": "schedule_message",
+      "delivery_event_id": "delivery.route.warning",
+      "message_id": "message.route.warning",
+      "sender_id": "agent.witness",
+      "receiver_id": "agent.courier",
+      "source_claim_id": "claim.route.closed.root",
+      "new_claim_id": "claim.route.closed.courier",
+      "channel_id": "channel.private.relay",
+      "semantic_minute": 10,
+      "receiver_trust_in_sender": 20
+    },
+    {
+      "event_id": "cycle.before.delivery",
+      "kind": "cycle",
+      "semantic_minute": 14,
+      "delivery_budget": 1
+    },
+    {
+      "event_id": "cycle.delivery.and.replan",
+      "kind": "cycle",
+      "semantic_minute": 15,
+      "delivery_budget": 1,
+      "replan_priority": 8
+    },
+    {
+      "event_id": "assess.courier",
+      "kind": "assess",
+      "agent_id": "agent.courier",
+      "subject": "fixture.route.primary",
+      "claim_id": "claim.route.closed.courier"
+    },
+    {
+      "event_id": "assess.bystander",
+      "kind": "assess",
+      "agent_id": "agent.bystander",
+      "subject": "fixture.route.primary",
+      "claim_id": "claim.route.closed.courier"
+    }
+  ]
+}
