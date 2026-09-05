@@ -62,6 +62,65 @@ class Decision:
     target_ref: str | None = None
 
 
+@dataclass(frozen=True)
+class DurableGoal:
+    goal_id: str
+    intent_kind: str
+    priority: int
+    progress: int = 0
+    target_progress: int = 100
+    required_knowledge: FrozenSet[str] = frozenset()
+    required_permissions: FrozenSet[str] = frozenset()
+    target_ref: str | None = None
+    requires_local_projection: bool = False
+    requires_structured_mechanics: bool = False
+
+    @property
+    def complete(self) -> bool:
+        return self.progress >= self.target_progress
+
+
+@dataclass(frozen=True)
+class NeedState:
+    need_id: str
+    intent_kind: str
+    pressure: int
+    activation_threshold: int
+    critical_threshold: int = 90
+    target_ref: str | None = None
+
+
+@dataclass(frozen=True)
+class ScheduledCommitment:
+    commitment_id: str
+    intent_kind: str
+    start_minute: int
+    end_minute: int
+    priority: int = 5
+    hard: bool = False
+    grace_minutes: int = 0
+    required_knowledge: FrozenSet[str] = frozenset()
+    required_permissions: FrozenSet[str] = frozenset()
+    target_ref: str | None = None
+    requires_local_projection: bool = False
+    requires_structured_mechanics: bool = False
+
+
+@dataclass(frozen=True)
+class PlanningContext:
+    semantic_minute: int
+    active_intent_id: str | None = None
+    continuity_bonus: int = 1
+
+
+@dataclass(frozen=True)
+class AgendaDecision:
+    decision: Decision
+    source_type: str
+    source_ref: str | None
+    schedule_state: str | None = None
+
+
 def _intent_is_eligible(agent: NpcAgentState, intent: NpcIntent) -> tuple[bool, tuple[str, ...]]:
     reasons: list[str] = []
 
@@ -128,7 +187,6 @@ def choose_intent(agent: NpcAgentState, intents: Iterable[NpcIntent]) -> Decisio
             reason_codes=("NO_ELIGIBLE_INTENT",),
         )
 
-    # Highest score wins. intent_id is the stable replay-safe tie-break.
     eligible.sort(key=lambda row: (-row[0], row[1]))
     score, _, chosen = eligible[0]
 
@@ -154,17 +212,173 @@ def choose_intent(agent: NpcAgentState, intents: Iterable[NpcIntent]) -> Decisio
     )
 
 
+def schedule_state(commitment: ScheduledCommitment, semantic_minute: int) -> str:
+    if semantic_minute < commitment.start_minute:
+        return "UPCOMING"
+    if semantic_minute <= commitment.end_minute:
+        return "DUE"
+    if semantic_minute <= commitment.end_minute + max(0, commitment.grace_minutes):
+        return "GRACE"
+    return "MISSED"
+
+
+def _goal_intent(goal: DurableGoal) -> NpcIntent | None:
+    if goal.complete:
+        return None
+    remaining = max(0, goal.target_progress - goal.progress)
+    urgency = min(10, max(0, remaining // 10))
+    return NpcIntent(
+        intent_id=f"goal:{goal.goal_id}",
+        kind=goal.intent_kind,
+        base_priority=goal.priority,
+        urgency=urgency,
+        required_knowledge=goal.required_knowledge,
+        required_permissions=goal.required_permissions,
+        target_ref=goal.target_ref,
+        requires_local_projection=goal.requires_local_projection,
+        requires_structured_mechanics=goal.requires_structured_mechanics,
+    )
+
+
+def _need_intent(need: NeedState) -> NpcIntent | None:
+    if need.pressure < need.activation_threshold:
+        return None
+    critical = need.pressure >= need.critical_threshold
+    return NpcIntent(
+        intent_id=f"need:{need.need_id}",
+        kind=need.intent_kind,
+        base_priority=8 if critical else 3,
+        urgency=min(10, max(1, need.pressure // 10)),
+        target_ref=need.target_ref,
+    )
+
+
+def _commitment_intent(
+    commitment: ScheduledCommitment,
+    semantic_minute: int,
+) -> tuple[NpcIntent | None, str]:
+    state = schedule_state(commitment, semantic_minute)
+    if state == "UPCOMING":
+        return None, state
+    if state == "MISSED":
+        return (
+            NpcIntent(
+                intent_id=f"missed:{commitment.commitment_id}",
+                kind="RESCHEDULE_OR_REPORT_MISSED_COMMITMENT",
+                base_priority=commitment.priority,
+                urgency=8 if commitment.hard else 4,
+                obligation=8 if commitment.hard else 4,
+                required_knowledge=commitment.required_knowledge,
+                required_permissions=commitment.required_permissions,
+                target_ref=commitment.target_ref,
+            ),
+            state,
+        )
+    urgency = 10 if commitment.hard else (6 if state == "DUE" else 8)
+    obligation = 10 if commitment.hard else 6
+    return (
+        NpcIntent(
+            intent_id=f"commitment:{commitment.commitment_id}",
+            kind=commitment.intent_kind,
+            base_priority=commitment.priority,
+            urgency=urgency,
+            obligation=obligation,
+            required_knowledge=commitment.required_knowledge,
+            required_permissions=commitment.required_permissions,
+            target_ref=commitment.target_ref,
+            requires_local_projection=commitment.requires_local_projection,
+            requires_structured_mechanics=commitment.requires_structured_mechanics,
+        ),
+        state,
+    )
+
+
+def choose_agenda_intent(
+    agent: NpcAgentState,
+    *,
+    goals: Iterable[DurableGoal] = (),
+    needs: Iterable[NeedState] = (),
+    commitments: Iterable[ScheduledCommitment] = (),
+    situational_intents: Iterable[NpcIntent] = (),
+    context: PlanningContext,
+) -> AgendaDecision:
+    """Select world action from durable goals, needs, commitments and events.
+
+    Time is supplied explicitly as Ouros semantic time. No wall-clock,
+    Minecraft tick, chunk-load or entity-presence inference is performed here.
+    """
+    if agent.mode == AgentMode.AUTOPTU_BOUND:
+        return AgendaDecision(choose_intent(agent, ()), "SYSTEM", None)
+
+    candidates: list[tuple[NpcIntent, str, str | None, str | None]] = []
+
+    for goal in goals:
+        intent = _goal_intent(goal)
+        if intent is not None:
+            candidates.append((intent, "GOAL", goal.goal_id, None))
+
+    for need in needs:
+        intent = _need_intent(need)
+        if intent is not None:
+            candidates.append((intent, "NEED", need.need_id, None))
+
+    for commitment in commitments:
+        intent, state = _commitment_intent(commitment, context.semantic_minute)
+        if intent is not None:
+            candidates.append((intent, "COMMITMENT", commitment.commitment_id, state))
+
+    for intent in situational_intents:
+        candidates.append((intent, "SITUATIONAL", intent.intent_id, None))
+
+    if not candidates:
+        return AgendaDecision(choose_intent(agent, ()), "SYSTEM", None)
+
+    scored: list[tuple[int, str, NpcIntent, str, str | None, str | None]] = []
+    for intent, source_type, source_ref, state in candidates:
+        ok, _ = _intent_is_eligible(agent, intent)
+        if not ok:
+            continue
+        score = score_intent(agent, intent)
+        if context.active_intent_id == intent.intent_id:
+            score += max(0, context.continuity_bonus) * 100
+        scored.append((score, intent.intent_id, intent, source_type, source_ref, state))
+
+    if not scored:
+        return AgendaDecision(choose_intent(agent, ()), "SYSTEM", None)
+
+    scored.sort(key=lambda row: (-row[0], row[1]))
+    score, _, chosen, source_type, source_ref, state = scored[0]
+    handoff = Handoff.REQUEST_AUTOPTU if chosen.requires_structured_mechanics else Handoff.NONE
+    reasons = ["AGENDA_INTENT_SELECTED", f"SOURCE_{source_type}"]
+    if context.active_intent_id == chosen.intent_id and context.continuity_bonus > 0:
+        reasons.append("CONTINUITY_PRESERVED")
+    if state == "MISSED":
+        reasons.append("MISSED_COMMITMENT_REQUIRES_FOLLOWUP")
+    if handoff == Handoff.REQUEST_AUTOPTU:
+        reasons.append("STRUCTURED_MECHANICS_REQUIRED")
+    return AgendaDecision(
+        Decision(
+            agent_id=agent.agent_id,
+            intent_id=chosen.intent_id,
+            kind=chosen.kind,
+            score=score,
+            handoff=handoff,
+            reason_codes=tuple(reasons),
+            target_ref=chosen.target_ref,
+        ),
+        source_type,
+        source_ref,
+        state,
+    )
+
+
 def receive_information(
     agent: NpcAgentState,
     *,
     claim_ref: str,
     provenance_ref: str,
 ) -> NpcAgentState:
-    """Add one observed/communicated claim to this NPC's private knowledge.
-
-    Hidden world/ecology truth is never imported automatically. The caller must
-    provide an observation, communication or accessible institutional record.
-    """
+    """Add one observed/communicated claim to this NPC's private knowledge."""
     memory = agent.memory_refs
     if provenance_ref not in memory:
         memory = memory + (provenance_ref,)
@@ -236,6 +450,49 @@ def intent_from_dict(data: Mapping[str, object]) -> NpcIntent:
     )
 
 
+def goal_from_dict(data: Mapping[str, object]) -> DurableGoal:
+    return DurableGoal(
+        goal_id=str(data["goal_id"]),
+        intent_kind=str(data["intent_kind"]),
+        priority=int(data.get("priority", 0)),
+        progress=int(data.get("progress", 0)),
+        target_progress=int(data.get("target_progress", 100)),
+        required_knowledge=frozenset(str(v) for v in data.get("required_knowledge", [])),
+        required_permissions=frozenset(str(v) for v in data.get("required_permissions", [])),
+        target_ref=None if data.get("target_ref") is None else str(data["target_ref"]),
+        requires_local_projection=bool(data.get("requires_local_projection", False)),
+        requires_structured_mechanics=bool(data.get("requires_structured_mechanics", False)),
+    )
+
+
+def need_from_dict(data: Mapping[str, object]) -> NeedState:
+    return NeedState(
+        need_id=str(data["need_id"]),
+        intent_kind=str(data["intent_kind"]),
+        pressure=int(data["pressure"]),
+        activation_threshold=int(data.get("activation_threshold", 50)),
+        critical_threshold=int(data.get("critical_threshold", 90)),
+        target_ref=None if data.get("target_ref") is None else str(data["target_ref"]),
+    )
+
+
+def commitment_from_dict(data: Mapping[str, object]) -> ScheduledCommitment:
+    return ScheduledCommitment(
+        commitment_id=str(data["commitment_id"]),
+        intent_kind=str(data["intent_kind"]),
+        start_minute=int(data["start_minute"]),
+        end_minute=int(data["end_minute"]),
+        priority=int(data.get("priority", 5)),
+        hard=bool(data.get("hard", False)),
+        grace_minutes=int(data.get("grace_minutes", 0)),
+        required_knowledge=frozenset(str(v) for v in data.get("required_knowledge", [])),
+        required_permissions=frozenset(str(v) for v in data.get("required_permissions", [])),
+        target_ref=None if data.get("target_ref") is None else str(data["target_ref"]),
+        requires_local_projection=bool(data.get("requires_local_projection", False)),
+        requires_structured_mechanics=bool(data.get("requires_structured_mechanics", False)),
+    )
+
+
 def run_fixture(data: Mapping[str, object]) -> dict[str, Decision]:
     """Execute region-neutral scenarios from a machine-readable fixture."""
     agents = {
@@ -261,6 +518,50 @@ def run_fixture(data: Mapping[str, object]) -> dict[str, Decision]:
     return decisions
 
 
+def run_agenda_fixture(data: Mapping[str, object]) -> dict[str, AgendaDecision]:
+    """Execute global goal/need/schedule scenarios without local special cases."""
+    agents = {
+        str(raw["agent_id"]): agent_from_dict(raw)
+        for raw in data.get("agents", [])
+    }
+    decisions: dict[str, AgendaDecision] = {}
+
+    for scenario in data.get("scenarios", []):
+        scenario_id = str(scenario["scenario_id"])
+        agent = agents[str(scenario["agent_id"])]
+
+        for info in scenario.get("information_before_decision", []):
+            agent = receive_information(
+                agent,
+                claim_ref=str(info["claim_ref"]),
+                provenance_ref=str(info["provenance_ref"]),
+            )
+
+        context_raw = scenario.get("context", {})
+        context = PlanningContext(
+            semantic_minute=int(context_raw.get("semantic_minute", 0)),
+            active_intent_id=(
+                None if context_raw.get("active_intent_id") is None
+                else str(context_raw["active_intent_id"])
+            ),
+            continuity_bonus=int(context_raw.get("continuity_bonus", 1)),
+        )
+        decisions[scenario_id] = choose_agenda_intent(
+            agent,
+            goals=[goal_from_dict(raw) for raw in scenario.get("goals", [])],
+            needs=[need_from_dict(raw) for raw in scenario.get("needs", [])],
+            commitments=[
+                commitment_from_dict(raw) for raw in scenario.get("commitments", [])
+            ],
+            situational_intents=[
+                intent_from_dict(raw) for raw in scenario.get("situational_intents", [])
+            ],
+            context=context,
+        )
+
+    return decisions
+
+
 if __name__ == "__main__":
     import argparse
     import json
@@ -272,9 +573,25 @@ if __name__ == "__main__":
     with open(args.fixture, "r", encoding="utf-8") as handle:
         payload = json.load(handle)
 
-    results = run_fixture(payload)
-    print(json.dumps(
-        {
+    if payload.get("fixture_type") == "GOAL_NEED_SCHEDULE":
+        agenda_results = run_agenda_fixture(payload)
+        rendered = {
+            key: {
+                "intent_id": value.decision.intent_id,
+                "kind": value.decision.kind,
+                "score": value.decision.score,
+                "handoff": value.decision.handoff.value,
+                "reason_codes": list(value.decision.reason_codes),
+                "target_ref": value.decision.target_ref,
+                "source_type": value.source_type,
+                "source_ref": value.source_ref,
+                "schedule_state": value.schedule_state,
+            }
+            for key, value in agenda_results.items()
+        }
+    else:
+        results = run_fixture(payload)
+        rendered = {
             key: {
                 "intent_id": value.intent_id,
                 "kind": value.kind,
@@ -284,7 +601,6 @@ if __name__ == "__main__":
                 "target_ref": value.target_ref,
             }
             for key, value in results.items()
-        },
-        indent=2,
-        sort_keys=True,
-    ))
+        }
+
+    print(json.dumps(rendered, indent=2, sort_keys=True))
