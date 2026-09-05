@@ -1,0 +1,46 @@
+{
+  "fixture_id": "global-npc-publication-broadcast-v1",
+  "agents": [
+    {"agent_id": "publisher.signal"},
+    {"agent_id": "listener.alpha"},
+    {"agent_id": "listener.beta"},
+    {"agent_id": "listener.gamma"},
+    {"agent_id": "listener.outside"},
+    {"agent_id": "listener.offline"}
+  ],
+  "channels": [
+    {"channel_id": "public.signal", "kind": "PUBLIC_BROADCAST", "latency_minutes": 2, "available": true}
+  ],
+  "audience_members": [
+    {"agent_id": "listener.alpha", "scope_ids": ["region.north"], "service_ids": ["service.signal"], "topic_ids": ["route_alert"]},
+    {"agent_id": "listener.beta", "scope_ids": ["region.north"], "service_ids": ["service.signal"], "topic_ids": ["route_alert"]},
+    {"agent_id": "listener.gamma", "scope_ids": ["region.north"], "service_ids": ["service.signal"], "topic_ids": ["route_alert"]},
+    {"agent_id": "listener.outside", "scope_ids": ["region.south"], "service_ids": ["service.signal"], "topic_ids": ["route_alert"]},
+    {"agent_id": "listener.offline", "scope_ids": ["region.north"], "service_ids": ["service.signal"], "topic_ids": ["route_alert"], "receiving_enabled": false}
+  ],
+  "publications": [
+    {
+      "publication_id": "pub.route.warning.1",
+      "publisher_id": "publisher.signal",
+      "source_claim_id": "claim.route.closed",
+      "service_id": "service.signal",
+      "channel_id": "public.signal",
+      "published_minute": 100,
+      "scope_ids": ["region.north"],
+      "topic_id": "route_alert",
+      "retention_until_minute": 130
+    }
+  ],
+  "events": [
+    {"kind": "observe", "event_id": "observe.publisher", "agent_id": "publisher.signal", "claim_id": "claim.route.closed", "subject": "route.delta.state", "value": "CLOSED", "semantic_minute": 99, "confidence": 95},
+    {"kind": "expand", "event_id": "expand.batch.1", "publication_id": "pub.route.warning.1", "semantic_minute": 100, "max_receivers": 2},
+    {"kind": "assess", "event_id": "before.delivery.alpha", "agent_id": "listener.alpha", "subject": "route.delta.state"},
+    {"kind": "expand", "event_id": "expand.batch.2", "publication_id": "pub.route.warning.1", "semantic_minute": 100, "max_receivers": 2},
+    {"kind": "advance", "event_id": "deliver.receipts", "semantic_minute": 102},
+    {"kind": "assess", "event_id": "after.alpha", "agent_id": "listener.alpha", "subject": "route.delta.state"},
+    {"kind": "assess", "event_id": "after.beta", "agent_id": "listener.beta", "subject": "route.delta.state"},
+    {"kind": "assess", "event_id": "after.gamma", "agent_id": "listener.gamma", "subject": "route.delta.state"},
+    {"kind": "assess", "event_id": "outside.unknown", "agent_id": "listener.outside", "subject": "route.delta.state"},
+    {"kind": "assess", "event_id": "offline.unknown", "agent_id": "listener.offline", "subject": "route.delta.state"}
+  ]
+}
