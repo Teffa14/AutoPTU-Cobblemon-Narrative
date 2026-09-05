@@ -1,0 +1,73 @@
+{
+  "contract": "GLOBAL_NPC_WORLD_TRAVEL_V1",
+  "canon_status": "FIXTURE_ONLY",
+  "notes": [
+    "All actors, regions and locations are synthetic.",
+    "The same route planner is exercised across unrelated region refs.",
+    "World-route edges are semantic travel abstractions, not PTU movement squares or Minecraft paths."
+  ],
+  "route_cases": [
+    {
+      "case_id": "reserve-time-for-hard-commitment",
+      "agent_id": "fixture.agent.north",
+      "region_ref": "fixture.region.north",
+      "origin_node": "north.harbor",
+      "destination_node": "north.archive",
+      "semantic_minute": 530,
+      "commitment_start_minute": 600,
+      "arrival_buffer_minutes": 10,
+      "edges": [
+        {"edge_id": "north.harbor-market", "from_node": "north.harbor", "to_node": "north.market", "duration_minutes": 20},
+        {"edge_id": "north.market-archive", "from_node": "north.market", "to_node": "north.archive", "duration_minutes": 25},
+        {"edge_id": "north.harbor-archive-slow", "from_node": "north.harbor", "to_node": "north.archive", "duration_minutes": 70}
+      ],
+      "expected_edge_ids": ["north.harbor-market", "north.market-archive"],
+      "expected_departure_minute": 545,
+      "expected_arrival_minute": 590
+    },
+    {
+      "case_id": "same-core-second-region",
+      "agent_id": "fixture.agent.south",
+      "region_ref": "fixture.region.south",
+      "origin_node": "south.workshop",
+      "destination_node": "south.station",
+      "semantic_minute": 100,
+      "edges": [
+        {"edge_id": "south.workshop-square", "from_node": "south.workshop", "to_node": "south.square", "duration_minutes": 12},
+        {"edge_id": "south.square-station", "from_node": "south.square", "to_node": "south.station", "duration_minutes": 8}
+      ],
+      "expected_edge_ids": ["south.workshop-square", "south.square-station"],
+      "expected_departure_minute": 100,
+      "expected_arrival_minute": 120
+    },
+    {
+      "case_id": "knowledge-gated-shortcut-not-known",
+      "agent_id": "fixture.agent.east",
+      "region_ref": "fixture.region.east",
+      "origin_node": "east.gate",
+      "destination_node": "east.clinic",
+      "semantic_minute": 200,
+      "knowledge": [],
+      "edges": [
+        {"edge_id": "east.secret-cut", "from_node": "east.gate", "to_node": "east.clinic", "duration_minutes": 5, "required_knowledge": ["route.east.secret-cut"]},
+        {"edge_id": "east.public-road", "from_node": "east.gate", "to_node": "east.clinic", "duration_minutes": 18}
+      ],
+      "expected_edge_ids": ["east.public-road"],
+      "expected_departure_minute": 200,
+      "expected_arrival_minute": 218
+    },
+    {
+      "case_id": "permission-gated-route-unavailable",
+      "agent_id": "fixture.agent.west",
+      "region_ref": "fixture.region.west",
+      "origin_node": "west.yard",
+      "destination_node": "west.lab",
+      "semantic_minute": 300,
+      "permissions": [],
+      "edges": [
+        {"edge_id": "west.staff-corridor", "from_node": "west.yard", "to_node": "west.lab", "duration_minutes": 7, "required_permissions": ["access.west.staff-corridor"]}
+      ],
+      "expected_edge_ids": null
+    }
+  ]
+}
