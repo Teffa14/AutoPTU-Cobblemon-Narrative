@@ -53,8 +53,16 @@ Pass 279 agenda layer:
 - `implementation/global-npc-goal-need-schedule-fixture-v1.json`
 - `tests/test_global_npc_goals_needs_schedules.py`
 
-Durable goals, need pressure, semantic-time commitments, finite intent continuity and missed-commitment follow-up now have executable coverage.
+Durable goals, need pressure, semantic-time commitments, finite intent continuity and missed-commitment follow-up have executable coverage.
 
-The immediate next slices should deepen relationships/factions, world travel planning and reservation of travel time, memory revision, NPC-to-NPC communication, dialogue projection and scalable event scheduling. These systems must consume the same global agenda rather than fork it per region.
+Pass 280 social layer:
+- `design/global-npc-social-relationship-faction-contract.md`
+- `tools/global_npc_social.py`
+- `implementation/global-npc-social-relationship-faction-fixture-v1.json`
+- `tests/test_global_npc_social_relationships_factions.py`
+
+Directional relationships, provenance-backed social change, explicit faction duties/permissions, non-hive-mind knowledge and rivalry-to-AutoPTU boundaries now have executable coverage.
+
+The immediate next slice should implement world travel planning and reservation of travel time so schedules and social commitments cannot teleport NPCs between locations. After that, deepen memory revision, NPC-to-NPC communication, dialogue projection and scalable event scheduling. All must consume the same global agenda rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
