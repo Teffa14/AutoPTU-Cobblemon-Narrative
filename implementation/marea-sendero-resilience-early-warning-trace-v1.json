@@ -1,0 +1,79 @@
+{
+  "fixture": "marea-sendero-resilience-early-warning-trace-v1",
+  "pass": 274,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false,
+    "resilience_loss_is_canon": false,
+    "collapse_predicted": false,
+    "critical_threshold_is_canon": false,
+    "ptu_mechanic_promoted": false,
+    "caelo_rule_adopted": false
+  },
+  "trace": [
+    {
+      "event": "REFERENCE_WINDOWS_LOADED",
+      "population": 12,
+      "reference_state_ref": "fixture-only:sendero-resilience-reference-274",
+      "disposition": "DESCRIPTIVE_VARIABILITY_ONLY"
+    },
+    {
+      "event": "CANDIDATE_SIGNAL_OBSERVED",
+      "population": 12,
+      "candidate_signals": ["RISING_VARIANCE", "SLOWER_RETURN_TO_REFERENCE"],
+      "semantic_windows": 3,
+      "disposition": "EARLY_WARNING_PATTERN_CANDIDATE",
+      "collapse_predicted": false
+    },
+    {
+      "event": "SINGLE_METRIC_COLLAPSE_PROMOTION_ATTEMPT",
+      "result": "REJECT_WARNING_AS_COLLAPSE_PREDICTION",
+      "collapse_predicted": false,
+      "critical_threshold_supported": false
+    },
+    {
+      "event": "NOISE_AND_DETECTABILITY_REVIEW",
+      "noise_model_notes_present": true,
+      "detectability_matched": false,
+      "false_positive_check_complete": false,
+      "disposition": "FALSE_POSITIVE_RISK_HIGH"
+    },
+    {
+      "event": "MATCHED_COMPARISON_WINDOWS",
+      "population": 12,
+      "detectability_matched": true,
+      "seasonality_controlled": true,
+      "disturbance_context_matched": true,
+      "false_positive_check_complete": true,
+      "disposition": "RESILIENCE_LOSS_SIGNAL_SUPPORTED_NARROWLY",
+      "scope": "fixture-only:sendero-local-site-use-timing-274",
+      "collapse_predicted": false,
+      "species_global_rule_created": false
+    },
+    {
+      "event": "SECOND_SITE_FALSE_POSITIVE_CONTROL",
+      "candidate_variance_increase": true,
+      "noise_structure_differs": true,
+      "resilience_loss_supported": false,
+      "disposition": "SIGNAL_NOT_SUPPORTED"
+    },
+    {
+      "event": "TACTICAL_SEMANTICS_INFERENCE_ATTEMPT",
+      "requested_semantics": ["HAZARD", "REACTION", "FORCED_MOVEMENT", "STATUS"],
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "event": "RESTART_RESTORE",
+      "population": 12,
+      "semantic_windows_preserved": true,
+      "warning_history_preserved": true,
+      "false_positive_history_preserved": true,
+      "semantic_time_advanced_by_restart": false,
+      "demographic_events": 0
+    }
+  ]
+}
