@@ -1,0 +1,53 @@
+{
+  "fixture_id": "GLOBAL_NPC_AUDIENCE_RESOLUTION_V1",
+  "relationships": [
+    {"source_agent_id": "agent.sender", "target_agent_id": "agent.friend", "affinity": 60, "trust": 70, "respect": 20},
+    {"source_agent_id": "agent.sender", "target_agent_id": "agent.rival", "affinity": -20, "trust": 5, "respect": 55, "rivalry": 75}
+  ],
+  "memberships": [
+    {"agent_id": "agent.sender", "faction_id": "faction.survey", "role_id": "field_member", "commitment": 70, "obligation_tags": ["REPORT_HAZARD"]},
+    {"agent_id": "agent.officer", "faction_id": "faction.survey", "role_id": "duty_officer", "commitment": 90, "obligation_tags": ["RECEIVE_HAZARD_REPORT"]},
+    {"agent_id": "agent.same_faction", "faction_id": "faction.survey", "role_id": "member", "commitment": 40}
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "relationship_and_relevance_selective_contact",
+      "sender_id": "agent.sender",
+      "policy": {"max_recipients": 2, "min_score": 1},
+      "candidates": [
+        {"agent_id": "agent.friend", "reachable_channel_ids": ["local_voice"], "proximity_band": 2, "topic_relevance": 3},
+        {"agent_id": "agent.rival", "reachable_channel_ids": ["message"], "topic_relevance": 1},
+        {"agent_id": "agent.stranger", "reachable_channel_ids": ["message"], "topic_relevance": 0}
+      ]
+    },
+    {
+      "scenario_id": "shared_faction_is_not_broadcast",
+      "sender_id": "agent.sender",
+      "policy": {"max_recipients": 3, "min_score": 1},
+      "candidates": [
+        {"agent_id": "agent.same_faction", "reachable_channel_ids": ["message"]},
+        {"agent_id": "agent.friend", "reachable_channel_ids": ["message"], "topic_relevance": 2}
+      ]
+    },
+    {
+      "scenario_id": "institutional_obligation_routes_report",
+      "sender_id": "agent.sender",
+      "required_obligation_tag": "RECEIVE_HAZARD_REPORT",
+      "policy": {"max_recipients": 1, "min_score": 1},
+      "candidates": [
+        {"agent_id": "agent.officer", "reachable_channel_ids": ["dispatch"], "explicit_role_relevance": 2},
+        {"agent_id": "agent.friend", "reachable_channel_ids": ["message"], "topic_relevance": 4}
+      ]
+    },
+    {
+      "scenario_id": "unreachable_and_budgeted",
+      "sender_id": "agent.sender",
+      "policy": {"max_recipients": 1, "min_score": 1},
+      "candidates": [
+        {"agent_id": "agent.friend", "reachable_channel_ids": ["message"], "topic_relevance": 3},
+        {"agent_id": "agent.officer", "reachable_channel_ids": [], "explicit_role_relevance": 9},
+        {"agent_id": "agent.other", "reachable_channel_ids": ["message"], "topic_relevance": 2}
+      ]
+    }
+  ]
+}
