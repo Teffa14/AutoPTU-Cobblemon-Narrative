@@ -42,7 +42,8 @@ NPC AI must also work for non-ecology goals such as work, travel, training, comm
 - generic crowds may remain aggregate; persistence is required only when an individual matters;
 - event-driven wake-up is preferred over global per-tick replanning for persistent world agents;
 - information recipients must be explicit; shared faction membership never implies broadcast knowledge;
-- private communication overload defers due work by default instead of silently destroying world information.
+- private communication overload defers due work by default instead of silently destroying world information;
+- successful private delivery may wake only its explicit managed receiver; failed, deferred or unacknowledged communication cannot alter agenda eligibility.
 
 ## Current executable foundation
 
@@ -115,6 +116,14 @@ Pass 286 durable communication runtime:
 
 Audience selections can now schedule real private envelopes through deterministic channels. The information queue persists pending deliveries, delivery status, delivered IDs and local-ack waits across snapshot/restore. Budgeted processing exposes deferred backlog and preserves undelivered private events instead of dropping them under load.
 
-The immediate next slices should deepen direct delivery-to-replanning coordination, public/broadcast/publication channels with explicit audience expansion and retention policy, sustained-load fairness/backlog aging, durable memory-ledger persistence, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
+Pass 287 delivery-to-replanning coordinator:
+- `design/global-npc-delivery-replanning-coordinator-contract.md`
+- `tools/global_npc_world_event_coordinator.py`
+- `implementation/global-npc-world-event-coordinator-fixture-v1.json`
+- `tests/test_global_npc_world_event_coordinator.py`
+
+Successful private delivery now flows directly into the existing receiver knowledge reference, one selective `KNOWLEDGE_DELIVERED` wake-up and the existing agenda planner. Failed, deferred and unacknowledged communication cannot wake the receiver as though information arrived. Duplicate materialization is guarded in-process. If the receiver is already `AUTOPTU_BOUND`, the coordinator preserves tactical ownership through `HOLD_AUTOPTU`.
+
+The immediate next slices should deepen public/broadcast/publication channels with explicit audience expansion and retention policy, sustained-load fairness/backlog aging and replan budgets, durable memory-ledger/coordinator persistence, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
