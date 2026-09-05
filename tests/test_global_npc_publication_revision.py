@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from tools.global_npc_publication import PublicPublication
 from tools.global_npc_publication_revision import (
     PublicationRevision,
     PublicationRevisionRegistry,
     RevisionKind,
+    replay_fixture,
 )
 
 
@@ -89,6 +91,16 @@ class PublicationRevisionRegistryTests(unittest.TestCase):
             PublicationRevision(publication("bad-original", 20, supersedes="bulletin-1"), RevisionKind.ORIGINAL)
         with self.assertRaises(ValueError):
             PublicationRevision(publication("bad-correction", 20), RevisionKind.CORRECTION)
+
+    def test_fixture_replays_partial_receipt_and_restart(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        result = replay_fixture(root / "implementation" / "global-npc-publication-revision-fixture-v1.json")
+        by_event = {row["event_id"]: row for row in result["results"]}
+        self.assertEqual(by_event["restart-registry"]["revision_count"], 2)
+        self.assertTrue(by_event["assess-amber"]["current_revision_received"])
+        self.assertEqual(by_event["assess-birch"]["latest_received_publication_id"], "route-bulletin-v1")
+        self.assertEqual(by_event["assess-cinder"]["latest_received_kind"], "CORRECTION")
+        self.assertIsNone(by_event["assess-delta"]["latest_received_publication_id"])
 
     def test_core_is_region_neutral_and_contains_no_tactical_resolution(self) -> None:
         import inspect
