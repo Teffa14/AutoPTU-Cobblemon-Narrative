@@ -1,0 +1,138 @@
+{
+  "fixture_id": "global-npc-ai-agent-fixture-v1",
+  "status": "FIXTURE_ONLY",
+  "purpose": "Prove one region-neutral Ouros world-agent planner can drive persistent NPC decisions across unrelated fixture regions without hidden-world omniscience or duplicated PTU tactics.",
+  "regions": [
+    "fixture:region:north",
+    "fixture:region:south"
+  ],
+  "agents": [
+    {
+      "agent_id": "fixture:npc:researcher",
+      "mode": "OFFSCREEN_NAMED",
+      "region_ref": "fixture:region:north",
+      "location_ref": "fixture:site:north-field",
+      "risk_tolerance": 35,
+      "energy": 80,
+      "knowledge": [],
+      "permissions": ["REPORT_FIELD_OBSERVATION"]
+    },
+    {
+      "agent_id": "fixture:npc:courier",
+      "mode": "OFFSCREEN_NAMED",
+      "region_ref": "fixture:region:south",
+      "location_ref": "fixture:site:south-depot",
+      "risk_tolerance": 55,
+      "energy": 75,
+      "knowledge": [],
+      "permissions": ["TRAVEL_ROUTE"]
+    },
+    {
+      "agent_id": "fixture:npc:steward",
+      "mode": "LOCAL_ACTIVE",
+      "region_ref": "fixture:region:north",
+      "location_ref": "fixture:site:north-gate",
+      "risk_tolerance": 65,
+      "energy": 90,
+      "knowledge": ["claim:visible-threat"],
+      "permissions": ["REPORT_FIELD_OBSERVATION"]
+    }
+  ],
+  "hidden_world_truth": [
+    "fixture:hidden:ecology-risk-exists"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "researcher_without_observation_does_not_know_hidden_risk",
+      "agent_id": "fixture:npc:researcher",
+      "intents": [
+        {
+          "intent_id": "report-risk",
+          "kind": "REPORT",
+          "base_priority": 50,
+          "required_knowledge": ["claim:ecology-risk"]
+        },
+        {
+          "intent_id": "scheduled-survey",
+          "kind": "WORK",
+          "base_priority": 10,
+          "obligation": 4
+        }
+      ],
+      "expected": {"kind": "WORK", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "researcher_changes_plan_after_message",
+      "agent_id": "fixture:npc:researcher",
+      "information_before_decision": [
+        {
+          "claim_ref": "claim:ecology-risk",
+          "provenance_ref": "fixture:message:field-obs-001"
+        }
+      ],
+      "intents": [
+        {
+          "intent_id": "report-risk",
+          "kind": "REPORT",
+          "base_priority": 50,
+          "required_knowledge": ["claim:ecology-risk"]
+        },
+        {
+          "intent_id": "scheduled-survey",
+          "kind": "WORK",
+          "base_priority": 10,
+          "obligation": 4
+        }
+      ],
+      "expected": {"kind": "REPORT", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "south_region_uses_same_global_planner",
+      "agent_id": "fixture:npc:courier",
+      "intents": [
+        {
+          "intent_id": "deliver",
+          "kind": "TRAVEL",
+          "base_priority": 12,
+          "obligation": 4,
+          "required_permissions": ["TRAVEL_ROUTE"]
+        },
+        {
+          "intent_id": "social",
+          "kind": "SOCIALIZE",
+          "base_priority": 8
+        }
+      ],
+      "expected": {"kind": "TRAVEL", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "world_conflict_requests_autoptu_instead_of_resolving_tactics",
+      "agent_id": "fixture:npc:steward",
+      "intents": [
+        {
+          "intent_id": "confront-visible-threat",
+          "kind": "CONFRONT",
+          "base_priority": 25,
+          "urgency": 6,
+          "required_knowledge": ["claim:visible-threat"],
+          "requires_structured_mechanics": true,
+          "target_ref": "fixture:actor:threat"
+        },
+        {
+          "intent_id": "report",
+          "kind": "REPORT",
+          "base_priority": 6
+        }
+      ],
+      "expected": {"kind": "CONFRONT", "handoff": "REQUEST_AUTOPTU"}
+    }
+  ],
+  "invariants": [
+    "Marea and Sendero are not referenced by the global planner or fixture.",
+    "All NPC decisions use only the agent's own knowledge, permissions, obligations, risk and context inputs.",
+    "Hidden world truth is not injected into NPC knowledge.",
+    "Off-screen named NPCs can plan work, travel and communication without a Minecraft entity.",
+    "Structured tactical resolution produces REQUEST_AUTOPTU; the world planner never mutates HP, status, position legality or damage.",
+    "Minecraft/Cobblemon UUIDs are presentation correlation only and are absent from the global agent identity model."
+  ]
+}
