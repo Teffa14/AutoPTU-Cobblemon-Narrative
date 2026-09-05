@@ -43,10 +43,18 @@ NPC AI must also work for non-ecology goals such as work, travel, training, comm
 
 ## Current executable foundation
 
+Base planner:
 - `tools/global_npc_ai.py`
 - `implementation/global-npc-ai-agent-fixture-v1.json`
 - `tests/test_global_npc_ai.py`
 
-The immediate next slices should deepen this global system: durable goals/needs, schedule state, relationships/factions, world travel planning, memory revision, NPC-to-NPC communication, dialogue projection and scalable tick/event scheduling.
+Pass 279 agenda layer:
+- `design/global-npc-goal-need-schedule-contract.md`
+- `implementation/global-npc-goal-need-schedule-fixture-v1.json`
+- `tests/test_global_npc_goals_needs_schedules.py`
+
+Durable goals, need pressure, semantic-time commitments, finite intent continuity and missed-commitment follow-up now have executable coverage.
+
+The immediate next slices should deepen relationships/factions, world travel planning and reservation of travel time, memory revision, NPC-to-NPC communication, dialogue projection and scalable event scheduling. These systems must consume the same global agenda rather than fork it per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
