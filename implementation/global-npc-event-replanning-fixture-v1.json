@@ -1,0 +1,70 @@
+{
+  "fixture_id": "GLOBAL_NPC_EVENT_REPLANNING_V1",
+  "status": "REGRESSION_FIXTURE_ONLY",
+  "canon": false,
+  "regions": ["fixture.region.north", "fixture.region.south"],
+  "events": [
+    {
+      "event_id": "fixture.queue.1",
+      "kind": "schedule",
+      "trigger_id": "trigger.agent.a.knowledge",
+      "agent_id": "fixture.agent.a",
+      "reason": "KNOWLEDGE_DELIVERED",
+      "due_minute": 120,
+      "source_ref": "fixture.message.route_closed",
+      "priority": 6
+    },
+    {
+      "event_id": "fixture.queue.2",
+      "kind": "schedule",
+      "trigger_id": "trigger.agent.a.social",
+      "agent_id": "fixture.agent.a",
+      "reason": "SOCIAL_CHANGE",
+      "due_minute": 120,
+      "source_ref": "fixture.relationship.promise_kept",
+      "priority": 3
+    },
+    {
+      "event_id": "fixture.queue.3",
+      "kind": "schedule",
+      "trigger_id": "trigger.agent.b.schedule",
+      "agent_id": "fixture.agent.b",
+      "reason": "SCHEDULE_DUE",
+      "due_minute": 135,
+      "source_ref": "fixture.commitment.training",
+      "priority": 5
+    },
+    {
+      "event_id": "fixture.advance.before",
+      "kind": "advance",
+      "semantic_minute": 119
+    },
+    {
+      "event_id": "fixture.restart",
+      "kind": "restart"
+    },
+    {
+      "event_id": "fixture.advance.a",
+      "kind": "advance",
+      "semantic_minute": 120
+    },
+    {
+      "event_id": "fixture.advance.b",
+      "kind": "advance",
+      "semantic_minute": 135
+    },
+    {
+      "event_id": "fixture.advance.idempotent",
+      "kind": "advance",
+      "semantic_minute": 200
+    }
+  ],
+  "expected_invariants": [
+    "no agent replans before a trigger becomes due",
+    "multiple same-minute triggers for one agent become one replan batch",
+    "different agents remain independently scheduled",
+    "restart preserves pending trigger timing and deterministic order",
+    "processed triggers do not replay after completion",
+    "fixture regions never define core planner behavior"
+  ]
+}
