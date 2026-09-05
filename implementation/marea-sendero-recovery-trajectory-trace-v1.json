@@ -1,0 +1,37 @@
+{
+  "schema": "OUROS_ECOLOGY_TRACE_V1",
+  "pass": 272,
+  "fixture_id": "marea_sendero_recovery_trajectory_v1",
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "disturbance_is_canon": false,
+    "secondary_pressure_is_canon": false,
+    "reference_state_is_canon": false,
+    "recovery_outcome_is_canon": false,
+    "hysteresis_is_canon": false,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false
+  },
+  "fixture_entities": {
+    "focal_site": "fixture-only:sendero-recovery-site-272",
+    "source_a": "fixture-only:counted-fletchling-source-a-272",
+    "disturbance": "fixture-only:localized-disturbance-272",
+    "secondary_pressure": "fixture-only:secondary-pressure-272",
+    "reference": "fixture-only:matched-reference-272"
+  },
+  "trace": [
+    {"step":1,"event":"REFERENCE_ESTABLISHED","population":12,"activity_timing":"EARLY_WINDOW","site_use":"PRIMARY_PERCH","reference_provenance":"MATCHED_PRE_DISTURBANCE_AND_COMPARATOR","demographic_events":0,"ptu_state_mutations":0,"autoptu_handoffs":0},
+    {"step":2,"event":"DISTURBANCE_RESPONSE_DOCUMENTED","population":12,"activity_timing":"LATE_WINDOW","site_use":"SECONDARY_PERCH","causal_claim_ref":"fixture-only:pass271-narrow-causal-claim","recovery_disposition":"DISTURBANCE_ACTIVE"},
+    {"step":3,"event":"DISTURBANCE_CESSATION_CONFIRMED","population":12,"cessation_authority":"FIXTURE_AUTHORITY","semantic_epoch":27210,"recovery_disposition":"CESSATION_CONFIRMED","recovery_claimed":false},
+    {"step":4,"event":"IMMEDIATE_POST_CESSATION_ASSESSMENT","population":12,"activity_timing":"LATE_WINDOW","site_use":"SECONDARY_PERCH","activity_disposition":"RECOVERY_LAG_OBSERVED","site_use_disposition":"RECOVERY_LAG_OBSERVED","system_recovered":false},
+    {"step":5,"event":"SINGLE_NORMAL_SIGHTING","population":12,"observed_site_use":"PRIMARY_PERCH","requested":"SYSTEM_RECOVERED","result":"REJECT_SINGLE_OBSERVATION_AS_RECOVERY"},
+    {"step":6,"event":"LATER_DIMENSION_SPECIFIC_ASSESSMENT","population":12,"activity_timing":"LATE_WINDOW","site_use":"PRIMARY_PERCH","activity_disposition":"PERSISTENT_SHIFT_HYPOTHESIS","site_use_disposition":"RECOVERED_WITHIN_REFERENCE_BAND","system_recovered":false},
+    {"step":7,"event":"HYSTERESIS_PROMOTION_ATTEMPT","population":12,"requested":"HYSTERESIS_CONFIRMED","evidence":"PERSISTENT_ACTIVITY_SHIFT_ONLY","result":"REJECT_INSUFFICIENT_HYSTERESIS_EVIDENCE"},
+    {"step":8,"event":"SECONDARY_PRESSURE_DOCUMENTED","population":12,"activity_timing":"LATE_WINDOW","recovery_disposition":"SECONDARY_PRESSURE_SUSPECTED","original_cause_reinterpreted":false},
+    {"step":9,"event":"SECONDARY_PRESSURE_CESSATION_CONFIRMED","population":12,"semantic_epoch":27220,"activity_disposition":"RECOVERY_ASSESSMENT_PENDING","recovery_claimed":false},
+    {"step":10,"event":"MATCHED_FOLLOWUP_ASSESSMENT","population":12,"activity_timing":"EARLY_WINDOW","site_use":"PRIMARY_PERCH","activity_disposition":"RECOVERED_WITHIN_REFERENCE_BAND","site_use_disposition":"RECOVERED_WITHIN_REFERENCE_BAND","hysteresis_confirmed":false,"population_recovery_claimed":false},
+    {"step":11,"event":"TACTICAL_SEMANTICS_INFERENCE_ATTEMPT","requested_semantics":["REACTION","INTERCEPTION","FORCED_MOVEMENT","PERSISTENT_STATUS"],"result":"REJECT_UNVERIFIED_TACTICAL_SEMANTICS","ptu_state_mutations":0,"autoptu_handoffs":0},
+    {"step":12,"event":"RESTART_RESTORE","population":12,"trajectory_history_preserved":true,"dimension_history_preserved":true,"cessation_epochs_preserved":true,"demographic_events":0,"ptu_state_mutations":0,"autoptu_handoffs":0}
+  ]
+}
