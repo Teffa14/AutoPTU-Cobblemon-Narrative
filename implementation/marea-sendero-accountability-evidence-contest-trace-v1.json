@@ -1,0 +1,132 @@
+{
+  "contract": "ECOLOGICAL_ACCOUNTABILITY_EVIDENCE_CONTEST_V1",
+  "pass": 278,
+  "status": "fixture_only_non_canon",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false,
+    "sendero_institution_created_as_canon": false,
+    "appeal_right_created_as_canon": false,
+    "review_body_created_as_canon": false,
+    "ecological_truth_duplicated": false
+  },
+  "trace": [
+    {
+      "event": "DELEGATED_OBLIGATION_REVIEW_PACKET_OPENED",
+      "population": 12,
+      "delegation_ref": "fixture.delegate.sendero.stewardship.277",
+      "obligation_ref": "fixture.obligation.marker_inspection_log",
+      "challenged_interpretation_ref": "fixture.interpretation.initial_compliance",
+      "review_disposition": "REVIEW_PENDING"
+    },
+    {
+      "event": "CHALLENGE_AS_AUTOMATIC_REVERSAL_ATTEMPT",
+      "population": 12,
+      "challenge_present": true,
+      "result": "REJECT_CHALLENGE_AS_AUTOMATIC_REVERSAL",
+      "delegation_suspended": false,
+      "original_interpretation_erased": false
+    },
+    {
+      "event": "FIRST_LOG_METHOD_PROFILE_LOADED",
+      "population": 12,
+      "method_profile": "fixture.method.visual_marker_check.v1",
+      "semantic_window": "fixture.window.dawn.01",
+      "visibility_class": "GOOD",
+      "observer_ref": "fixture.observer.a",
+      "evidence_ref": "fixture.log.a1"
+    },
+    {
+      "event": "SECOND_LOG_METHOD_MISMATCH_DETECTED",
+      "population": 12,
+      "method_profile": "fixture.method.visual_marker_check.v2",
+      "semantic_window": "fixture.window.rain.02",
+      "visibility_class": "POOR",
+      "observer_ref": "fixture.observer.b",
+      "evidence_ref": "fixture.log.b1",
+      "comparability_assessment": "METHODS_NOT_COMPARABLE",
+      "result": "METHODS_NOT_COMPARABLE"
+    },
+    {
+      "event": "MISSING_LOG_AS_NONCOMPLIANCE_ATTEMPT",
+      "population": 12,
+      "expected_record": "fixture.log.change_record",
+      "record_available_to_reviewer": false,
+      "result": "REJECT_MISSING_EVIDENCE_AS_NONCOMPLIANCE_PROOF",
+      "noncompliance_proven": false,
+      "bad_faith_inferred": false
+    },
+    {
+      "event": "APPARENT_CORROBORATION_INDEPENDENCE_CHECK",
+      "population": 12,
+      "evidence_refs": ["fixture.photo.c1", "fixture.photo.c2"],
+      "same_source_capture_session": true,
+      "independence_assessment": "INDEPENDENCE_NOT_ESTABLISHED",
+      "result": "INDEPENDENCE_NOT_ESTABLISHED"
+    },
+    {
+      "event": "COMPARABLE_FOLLOWUP_AUTHORIZED_BY_EXISTING_AUTHORITY",
+      "population": 12,
+      "authority_source": "fixture.authority.valid_followup_scope",
+      "method_profile": "fixture.method.visual_marker_check.v1",
+      "semantic_window": "fixture.window.dawn.03",
+      "visibility_class": "GOOD",
+      "review_disposition": "FOLLOWUP_OBSERVATION_AUTHORIZED"
+    },
+    {
+      "event": "STRONGER_RECORD_SUPPORTS_NARROW_PROCESS_FINDING",
+      "population": 12,
+      "evidence_refs": ["fixture.log.a1", "fixture.log.c1", "fixture.provenance.marker_service_record"],
+      "comparability_assessment": "COMPARABLE_FOR_NARROW_OBLIGATION",
+      "supports_process_compliance": true,
+      "supports_ecological_outcome": false,
+      "review_disposition": "EVIDENCE_SUFFICIENT_FOR_NARROW_PROCESS_FINDING"
+    },
+    {
+      "event": "INTERPRETATION_SUPERSESSION_RECORDED",
+      "population": 12,
+      "historical_interpretation_preserved": true,
+      "new_interpretation_ref": "fixture.interpretation.reviewed_compliance",
+      "supersedes_interpretation_ref": "fixture.interpretation.initial_compliance",
+      "review_disposition": "INTERPRETATION_SUPERSEDED_BY_STRONGER_RECORD"
+    },
+    {
+      "event": "ECOLOGICAL_OUTCOME_INFERENCE_ATTEMPT",
+      "population": 12,
+      "process_finding_supported": true,
+      "result": "REJECT_PROCESS_FINDING_AS_ECOLOGICAL_OUTCOME",
+      "population_recovery_claimed": false,
+      "habitat_quality_claimed": false,
+      "species_behavior_rule_created": false
+    },
+    {
+      "event": "FORMAL_APPEAL_RIGHT_INFERENCE_ATTEMPT",
+      "population": 12,
+      "evidence_contest_exists": true,
+      "canon_appeal_procedure_exists": false,
+      "result": "REJECT_EVIDENCE_CONTEST_AS_IMPLIED_APPEAL_RIGHT",
+      "stay_created": false,
+      "remedy_created": false
+    },
+    {
+      "event": "TACTICAL_SEMANTICS_INFERENCE_ATTEMPT",
+      "population": 12,
+      "requested_semantics": ["INTERCEPTION", "FORCED_MOVEMENT", "REACTION", "PROTECTED_ZONE"],
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "event": "RESTART_RESTORE",
+      "population": 12,
+      "contest_history_preserved": true,
+      "interpretation_lineage_preserved": true,
+      "provenance_preserved": true,
+      "semantic_window_advanced_by_restart": false,
+      "demographic_events": 0,
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    }
+  ]
+}
