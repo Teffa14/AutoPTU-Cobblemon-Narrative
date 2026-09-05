@@ -10,6 +10,7 @@ on:
       - 'tools/global_npc_memory.py'
       - 'tools/global_npc_information_network.py'
       - 'tools/global_npc_replanning.py'
+      - 'tools/global_npc_audience.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
@@ -17,6 +18,7 @@ on:
       - 'implementation/global-npc-memory-*.json'
       - 'implementation/global-npc-information-*.json'
       - 'implementation/global-npc-event-replanning-*.json'
+      - 'implementation/global-npc-audience-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -29,6 +31,7 @@ on:
       - 'tools/global_npc_memory.py'
       - 'tools/global_npc_information_network.py'
       - 'tools/global_npc_replanning.py'
+      - 'tools/global_npc_audience.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
@@ -36,6 +39,7 @@ on:
       - 'implementation/global-npc-memory-*.json'
       - 'implementation/global-npc-information-*.json'
       - 'implementation/global-npc-event-replanning-*.json'
+      - 'implementation/global-npc-audience-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -63,5 +67,7 @@ jobs:
         run: python -m tools.global_npc_information_network implementation/global-npc-information-propagation-fixture-v1.json
       - name: Replay global NPC event replanning fixture
         run: python -m tools.global_npc_replanning implementation/global-npc-event-replanning-fixture-v1.json
+      - name: Replay global NPC audience resolution fixture
+        run: python -m tools.global_npc_audience implementation/global-npc-audience-resolution-fixture-v1.json
       - name: Run global NPC AI regressions
         run: python -m unittest discover -s tests -p 'test_global_npc_*.py' -v
