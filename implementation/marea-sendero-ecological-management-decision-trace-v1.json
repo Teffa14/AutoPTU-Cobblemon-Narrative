@@ -1,0 +1,113 @@
+{
+  "fixture": "marea-sendero-ecological-management-decision-trace-v1",
+  "pass": 275,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false,
+    "sendero_institution_created_as_canon": false,
+    "access_restriction_created_as_canon": false,
+    "risk_posture_created_as_species_trait": false,
+    "ptu_mechanic_promoted": false,
+    "caelo_rule_adopted": false
+  },
+  "trace": [
+    {
+      "event": "WARNING_EVIDENCE_LOADED",
+      "population": 12,
+      "evidence_ref": "fixture-only:pass-274-resilience-warning-275",
+      "evidence_disposition": "RESILIENCE_LOSS_SIGNAL_SUPPORTED_NARROWLY",
+      "policy_command_created": false,
+      "disposition": "EVIDENCE_REVIEW_PENDING"
+    },
+    {
+      "event": "AUTOMATIC_POLICY_PROMOTION_ATTEMPT",
+      "requested_action": "TEMPORARY_ACCESS_RESTRICTION",
+      "result": "REJECT_SIGNAL_AS_POLICY_COMMAND",
+      "ecological_threshold_equals_decision_threshold": false
+    },
+    {
+      "event": "OBJECTIVE_PROFILES_DECLARED",
+      "population": 12,
+      "decision_owners": [
+        {
+          "id": "fixture-only:stewardship-owner-a-275",
+          "objective": "MINIMIZE_PLAUSIBLE_IRREVERSIBLE_HABITAT_LOSS",
+          "risk_posture": "PRECAUTION_LEANING"
+        },
+        {
+          "id": "fixture-only:access-owner-b-275",
+          "objective": "MAINTAIN_ACCESS_WHILE_AVOIDING_MATERIAL_ECOLOGICAL_DAMAGE",
+          "risk_posture": "EVIDENCE_BEFORE_RESTRICTION_LEANING"
+        }
+      ],
+      "same_evidence_consumed": true,
+      "ecological_truth_duplicated": false,
+      "disposition": "OBJECTIVES_DECLARED"
+    },
+    {
+      "event": "HIGH_VALUE_UNCERTAINTY_IDENTIFIED",
+      "critical_uncertainty_ref": "fixture-only:whether-warning-persists-under-one-matched-window-275",
+      "could_change_owner_b_action": true,
+      "monitoring_cost_units": 1,
+      "decision_horizon_remaining": true,
+      "disposition": "MONITORING_BEFORE_ACTION"
+    },
+    {
+      "event": "LOW_VALUE_MONITORING_ATTEMPT",
+      "uncertainty_ref": "fixture-only:decorative-observation-count-275",
+      "could_change_selected_action": false,
+      "result": "ARCHIVE_WITHOUT_DECISION_GATE",
+      "mandatory_progress_created": false
+    },
+    {
+      "event": "PRECAUTIONARY_ACTION_SELECTED",
+      "decision_owner_ref": "fixture-only:stewardship-owner-a-275",
+      "selected_action": "TEMPORARY_LOCAL_ACCESS_BUFFER",
+      "scope": "fixture-only:sendero-local-microhabitat-275",
+      "uncertainty_acknowledged": true,
+      "reversibility_class": "EASILY_REVERSIBLE",
+      "semantic_review_horizon": "fixture-only:review-window-275-a",
+      "rollback_condition_present": true,
+      "minecraft_presentation_allowed": true,
+      "ptu_terrain_created": false,
+      "disposition": "PRECAUTIONARY_ACTION_SELECTED"
+    },
+    {
+      "event": "MATCHED_MONITORING_RESULT",
+      "population": 12,
+      "critical_uncertainty_reduced": true,
+      "warning_reproduced": false,
+      "ecological_signal_disposition": "INCONCLUSIVE",
+      "automatic_restriction_removal": false,
+      "disposition": "REASSESSMENT_REQUIRED"
+    },
+    {
+      "event": "REASSESSMENT_AND_ROLLBACK",
+      "decision_owner_ref": "fixture-only:stewardship-owner-a-275",
+      "selected_action": "REMOVE_TEMPORARY_LOCAL_ACCESS_BUFFER",
+      "reason": "declared-review-condition-met",
+      "ecological_recovery_claimed": false,
+      "population": 12,
+      "disposition": "ACTION_REVERSED_OR_EXPIRED"
+    },
+    {
+      "event": "TACTICAL_SEMANTICS_INFERENCE_ATTEMPT",
+      "requested_semantics": ["BLOCKER", "DIFFICULT_TERRAIN", "REACTION", "FORCED_MOVEMENT"],
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "event": "RESTART_RESTORE",
+      "population": 12,
+      "decision_history_preserved": true,
+      "objective_profiles_preserved": true,
+      "risk_profiles_preserved": true,
+      "monitoring_value_history_preserved": true,
+      "semantic_review_horizon_advanced_by_restart": false,
+      "demographic_events": 0
+    }
+  ]
+}
