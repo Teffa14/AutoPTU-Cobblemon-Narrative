@@ -6,16 +6,18 @@ on:
     paths:
       - 'tools/global_npc_ai.py'
       - 'implementation/global-npc-ai-*.json'
-      - 'tests/test_global_npc_ai.py'
-      - 'design/global-npc-world-agent-ai-contract.md'
+      - 'implementation/global-npc-goal-need-schedule-*.json'
+      - 'tests/test_global_npc_*.py'
+      - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
       - '.github/workflows/global-npc-ai.yml'
   pull_request:
     paths:
       - 'tools/global_npc_ai.py'
       - 'implementation/global-npc-ai-*.json'
-      - 'tests/test_global_npc_ai.py'
-      - 'design/global-npc-world-agent-ai-contract.md'
+      - 'implementation/global-npc-goal-need-schedule-*.json'
+      - 'tests/test_global_npc_*.py'
+      - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
       - '.github/workflows/global-npc-ai.yml'
 
@@ -27,7 +29,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Replay global NPC AI fixture
+      - name: Replay global NPC base fixture
         run: python tools/global_npc_ai.py implementation/global-npc-ai-agent-fixture-v1.json
+      - name: Replay global NPC agenda fixture
+        run: python tools/global_npc_ai.py implementation/global-npc-goal-need-schedule-fixture-v1.json
       - name: Run global NPC AI regressions
-        run: python -m unittest tests.test_global_npc_ai -v
+        run: python -m unittest discover -s tests -p 'test_global_npc_*.py' -v
