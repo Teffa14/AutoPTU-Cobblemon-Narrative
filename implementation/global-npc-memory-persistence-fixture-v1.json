@@ -1,0 +1,53 @@
+{
+  "fixture_id": "global-npc-memory-persistence-v1",
+  "agents": [
+    {"agent_id": "witness"},
+    {"agent_id": "traveler"},
+    {"agent_id": "bystander"}
+  ],
+  "events": [
+    {
+      "event_id": "observe-1",
+      "kind": "observe",
+      "agent_id": "witness",
+      "claim_id": "witness-route-1",
+      "subject": "route:synthetic-pass",
+      "value": "closed",
+      "semantic_minute": 10,
+      "confidence": 90
+    },
+    {
+      "event_id": "tell-1",
+      "kind": "tell",
+      "sender_id": "witness",
+      "receiver_id": "traveler",
+      "source_claim_id": "witness-route-1",
+      "claim_id": "traveler-route-1",
+      "message_id": "message-route-1",
+      "semantic_minute": 15,
+      "receiver_trust_in_sender": 40
+    },
+    {
+      "event_id": "assess-before",
+      "kind": "assess",
+      "agent_id": "traveler",
+      "subject": "route:synthetic-pass"
+    },
+    {
+      "event_id": "restart-1",
+      "kind": "restart"
+    },
+    {
+      "event_id": "assess-after",
+      "kind": "assess",
+      "agent_id": "traveler",
+      "subject": "route:synthetic-pass"
+    },
+    {
+      "event_id": "assess-uninformed",
+      "kind": "assess",
+      "agent_id": "bystander",
+      "subject": "route:synthetic-pass"
+    }
+  ]
+}

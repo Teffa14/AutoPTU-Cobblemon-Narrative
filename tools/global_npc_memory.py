@@ -5,7 +5,11 @@ import sys
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Mapping
+
+
+LEDGER_SNAPSHOT_SCHEMA = "OUROS_NPC_KNOWLEDGE_LEDGER_V1"
+LEDGER_STORE_SNAPSHOT_SCHEMA = "OUROS_NPC_KNOWLEDGE_LEDGER_STORE_V1"
 
 
 class SourceKind(str, Enum):
@@ -37,14 +41,53 @@ class Claim:
     message_id: str | None = None
 
     def __post_init__(self) -> None:
+        if not self.claim_id:
+            raise ValueError("claim_id is required")
+        if not self.subject:
+            raise ValueError("subject is required")
+        if not self.provenance_root:
+            raise ValueError("provenance_root is required")
         if not 0 <= self.confidence <= 100:
             raise ValueError("confidence must be between 0 and 100")
+
+    def to_snapshot(self) -> dict:
+        return {
+            "claim_id": self.claim_id,
+            "subject": self.subject,
+            "value": self.value,
+            "source_kind": self.source_kind.value,
+            "source_agent_id": self.source_agent_id,
+            "semantic_minute": self.semantic_minute,
+            "confidence": self.confidence,
+            "provenance_root": self.provenance_root,
+            "parent_claim_id": self.parent_claim_id,
+            "message_id": self.message_id,
+        }
+
+    @classmethod
+    def from_snapshot(cls, raw: Mapping[str, object]) -> "Claim":
+        return cls(
+            claim_id=str(raw["claim_id"]),
+            subject=str(raw["subject"]),
+            value=str(raw["value"]),
+            source_kind=SourceKind(str(raw["source_kind"])),
+            source_agent_id=None if raw.get("source_agent_id") is None else str(raw["source_agent_id"]),
+            semantic_minute=int(raw["semantic_minute"]),
+            confidence=int(raw["confidence"]),
+            provenance_root=str(raw["provenance_root"]),
+            parent_claim_id=None if raw.get("parent_claim_id") is None else str(raw["parent_claim_id"]),
+            message_id=None if raw.get("message_id") is None else str(raw["message_id"]),
+        )
 
 
 @dataclass
 class KnowledgeLedger:
     agent_id: str
     claims: dict[str, Claim] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if not self.agent_id:
+            raise ValueError("agent_id is required")
 
     def add(self, claim: Claim) -> None:
         existing = self.claims.get(claim.claim_id)
@@ -57,6 +100,68 @@ class KnowledgeLedger:
             (claim for claim in self.claims.values() if claim.subject == subject),
             key=lambda claim: (claim.semantic_minute, claim.claim_id),
         )
+
+    def snapshot(self) -> dict:
+        return {
+            "schema": LEDGER_SNAPSHOT_SCHEMA,
+            "agent_id": self.agent_id,
+            "claims": [
+                self.claims[claim_id].to_snapshot()
+                for claim_id in sorted(self.claims)
+            ],
+        }
+
+    @classmethod
+    def restore(cls, snapshot: Mapping[str, object]) -> "KnowledgeLedger":
+        if snapshot.get("schema") != LEDGER_SNAPSHOT_SCHEMA:
+            raise ValueError("unsupported knowledge ledger snapshot schema")
+        agent_id = str(snapshot["agent_id"])
+        ledger = cls(agent_id)
+        rows = snapshot.get("claims", [])
+        if not isinstance(rows, list):
+            raise ValueError("knowledge ledger claims must be a list")
+        for raw in rows:
+            if not isinstance(raw, Mapping):
+                raise ValueError("knowledge ledger claim row must be a mapping")
+            ledger.add(Claim.from_snapshot(raw))
+        return ledger
+
+
+@dataclass
+class KnowledgeLedgerStore:
+    ledgers: dict[str, KnowledgeLedger] = field(default_factory=dict)
+
+    def add(self, ledger: KnowledgeLedger) -> None:
+        existing = self.ledgers.get(ledger.agent_id)
+        if existing is not None and existing != ledger:
+            raise ValueError(f"agent ledger collision: {ledger.agent_id}")
+        self.ledgers[ledger.agent_id] = ledger
+
+    def require(self, agent_id: str) -> KnowledgeLedger:
+        return self.ledgers[agent_id]
+
+    def snapshot(self) -> dict:
+        return {
+            "schema": LEDGER_STORE_SNAPSHOT_SCHEMA,
+            "ledgers": [
+                self.ledgers[agent_id].snapshot()
+                for agent_id in sorted(self.ledgers)
+            ],
+        }
+
+    @classmethod
+    def restore(cls, snapshot: Mapping[str, object]) -> "KnowledgeLedgerStore":
+        if snapshot.get("schema") != LEDGER_STORE_SNAPSHOT_SCHEMA:
+            raise ValueError("unsupported knowledge ledger store snapshot schema")
+        rows = snapshot.get("ledgers", [])
+        if not isinstance(rows, list):
+            raise ValueError("knowledge ledger store ledgers must be a list")
+        store = cls()
+        for raw in rows:
+            if not isinstance(raw, Mapping):
+                raise ValueError("knowledge ledger snapshot must be a mapping")
+            store.add(KnowledgeLedger.restore(raw))
+        return store
 
 
 @dataclass(frozen=True)
@@ -170,7 +275,11 @@ def supported_fact_keys(ledger: KnowledgeLedger, subjects: Iterable[str]) -> fro
 
 def replay_fixture(path: str | Path) -> dict:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
-    ledgers = {entry["agent_id"]: KnowledgeLedger(entry["agent_id"]) for entry in data["agents"]}
+    store = KnowledgeLedgerStore({
+        entry["agent_id"]: KnowledgeLedger(entry["agent_id"])
+        for entry in data["agents"]
+    })
+    ledgers = store.ledgers
     results: list[dict] = []
 
     for event in data["events"]:
@@ -196,6 +305,15 @@ def replay_fixture(path: str | Path) -> dict:
                 receiver_trust_in_sender=event.get("receiver_trust_in_sender", 0),
             )
             results.append({"event_id": event["event_id"], "claim_id": claim.claim_id})
+        elif kind == "restart":
+            store = KnowledgeLedgerStore.restore(store.snapshot())
+            ledgers = store.ledgers
+            results.append({
+                "event_id": event["event_id"],
+                "status": "RESTORED",
+                "agent_ids": sorted(ledgers),
+                "claim_count": sum(len(ledger.claims) for ledger in ledgers.values()),
+            })
         elif kind == "assess":
             assessment = evaluate_belief(ledgers[event["agent_id"]], event["subject"])
             results.append({
