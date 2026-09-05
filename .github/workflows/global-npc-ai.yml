@@ -5,8 +5,10 @@ on:
     branches: [main]
     paths:
       - 'tools/global_npc_ai.py'
+      - 'tools/global_npc_social.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
+      - 'implementation/global-npc-social-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -14,8 +16,10 @@ on:
   pull_request:
     paths:
       - 'tools/global_npc_ai.py'
+      - 'tools/global_npc_social.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
+      - 'implementation/global-npc-social-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -33,5 +37,7 @@ jobs:
         run: python tools/global_npc_ai.py implementation/global-npc-ai-agent-fixture-v1.json
       - name: Replay global NPC agenda fixture
         run: python tools/global_npc_ai.py implementation/global-npc-goal-need-schedule-fixture-v1.json
+      - name: Replay global NPC social fixture
+        run: python tools/global_npc_social.py implementation/global-npc-social-relationship-faction-fixture-v1.json
       - name: Run global NPC AI regressions
         run: python -m unittest discover -s tests -p 'test_global_npc_*.py' -v
