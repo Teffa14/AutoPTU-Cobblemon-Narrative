@@ -1,0 +1,30 @@
+{
+  "schema": "OUROS_ECOLOGY_TRACE_V1",
+  "pass": 270,
+  "fixture_id": "marea_sendero_spatiotemporal_partition_v1",
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "partition_behavior_is_canon": false,
+    "resource_is_canon": false,
+    "avoidance_is_canon": false,
+    "competition_is_canon": false,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false
+  },
+  "fixture_entities": {
+    "resource": "fixture-only:sendero-partition-resource-270",
+    "source_a": "fixture-only:counted-fletchling-source-a-270",
+    "source_b": "fixture-only:counted-fletchling-source-b-270"
+  },
+  "trace": [
+    {"step":1,"event":"BASELINE","population":12,"demographic_events":0,"ptu_state_mutations":0,"autoptu_handoffs":0},
+    {"step":2,"event":"MULTIWINDOW_OBSERVATION","population":12,"spatial_state":"SPATIAL_OVERLAP","temporal_state":"TEMPORAL_SEPARATION","resource_fraction_state":"RESOURCE_FRACTION_OVERLAP","interpretation":"OBSERVED_PARTITION_PATTERN","avoidance_claimed":false,"competition_claimed":false},
+    {"step":3,"event":"NON_COOCCURRENCE_INFERENCE_ATTEMPT","requested_interpretation":"AVOIDANCE_HYPOTHESIS_AS_FACT","result":"REJECT_PATTERN_WITHOUT_MECHANISM","population":12},
+    {"step":4,"event":"COMPETITION_INFERENCE_ATTEMPT","evidence":"DIFFERENT_TIME_WINDOWS_ONLY","requested_interpretation":"COMPETITION_MEDIATED_PARTITION_SUPPORTED","result":"REJECT_CAUSAL_OVERREACH","population":12},
+    {"step":5,"event":"DISTURBANCE_CONTEXT_ADDED","disturbance":"fixture-only:localized-observer-pressure-270","observed_change":"SOURCE_B_WINDOW_SHIFT","interpretation":"DISTURBANCE_MEDIATED_SHIFT_HYPOTHESIS","causal_support":"INSUFFICIENT_FOR_SUPPORTED","population":12},
+    {"step":6,"event":"AXIS_CHANGE_WITHOUT_POPULATION_CHANGE","spatial_state":"SPATIAL_SEPARATION","temporal_state":"TEMPORAL_OVERLAP","resource_fraction_state":"RESOURCE_FRACTION_SEPARATION","population":12,"population_decline_claimed":false,"population_growth_claimed":false},
+    {"step":7,"event":"TACTICAL_SEMANTICS_INFERENCE_ATTEMPT","requested_semantics":["REACTION","INTERCEPTION","FORCED_MOVEMENT"],"result":"REJECT_UNVERIFIED_TACTICAL_SEMANTICS","ptu_state_mutations":0,"autoptu_handoffs":0},
+    {"step":8,"event":"RESTART_RESTORE","population":12,"axis_history_preserved":true,"causal_interpretation":"UNCERTAIN","demographic_events":0,"ptu_state_mutations":0,"autoptu_handoffs":0}
+  ]
+}
