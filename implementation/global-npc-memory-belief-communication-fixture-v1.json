@@ -1,0 +1,110 @@
+{
+  "fixture_id": "GLOBAL_NPC_MEMORY_BELIEF_COMMUNICATION_V1",
+  "canon_status": "SYNTHETIC_FIXTURE_ONLY",
+  "agents": [
+    {"agent_id": "agent.alpha"},
+    {"agent_id": "agent.beta"},
+    {"agent_id": "agent.gamma"},
+    {"agent_id": "agent.delta"}
+  ],
+  "events": [
+    {
+      "event_id": "alpha-observes-closure",
+      "kind": "observe",
+      "agent_id": "agent.alpha",
+      "claim_id": "claim.alpha.closure.1",
+      "subject": "route.north_gate.state",
+      "value": "CLOSED",
+      "semantic_minute": 100,
+      "confidence": 90
+    },
+    {
+      "event_id": "alpha-tells-beta",
+      "kind": "tell",
+      "sender_id": "agent.alpha",
+      "receiver_id": "agent.beta",
+      "source_claim_id": "claim.alpha.closure.1",
+      "claim_id": "claim.beta.heard_closure.1",
+      "message_id": "message.alpha.beta.1",
+      "semantic_minute": 105,
+      "receiver_trust_in_sender": 40
+    },
+    {
+      "event_id": "beta-assesses-hearsay",
+      "kind": "assess",
+      "agent_id": "agent.beta",
+      "subject": "route.north_gate.state"
+    },
+    {
+      "event_id": "beta-retells-gamma",
+      "kind": "tell",
+      "sender_id": "agent.beta",
+      "receiver_id": "agent.gamma",
+      "source_claim_id": "claim.beta.heard_closure.1",
+      "claim_id": "claim.gamma.heard_closure.1",
+      "message_id": "message.beta.gamma.1",
+      "semantic_minute": 108,
+      "receiver_trust_in_sender": 20
+    },
+    {
+      "event_id": "alpha-also-tells-gamma",
+      "kind": "tell",
+      "sender_id": "agent.alpha",
+      "receiver_id": "agent.gamma",
+      "source_claim_id": "claim.alpha.closure.1",
+      "claim_id": "claim.gamma.heard_closure.2",
+      "message_id": "message.alpha.gamma.1",
+      "semantic_minute": 109,
+      "receiver_trust_in_sender": 40
+    },
+    {
+      "event_id": "gamma-assesses-duplicate-lineage",
+      "kind": "assess",
+      "agent_id": "agent.gamma",
+      "subject": "route.north_gate.state"
+    },
+    {
+      "event_id": "delta-observes-closure-independently",
+      "kind": "observe",
+      "agent_id": "agent.delta",
+      "claim_id": "claim.delta.closure.1",
+      "subject": "route.north_gate.state",
+      "value": "CLOSED",
+      "semantic_minute": 112,
+      "confidence": 85
+    },
+    {
+      "event_id": "delta-tells-gamma",
+      "kind": "tell",
+      "sender_id": "agent.delta",
+      "receiver_id": "agent.gamma",
+      "source_claim_id": "claim.delta.closure.1",
+      "claim_id": "claim.gamma.heard_closure.3",
+      "message_id": "message.delta.gamma.1",
+      "semantic_minute": 113,
+      "receiver_trust_in_sender": 20
+    },
+    {
+      "event_id": "gamma-assesses-independent-corroboration",
+      "kind": "assess",
+      "agent_id": "agent.gamma",
+      "subject": "route.north_gate.state"
+    },
+    {
+      "event_id": "beta-later-observes-open",
+      "kind": "observe",
+      "agent_id": "agent.beta",
+      "claim_id": "claim.beta.open.1",
+      "subject": "route.north_gate.state",
+      "value": "OPEN",
+      "semantic_minute": 180,
+      "confidence": 90
+    },
+    {
+      "event_id": "beta-assesses-revised-state",
+      "kind": "assess",
+      "agent_id": "agent.beta",
+      "subject": "route.north_gate.state"
+    }
+  ]
+}
