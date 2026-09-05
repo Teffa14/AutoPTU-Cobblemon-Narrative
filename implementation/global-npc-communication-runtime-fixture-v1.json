@@ -1,0 +1,107 @@
+{
+  "fixture_id": "GLOBAL_NPC_COMMUNICATION_RUNTIME_V1",
+  "agents": [
+    {"agent_id": "agent.witness"},
+    {"agent_id": "agent.friend"},
+    {"agent_id": "agent.officer"},
+    {"agent_id": "agent.coworker"}
+  ],
+  "channels": [
+    {"channel_id": "channel.voice", "kind": "VOICE", "latency_minutes": 2},
+    {"channel_id": "channel.dispatch", "kind": "DISPATCH", "latency_minutes": 1}
+  ],
+  "relationships": [
+    {
+      "source_agent_id": "agent.witness",
+      "target_agent_id": "agent.friend",
+      "affinity": 70,
+      "trust": 80,
+      "respect": 30
+    }
+  ],
+  "memberships": [
+    {"agent_id": "agent.witness", "faction_id": "fixture.response", "role_id": "field"},
+    {
+      "agent_id": "agent.officer",
+      "faction_id": "fixture.response",
+      "role_id": "duty-officer",
+      "commitment": 80,
+      "obligation_tags": ["RECEIVE_ROUTE_ALERT"]
+    },
+    {"agent_id": "agent.coworker", "faction_id": "fixture.response", "role_id": "member"}
+  ],
+  "events": [
+    {
+      "kind": "observe",
+      "event_id": "observe.route",
+      "agent_id": "agent.witness",
+      "claim_id": "claim.route.closed",
+      "subject": "fixture.route.alpha.state",
+      "value": "CLOSED",
+      "semantic_minute": 100,
+      "confidence": 90
+    },
+    {
+      "kind": "dispatch",
+      "event_id": "dispatch.route",
+      "dispatch_id": "dispatch.route.alert",
+      "sender_id": "agent.witness",
+      "source_claim_id": "claim.route.closed",
+      "semantic_minute": 100,
+      "required_obligation_tag": "RECEIVE_ROUTE_ALERT",
+      "policy": {"max_recipients": 2, "min_score": 1},
+      "receiver_trust_in_sender": {
+        "agent.friend": 40,
+        "agent.officer": 20
+      },
+      "candidates": [
+        {
+          "agent_id": "agent.friend",
+          "reachable_channel_ids": ["channel.voice", "channel.dispatch"],
+          "topic_relevance": 4,
+          "proximity_band": 2
+        },
+        {
+          "agent_id": "agent.officer",
+          "reachable_channel_ids": ["channel.dispatch"],
+          "explicit_role_relevance": 4
+        },
+        {
+          "agent_id": "agent.coworker",
+          "reachable_channel_ids": ["channel.dispatch"]
+        }
+      ]
+    },
+    {"kind": "restart", "event_id": "restart.after.dispatch"},
+    {
+      "kind": "advance_budgeted",
+      "event_id": "advance.first.budget",
+      "semantic_minute": 105,
+      "max_events": 1
+    },
+    {
+      "kind": "advance_budgeted",
+      "event_id": "advance.second.budget",
+      "semantic_minute": 105,
+      "max_events": 1
+    },
+    {
+      "kind": "assess",
+      "event_id": "assess.friend",
+      "agent_id": "agent.friend",
+      "subject": "fixture.route.alpha.state"
+    },
+    {
+      "kind": "assess",
+      "event_id": "assess.officer",
+      "agent_id": "agent.officer",
+      "subject": "fixture.route.alpha.state"
+    },
+    {
+      "kind": "assess",
+      "event_id": "assess.coworker",
+      "agent_id": "agent.coworker",
+      "subject": "fixture.route.alpha.state"
+    }
+  ]
+}
