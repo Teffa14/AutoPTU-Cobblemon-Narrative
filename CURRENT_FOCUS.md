@@ -79,6 +79,14 @@ Pass 282 memory / belief / communication layer:
 
 Per-agent claim ledgers, explicit information transfer, report attenuation, provenance lineage, duplicate-source suppression, contradictory evidence and deterministic belief assessment now have executable coverage. Shared faction membership still does not create hive-mind knowledge.
 
-The immediate next slices should deepen memory revision/forgetting, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection, local Minecraft behavior acknowledgement and scalable event scheduling/broadcast propagation for large named casts. These systems must consume the same global agenda/travel/social/memory state rather than fork per region.
+Pass 283 event-driven information propagation layer:
+- `design/global-npc-event-driven-information-propagation-contract.md`
+- `tools/global_npc_information_network.py`
+- `implementation/global-npc-information-propagation-fixture-v1.json`
+- `tests/test_global_npc_information_network.py`
+
+Semantic-time message queues, channel latency/availability, due-only processing, deterministic delivery order, provenance-preserving relays, same-root suppression, local projection acknowledgement and idempotent in-process delivery now have executable coverage. The transport layer delegates belief semantics to Pass 282 instead of creating a second knowledge system.
+
+The immediate next slices should deepen durable event-queue persistence across server lifecycle, event-triggered agenda replanning, scalable audience/recipient resolution, memory revision/forgetting, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and local Minecraft behavior acknowledgement. These systems must consume the same global agenda/travel/social/memory/information state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
