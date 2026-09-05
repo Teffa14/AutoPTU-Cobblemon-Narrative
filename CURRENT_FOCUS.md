@@ -44,7 +44,9 @@ NPC AI must also work for non-ecology goals such as work, travel, training, comm
 - information recipients must be explicit; shared faction membership never implies broadcast knowledge;
 - private communication overload defers due work by default instead of silently destroying world information;
 - successful private delivery may wake only its explicit managed receiver; failed, deferred or unacknowledged communication cannot alter agenda eligibility;
-- a public publication/transmission never implies universal receipt or belief; public audience expansion must produce explicit per-agent receipt events.
+- a public publication/transmission never implies universal receipt or belief; public audience expansion must produce explicit per-agent receipt events;
+- a correction, update or retraction is a new publication event with its own audience expansion; receiving one version never guarantees receiving another;
+- publication history, receipt history and NPC belief history must remain separately queryable.
 
 ## Current executable foundation
 
@@ -133,6 +135,22 @@ Pass 288 public publication / broadcast receipt layer:
 
 Existing Pass 161 broadcast continuity now has an executable per-agent receipt seam. Public publications consume explicit service, scope, topic, channel and optional retention state; eligible named actors expand into ordinary information envelopes in bounded deterministic batches. Publication, transmission, receipt and belief remain separate facts. Coverage/service mismatch, disabled receiving state and expired retention cannot create knowledge.
 
-The immediate next slices should deepen sustained-load fairness/backlog aging across private and public queues, persist public expansion cursors and knowledge ledgers durably, connect corrections/retractions to Media revision lineage, add large-audience indexing, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
+Pass 289 publication revision lineage:
+- `design/global-npc-publication-revision-contract.md`
+- `tools/global_npc_publication_revision.py`
+- `implementation/global-npc-publication-revision-fixture-v1.json`
+- `tests/test_global_npc_publication_revision.py`
+
+Originals, updates, corrections and retractions now form validated deterministic lineages. Historical versions remain intact, forks are rejected, per-agent received-version state is queryable, and a retraction never fabricates the inverse world truth.
+
+Pass 290 publication revision delivery runtime:
+- `design/global-npc-publication-revision-delivery-contract.md`
+- `tools/global_npc_publication_revision_runtime.py`
+- `implementation/global-npc-publication-revision-runtime-fixture-v1.json`
+- `tests/test_global_npc_publication_revision_runtime.py`
+
+Each revision now resolves its public audience independently, schedules ordinary receipt envelopes, survives runtime-state snapshot/restore, records only completed receipts and wakes only actual managed recipients through the existing world-event coordinator. NPCs can validly retain original-only, correction-only, both-version or no-version histories without retroactive belief rewriting.
+
+The immediate next slices should deepen sustained-load fairness/backlog aging across private and public queues, add durable atomic persistence across public expansion/runtime state, information queues, knowledge ledgers and coordinator guards, add large-audience indexing, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
