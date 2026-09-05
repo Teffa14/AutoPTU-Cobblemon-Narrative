@@ -1,0 +1,131 @@
+{
+  "fixture": "marea-sendero-joint-jurisdiction-coordination-trace-v1",
+  "pass": 276,
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false,
+    "sendero_institution_created_as_canon": false,
+    "jurisdiction_created_as_canon": false,
+    "ownership_created_as_canon": false,
+    "player_organization_granted_authority": false,
+    "ptu_mechanic_promoted": false,
+    "caelo_rule_adopted": false
+  },
+  "trace": [
+    {
+      "event": "SHARED_ECOLOGICAL_EVIDENCE_LOADED",
+      "population": 12,
+      "evidence_ref": "fixture-only:pass-275-management-concern-276",
+      "ecological_truth_records": 1,
+      "governance_commands_created": 0,
+      "disposition": "AUTHORITY_MAPPING_PENDING"
+    },
+    {
+      "event": "OVERLAPPING_SCOPES_IDENTIFIED",
+      "population": 12,
+      "focal_ecological_scope": "fixture-only:sendero-shared-microhabitat-276",
+      "ecological_process_crosses_admin_boundary": true,
+      "authority_scopes": [
+        {
+          "id": "fixture-only:habitat-stewardship-scope-276",
+          "action_roles": ["PROPOSE", "CONSULT", "REVIEW"]
+        },
+        {
+          "id": "fixture-only:route-operations-scope-276",
+          "action_roles": ["APPROVE_ACCESS_CHANGE", "IMPLEMENT", "REVIEW"]
+        }
+      ],
+      "one_scope_supersedes_other": false,
+      "disposition": "MULTI_AUTHORITY_REVIEW"
+    },
+    {
+      "event": "OVERLAP_SUPERSESSION_ATTEMPT",
+      "requested_inference": "HABITAT_SCOPE_OVERRIDES_ROUTE_SCOPE",
+      "result": "REJECT_OVERLAP_AS_SUPERSESSION",
+      "authority_transfer_created": false
+    },
+    {
+      "event": "PARTICIPATION_AS_APPROVAL_ATTEMPT",
+      "participants_present": 2,
+      "explicit_approvals": 1,
+      "result": "REJECT_PARTICIPATION_AS_APPROVAL",
+      "silence_treated_as_consent": false
+    },
+    {
+      "event": "ACTION_CLASS_AUTHORITY_MAPPED",
+      "proposed_action": "TEMPORARY_LOCAL_ACCESS_WINDOW_CHANGE",
+      "required_roles": ["PROPOSE", "APPROVE_ACCESS_CHANGE", "IMPLEMENT", "REVIEW"],
+      "consultation_required": true,
+      "joint_consensus_required": false,
+      "scoped_veto_present": false,
+      "implementation_authority_ref": "fixture-only:route-operations-scope-276",
+      "disposition": "JOINT_APPROVAL_REQUIRED"
+    },
+    {
+      "event": "COORDINATED_ACTION_AUTHORIZED",
+      "population": 12,
+      "proposal_source_ref": "fixture-only:habitat-stewardship-scope-276",
+      "approval_source_ref": "fixture-only:route-operations-scope-276",
+      "implementation_authority_ref": "fixture-only:route-operations-scope-276",
+      "semantic_review_horizon": "fixture-only:review-window-276-a",
+      "temporary": true,
+      "ecological_recovery_claimed": false,
+      "disposition": "COORDINATED_ACTION_AUTHORIZED"
+    },
+    {
+      "event": "UNRELATED_VETO_INFERENCE_ATTEMPT",
+      "existing_veto_scope": "fixture-only:maintenance-shutdown-only-276",
+      "requested_veto_scope": "TEMPORARY_LOCAL_ACCESS_WINDOW_CHANGE",
+      "result": "REJECT_VETO_SCOPE_EXPANSION",
+      "universal_veto_created": false
+    },
+    {
+      "event": "CAPACITY_CONSTRAINT_RECORDED",
+      "authorized_to_implement": true,
+      "implementation_capacity_available": false,
+      "constraint": "fixture-only:staff-occupied-by-separate-response-276",
+      "bad_faith_claim_created": false,
+      "authority_revoked": false,
+      "disposition": "CAPACITY_CONSTRAINED"
+    },
+    {
+      "event": "EMERGENCY_TRIGGER_AND_BOUNDED_ACTION",
+      "population": 12,
+      "emergency_mandate_ref": "fixture-only:temporary-safety-mandate-276",
+      "trigger_within_mandate": true,
+      "action": "TEMPORARY_ROUTE_EDGE_PAUSE",
+      "scope_bounded": true,
+      "affected_authorities_recorded": true,
+      "permanent_authority_expansion": false,
+      "review_required": true,
+      "disposition": "EMERGENCY_ACTION_AUTHORIZED_PENDING_REVIEW"
+    },
+    {
+      "event": "POST_EMERGENCY_REVIEW",
+      "population": 12,
+      "emergency_action_expired": true,
+      "ordinary_mandates_preserved": true,
+      "ecological_outcome_inferred_from_governance": false,
+      "disposition": "REASSESSMENT_REQUIRED"
+    },
+    {
+      "event": "TACTICAL_SEMANTICS_INFERENCE_ATTEMPT",
+      "requested_semantics": ["BLOCKER", "INTERCEPTION", "REACTION", "FORCED_MOVEMENT"],
+      "result": "REJECT_UNVERIFIED_TACTICAL_SEMANTICS",
+      "ptu_state_mutations": 0,
+      "autoptu_handoffs": 0
+    },
+    {
+      "event": "RESTART_RESTORE",
+      "population": 12,
+      "authority_map_preserved": true,
+      "approval_history_preserved": true,
+      "capacity_history_preserved": true,
+      "emergency_action_history_preserved": true,
+      "semantic_review_horizon_advanced_by_restart": false,
+      "demographic_events": 0
+    }
+  ]
+}
