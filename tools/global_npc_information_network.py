@@ -103,12 +103,20 @@ class InformationEventQueue:
             channel = self.channels[envelope.channel_id]
             if not channel.available:
                 self.statuses[envelope.event_id] = DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE
-                results.append({"event_id": envelope.event_id, "status": DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE.value})
+                results.append({
+                    "event_id": envelope.event_id,
+                    "receiver_id": envelope.receiver_id,
+                    "status": DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE.value,
+                })
                 continue
             if channel.requires_local_projection:
                 self.statuses[envelope.event_id] = DeliveryStatus.WAITING_LOCAL_ACK
                 self.awaiting_local_ack[envelope.event_id] = envelope
-                results.append({"event_id": envelope.event_id, "status": DeliveryStatus.WAITING_LOCAL_ACK.value})
+                results.append({
+                    "event_id": envelope.event_id,
+                    "receiver_id": envelope.receiver_id,
+                    "status": DeliveryStatus.WAITING_LOCAL_ACK.value,
+                })
                 continue
             results.append(self._deliver(envelope, semantic_minute))
         return results
@@ -117,12 +125,21 @@ class InformationEventQueue:
         envelope = self.awaiting_local_ack.pop(event_id)
         if not accepted:
             self.statuses[event_id] = DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE
-            return {"event_id": event_id, "status": DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE.value}
+            return {
+                "event_id": event_id,
+                "receiver_id": envelope.receiver_id,
+                "status": DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE.value,
+            }
         return self._deliver(envelope, semantic_minute)
 
     def _deliver(self, envelope: InformationEnvelope, semantic_minute: int) -> dict:
         if envelope.event_id in self.delivered_event_ids:
-            return {"event_id": envelope.event_id, "status": DeliveryStatus.DELIVERED.value, "duplicate": True}
+            return {
+                "event_id": envelope.event_id,
+                "receiver_id": envelope.receiver_id,
+                "status": DeliveryStatus.DELIVERED.value,
+                "duplicate": True,
+            }
         claim = transmit_claim(
             self.ledgers[envelope.sender_id],
             self.ledgers[envelope.receiver_id],
@@ -136,6 +153,8 @@ class InformationEventQueue:
         self.statuses[envelope.event_id] = DeliveryStatus.DELIVERED
         return {
             "event_id": envelope.event_id,
+            "sender_id": envelope.sender_id,
+            "receiver_id": envelope.receiver_id,
             "status": DeliveryStatus.DELIVERED.value,
             "claim_id": claim.claim_id,
             "provenance_root": claim.provenance_root,
