@@ -13,6 +13,7 @@ on:
       - 'tools/global_npc_audience.py'
       - 'tools/global_npc_communication_runtime.py'
       - 'tools/global_npc_world_event_coordinator.py'
+      - 'tools/global_npc_publication.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
@@ -23,6 +24,7 @@ on:
       - 'implementation/global-npc-audience-*.json'
       - 'implementation/global-npc-communication-*.json'
       - 'implementation/global-npc-world-event-*.json'
+      - 'implementation/global-npc-publication-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -38,6 +40,7 @@ on:
       - 'tools/global_npc_audience.py'
       - 'tools/global_npc_communication_runtime.py'
       - 'tools/global_npc_world_event_coordinator.py'
+      - 'tools/global_npc_publication.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
@@ -48,6 +51,7 @@ on:
       - 'implementation/global-npc-audience-*.json'
       - 'implementation/global-npc-communication-*.json'
       - 'implementation/global-npc-world-event-*.json'
+      - 'implementation/global-npc-publication-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -81,5 +85,7 @@ jobs:
         run: python -m tools.global_npc_communication_runtime implementation/global-npc-communication-runtime-fixture-v1.json
       - name: Replay global NPC world event coordinator fixture
         run: python -m tools.global_npc_world_event_coordinator implementation/global-npc-world-event-coordinator-fixture-v1.json
+      - name: Replay global NPC public publication fixture
+        run: python -m tools.global_npc_publication implementation/global-npc-publication-broadcast-fixture-v1.json
       - name: Run global NPC AI regressions
         run: python -m unittest discover -s tests -p 'test_global_npc_*.py' -v
