@@ -39,7 +39,8 @@ NPC AI must also work for non-ecology goals such as work, travel, training, comm
 - structured mechanics require an explicit `REQUEST_AUTOPTU` handoff;
 - while AutoPTU owns resolution, the world planner must not compete with it;
 - deterministic replay is required for identical agent state;
-- generic crowds may remain aggregate; persistence is required only when an individual matters.
+- generic crowds may remain aggregate; persistence is required only when an individual matters;
+- event-driven wake-up is preferred over global per-tick replanning for persistent world agents.
 
 ## Current executable foundation
 
@@ -77,7 +78,7 @@ Pass 282 memory / belief / communication layer:
 - `implementation/global-npc-memory-belief-communication-fixture-v1.json`
 - `tests/test_global_npc_memory.py`
 
-Per-agent claim ledgers, explicit information transfer, report attenuation, provenance lineage, duplicate-source suppression, contradictory evidence and deterministic belief assessment now have executable coverage. Shared faction membership still does not create hive-mind knowledge.
+Per-agent claim ledgers, explicit information transfer, report attenuation, provenance lineage, duplicate-source suppression, contradictory evidence and deterministic belief assessment have executable coverage. Shared faction membership still does not create hive-mind knowledge.
 
 Pass 283 event-driven information propagation layer:
 - `design/global-npc-event-driven-information-propagation-contract.md`
@@ -85,8 +86,16 @@ Pass 283 event-driven information propagation layer:
 - `implementation/global-npc-information-propagation-fixture-v1.json`
 - `tests/test_global_npc_information_network.py`
 
-Semantic-time message queues, channel latency/availability, due-only processing, deterministic delivery order, provenance-preserving relays, same-root suppression, local projection acknowledgement and idempotent in-process delivery now have executable coverage. The transport layer delegates belief semantics to Pass 282 instead of creating a second knowledge system.
+Semantic-time message queues, channel latency/availability, due-only processing, deterministic delivery order, provenance-preserving relays, same-root suppression, local projection acknowledgement and idempotent in-process delivery have executable coverage. Delivery results now expose sender/receiver identity for selective downstream routing.
 
-The immediate next slices should deepen durable event-queue persistence across server lifecycle, event-triggered agenda replanning, scalable audience/recipient resolution, memory revision/forgetting, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and local Minecraft behavior acknowledgement. These systems must consume the same global agenda/travel/social/memory/information state rather than fork per region.
+Pass 284 event-triggered replanning layer:
+- `design/global-npc-event-triggered-replanning-contract.md`
+- `tools/global_npc_replanning.py`
+- `implementation/global-npc-event-replanning-fixture-v1.json`
+- `tests/test_global_npc_event_replanning.py`
+
+Meaningful semantic changes can wake only affected named agents. Multiple simultaneous triggers for one agent coalesce into one agenda reevaluation while preserving cause/provenance. Replan triggers persist across snapshot/restore and completed triggers do not replay. Successful information delivery can update private knowledge and make a new world intent eligible without polling every NPC.
+
+The immediate next slices should deepen durable persistence of the Pass 283 information-delivery queue, scalable audience/recipient resolution, event budgets/backpressure, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
