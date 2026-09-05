@@ -1,0 +1,33 @@
+{
+  "schema": "OUROS_ECOLOGY_TRACE_V1",
+  "pass": 271,
+  "fixture_id": "marea_sendero_controlled_comparison_v1",
+  "status": "FIXTURE_ONLY",
+  "canon_guards": {
+    "authoritative_fletchling_population": 12,
+    "disturbance_is_canon": false,
+    "comparator_site_is_canon": false,
+    "schedule_response_is_canon": false,
+    "causal_relation_is_canon": false,
+    "new_persistent_actor_created": false,
+    "population_change_claimed": false
+  },
+  "fixture_entities": {
+    "focal_site": "fixture-only:sendero-focal-window-271",
+    "comparator_site": "fixture-only:sendero-comparator-window-271",
+    "source_a": "fixture-only:counted-fletchling-source-a-271",
+    "disturbance": "fixture-only:localized-observer-pressure-271"
+  },
+  "trace": [
+    {"step":1,"event":"BASELINE_MATCHED_WINDOWS","population":12,"focal_temporal_use":"EARLY_WINDOW","comparator_temporal_use":"EARLY_WINDOW","observation_method":"FIXED_WINDOW_VISUAL","demographic_events":0,"ptu_state_mutations":0,"autoptu_handoffs":0},
+    {"step":2,"event":"FOCAL_AFTER_CHANGE","population":12,"focal_temporal_use":"LATE_WINDOW","comparator_observed":false,"interpretation":"BEFORE_AFTER_CHANGE_ONLY","causal_disposition":"DESCRIPTIVE_ONLY"},
+    {"step":3,"event":"CAUSAL_INFERENCE_WITHOUT_COMPARATOR_ATTEMPT","requested":"DISTURBANCE_CAUSED_SHIFT","result":"REJECT_BEFORE_AFTER_AS_CAUSAL_PROOF","population":12},
+    {"step":4,"event":"COMPARATOR_SURVEY_WITH_DETECTION_MISMATCH","focal_method":"FIXED_WINDOW_VISUAL","comparator_method":"SHORT_LOW_VISIBILITY_VISUAL","comparator_validity":"MATERIAL_MISMATCH","causal_disposition":"COMPARATOR_INSUFFICIENT","population":12},
+    {"step":5,"event":"REPEATED_REDETECTION_SAME_OBSERVER","observer_prior_detection_known":true,"raw_detection_count_added":1,"independent_corroboration_added":0,"interpretation":"REPEATED_PATTERN","population":12},
+    {"step":6,"event":"MATCHED_COMPARATOR_WINDOW","focal_temporal_use":"LATE_WINDOW","comparator_temporal_use":"EARLY_WINDOW","methods_matched":true,"effort_matched":true,"major_covariates_recorded":true,"exposure_contrast_recorded":true,"comparator_validity":"PLAUSIBLE","causal_disposition":"CONTROLLED_COMPARISON_SUPPORTED","population":12},
+    {"step":7,"event":"NARROW_CAUSAL_REVIEW","supported_claim":"LOCAL_DISTURBANCE_ASSOCIATED_WITH_TEMPORAL_USE_SHIFT_IN_TESTED_WINDOW","causal_disposition":"CAUSAL_ATTRIBUTION_SUPPORTED_NARROWLY","population_effect_claimed":false,"species_global_rule_claimed":false,"avoidance_global_rule_claimed":false},
+    {"step":8,"event":"NONDETECTION_AFTER_DISTURBANCE","source_visible":false,"detectability":"LOW_UNCERTAIN","absence_claimed":false,"population_decline_claimed":false,"population":12},
+    {"step":9,"event":"TACTICAL_SEMANTICS_INFERENCE_ATTEMPT","requested_semantics":["REACTION","INTERCEPTION","FORCED_MOVEMENT"],"result":"REJECT_UNVERIFIED_TACTICAL_SEMANTICS","ptu_state_mutations":0,"autoptu_handoffs":0},
+    {"step":10,"event":"RESTART_RESTORE","population":12,"comparison_history_preserved":true,"source_lineage_preserved":true,"causal_scope":"LOCAL_TESTED_WINDOW_ONLY","demographic_events":0,"ptu_state_mutations":0,"autoptu_handoffs":0}
+  ]
+}
