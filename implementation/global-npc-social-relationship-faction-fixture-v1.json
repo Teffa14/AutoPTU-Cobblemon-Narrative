@@ -1,0 +1,180 @@
+{
+  "fixture_id": "GLOBAL_NPC_SOCIAL_RELATIONSHIP_FACTION_V1",
+  "canon_status": "FIXTURE_ONLY",
+  "agents": [
+    {
+      "agent_id": "fixture:npc:aria",
+      "mode": "OFFSCREEN_NAMED",
+      "region_ref": "fixture:region:north",
+      "location_ref": "fixture:site:archive",
+      "risk_tolerance": 55,
+      "energy": 80,
+      "knowledge": ["claim:friend-needs-help"],
+      "permissions": []
+    },
+    {
+      "agent_id": "fixture:npc:borin",
+      "mode": "LOCAL_ACTIVE",
+      "region_ref": "fixture:region:south",
+      "location_ref": "fixture:site:training-yard",
+      "risk_tolerance": 70,
+      "energy": 90,
+      "knowledge": ["claim:rival-present"],
+      "permissions": []
+    }
+  ],
+  "relationships": [
+    {
+      "source_agent_id": "fixture:npc:aria",
+      "target_agent_id": "fixture:npc:friend",
+      "affinity": 80,
+      "trust": 70,
+      "respect": 40,
+      "fear": 0,
+      "rivalry": 0,
+      "debt": 35,
+      "provenance_refs": ["fixture:event:shared-history"]
+    },
+    {
+      "source_agent_id": "fixture:npc:borin",
+      "target_agent_id": "fixture:npc:rival",
+      "affinity": 10,
+      "trust": 25,
+      "respect": 75,
+      "fear": 5,
+      "rivalry": 90,
+      "debt": 0,
+      "provenance_refs": ["fixture:event:prior-competition"]
+    }
+  ],
+  "memberships": [
+    {
+      "agent_id": "fixture:npc:aria",
+      "faction_id": "fixture:faction:survey-guild",
+      "role_id": "field-member",
+      "commitment": 75,
+      "standing": 30,
+      "active": true,
+      "obligation_tags": ["REPORT_INCIDENT"],
+      "permission_tags": ["FILE_FIELD_REPORT"]
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "known_friend_emergency_can_matter",
+      "agent_id": "fixture:npc:aria",
+      "semantic_minute": 100,
+      "ordinary_intents": [
+        {"intent_id": "routine-work", "kind": "WORK", "base_priority": 5, "urgency": 1}
+      ],
+      "social_intents": [
+        {
+          "intent_id": "assist-friend",
+          "kind": "ASSIST",
+          "base_priority": 7,
+          "urgency": 8,
+          "target_agent_id": "fixture:npc:friend",
+          "relationship_motive": "ASSIST",
+          "required_knowledge": ["claim:friend-needs-help"]
+        }
+      ],
+      "expected": {"kind": "ASSIST", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "faction_duty_requires_actual_obligation",
+      "agent_id": "fixture:npc:aria",
+      "semantic_minute": 110,
+      "ordinary_intents": [
+        {"intent_id": "routine-work", "kind": "WORK", "base_priority": 4}
+      ],
+      "social_intents": [
+        {
+          "intent_id": "report",
+          "kind": "REPORT",
+          "base_priority": 4,
+          "urgency": 4,
+          "faction_id": "fixture:faction:survey-guild",
+          "required_faction_obligation": "REPORT_INCIDENT",
+          "required_permissions": ["FILE_FIELD_REPORT"]
+        }
+      ],
+      "expected": {"kind": "REPORT", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "shared_faction_does_not_create_hidden_knowledge",
+      "agent_id": "fixture:npc:aria",
+      "semantic_minute": 120,
+      "ordinary_intents": [
+        {"intent_id": "routine-work", "kind": "WORK", "base_priority": 5}
+      ],
+      "social_intents": [
+        {
+          "intent_id": "secret-report",
+          "kind": "REPORT",
+          "base_priority": 20,
+          "urgency": 10,
+          "faction_id": "fixture:faction:survey-guild",
+          "required_faction_obligation": "REPORT_INCIDENT",
+          "required_knowledge": ["claim:secret-other-member-knows"]
+        }
+      ],
+      "expected": {"kind": "WORK", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "critical_need_can_beat_faction_duty",
+      "agent_id": "fixture:npc:aria",
+      "semantic_minute": 130,
+      "needs": [
+        {"need_id": "rest", "intent_kind": "REST", "pressure": 100, "activation_threshold": 50, "critical_threshold": 90}
+      ],
+      "social_intents": [
+        {
+          "intent_id": "minor-report",
+          "kind": "REPORT",
+          "base_priority": 1,
+          "urgency": 1,
+          "faction_id": "fixture:faction:survey-guild",
+          "required_faction_obligation": "REPORT_INCIDENT"
+        }
+      ],
+      "expected": {"kind": "REST", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "rivalry_can_motivate_noncombat_contact",
+      "agent_id": "fixture:npc:borin",
+      "semantic_minute": 140,
+      "ordinary_intents": [
+        {"intent_id": "idle", "kind": "WAIT", "base_priority": 2}
+      ],
+      "social_intents": [
+        {
+          "intent_id": "arrange-challenge",
+          "kind": "ARRANGE_CHALLENGE",
+          "base_priority": 4,
+          "urgency": 3,
+          "target_agent_id": "fixture:npc:rival",
+          "relationship_motive": "RIVALRY",
+          "required_knowledge": ["claim:rival-present"]
+        }
+      ],
+      "expected": {"kind": "ARRANGE_CHALLENGE", "handoff": "NONE"}
+    },
+    {
+      "scenario_id": "accepted_spar_requests_autoptu",
+      "agent_id": "fixture:npc:borin",
+      "semantic_minute": 150,
+      "social_intents": [
+        {
+          "intent_id": "spar-rival",
+          "kind": "SPAR",
+          "base_priority": 8,
+          "urgency": 5,
+          "target_agent_id": "fixture:npc:rival",
+          "relationship_motive": "RIVALRY",
+          "requires_structured_mechanics": true
+        }
+      ],
+      "expected": {"kind": "SPAR", "handoff": "REQUEST_AUTOPTU"}
+    }
+  ]
+}
