@@ -1,0 +1,33 @@
+name: Global NPC AI Regressions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/global_npc_ai.py'
+      - 'implementation/global-npc-ai-*.json'
+      - 'tests/test_global_npc_ai.py'
+      - 'design/global-npc-world-agent-ai-contract.md'
+      - 'CURRENT_FOCUS.md'
+      - '.github/workflows/global-npc-ai.yml'
+  pull_request:
+    paths:
+      - 'tools/global_npc_ai.py'
+      - 'implementation/global-npc-ai-*.json'
+      - 'tests/test_global_npc_ai.py'
+      - 'design/global-npc-world-agent-ai-contract.md'
+      - 'CURRENT_FOCUS.md'
+      - '.github/workflows/global-npc-ai.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Replay global NPC AI fixture
+        run: python tools/global_npc_ai.py implementation/global-npc-ai-agent-fixture-v1.json
+      - name: Run global NPC AI regressions
+        run: python -m unittest tests.test_global_npc_ai -v
