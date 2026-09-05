@@ -1,0 +1,107 @@
+{
+  "fixture_id": "global-npc-goal-need-schedule-fixture-v1",
+  "fixture_type": "GOAL_NEED_SCHEDULE",
+  "status": "FIXTURE_ONLY",
+  "purpose": "Exercise durable goals, needs, semantic-time commitments, interruption and AutoPTU handoff with one region-neutral NPC planner.",
+  "agents": [
+    {
+      "agent_id": "fixture:npc:maker",
+      "mode": "OFFSCREEN_NAMED",
+      "region_ref": "fixture:region:delta",
+      "location_ref": "fixture:site:workshop",
+      "risk_tolerance": 45,
+      "energy": 80,
+      "knowledge": [],
+      "permissions": ["WORKSHOP_ACCESS", "TRAVEL_PUBLIC"]
+    },
+    {
+      "agent_id": "fixture:npc:guide",
+      "mode": "LOCAL_ACTIVE",
+      "region_ref": "fixture:region:ridge",
+      "location_ref": "fixture:site:station",
+      "risk_tolerance": 70,
+      "energy": 75,
+      "knowledge": [],
+      "permissions": ["TRAVEL_PUBLIC"]
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "durable_goal_drives_offscreen_work_before_schedule",
+      "agent_id": "fixture:npc:maker",
+      "context": {"semantic_minute": 100},
+      "goals": [
+        {"goal_id": "finish-commission", "intent_kind": "WORK", "priority": 7, "progress": 40, "target_progress": 100, "required_permissions": ["WORKSHOP_ACCESS"]}
+      ],
+      "commitments": [
+        {"commitment_id": "meet-carrier", "intent_kind": "TRAVEL", "start_minute": 180, "end_minute": 210, "priority": 6, "hard": true, "required_permissions": ["TRAVEL_PUBLIC"]}
+      ],
+      "expected": {"kind": "WORK", "handoff": "NONE", "source_type": "GOAL"}
+    },
+    {
+      "scenario_id": "hard_due_commitment_preempts_durable_goal",
+      "agent_id": "fixture:npc:maker",
+      "context": {"semantic_minute": 190},
+      "goals": [
+        {"goal_id": "finish-commission", "intent_kind": "WORK", "priority": 7, "progress": 40, "target_progress": 100, "required_permissions": ["WORKSHOP_ACCESS"]}
+      ],
+      "commitments": [
+        {"commitment_id": "meet-carrier", "intent_kind": "TRAVEL", "start_minute": 180, "end_minute": 210, "priority": 6, "hard": true, "required_permissions": ["TRAVEL_PUBLIC"]}
+      ],
+      "expected": {"kind": "TRAVEL", "handoff": "NONE", "source_type": "COMMITMENT", "schedule_state": "DUE"}
+    },
+    {
+      "scenario_id": "missed_commitment_creates_followup_not_teleport",
+      "agent_id": "fixture:npc:maker",
+      "context": {"semantic_minute": 260},
+      "commitments": [
+        {"commitment_id": "meet-carrier", "intent_kind": "TRAVEL", "start_minute": 180, "end_minute": 210, "priority": 6, "hard": true, "grace_minutes": 20, "target_ref": "fixture:site:carrier-stop"}
+      ],
+      "expected": {"kind": "RESCHEDULE_OR_REPORT_MISSED_COMMITMENT", "handoff": "NONE", "source_type": "COMMITMENT", "schedule_state": "MISSED"}
+    },
+    {
+      "scenario_id": "critical_need_can_interrupt_low_priority_goal",
+      "agent_id": "fixture:npc:maker",
+      "context": {"semantic_minute": 120},
+      "goals": [
+        {"goal_id": "tidy-workbench", "intent_kind": "WORK", "priority": 2, "progress": 70, "target_progress": 100}
+      ],
+      "needs": [
+        {"need_id": "rest", "intent_kind": "REST", "pressure": 95, "activation_threshold": 55, "critical_threshold": 90}
+      ],
+      "expected": {"kind": "REST", "handoff": "NONE", "source_type": "NEED"}
+    },
+    {
+      "scenario_id": "explicit_emergency_message_changes_global_agenda",
+      "agent_id": "fixture:npc:guide",
+      "context": {"semantic_minute": 140},
+      "information_before_decision": [
+        {"claim_ref": "claim:bridge-emergency", "provenance_ref": "fixture:message:dispatch-44"}
+      ],
+      "goals": [
+        {"goal_id": "prepare-route-notes", "intent_kind": "WORK", "priority": 6, "progress": 20, "target_progress": 100}
+      ],
+      "situational_intents": [
+        {"intent_id": "respond-bridge-emergency", "kind": "RESPOND_EMERGENCY", "base_priority": 20, "urgency": 10, "required_knowledge": ["claim:bridge-emergency"]}
+      ],
+      "expected": {"kind": "RESPOND_EMERGENCY", "handoff": "NONE", "source_type": "SITUATIONAL"}
+    },
+    {
+      "scenario_id": "structured_training_request_hands_to_autoptu",
+      "agent_id": "fixture:npc:guide",
+      "context": {"semantic_minute": 300},
+      "situational_intents": [
+        {"intent_id": "accept-structured-training", "kind": "TRAIN", "base_priority": 15, "requires_structured_mechanics": true, "target_ref": "fixture:actor:trainee"}
+      ],
+      "expected": {"kind": "TRAIN", "handoff": "REQUEST_AUTOPTU", "source_type": "SITUATIONAL"}
+    }
+  ],
+  "invariants": [
+    "Fixture regions are arbitrary and do not alter planner semantics.",
+    "Only explicit Ouros semantic_minute values affect commitment state.",
+    "A missed commitment creates follow-up intent and never teleports an NPC.",
+    "Needs create world-level pressure only; they are not PTU Status Afflictions.",
+    "Messages can alter knowledge and agenda without altering hidden world truth.",
+    "Structured mechanics emit REQUEST_AUTOPTU and remain unresolved by world-agent AI."
+  ]
+}
