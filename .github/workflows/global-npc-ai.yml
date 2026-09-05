@@ -8,11 +8,13 @@ on:
       - 'tools/global_npc_social.py'
       - 'tools/global_npc_travel.py'
       - 'tools/global_npc_memory.py'
+      - 'tools/global_npc_information_network.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
       - 'implementation/global-npc-travel-*.json'
       - 'implementation/global-npc-memory-*.json'
+      - 'implementation/global-npc-information-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -23,11 +25,13 @@ on:
       - 'tools/global_npc_social.py'
       - 'tools/global_npc_travel.py'
       - 'tools/global_npc_memory.py'
+      - 'tools/global_npc_information_network.py'
       - 'implementation/global-npc-ai-*.json'
       - 'implementation/global-npc-goal-need-schedule-*.json'
       - 'implementation/global-npc-social-*.json'
       - 'implementation/global-npc-travel-*.json'
       - 'implementation/global-npc-memory-*.json'
+      - 'implementation/global-npc-information-*.json'
       - 'tests/test_global_npc_*.py'
       - 'design/global-npc-*.md'
       - 'CURRENT_FOCUS.md'
@@ -51,5 +55,7 @@ jobs:
         run: python -m tools.global_npc_travel implementation/global-npc-travel-fixture-v1.json
       - name: Replay global NPC memory fixture
         run: python -m tools.global_npc_memory implementation/global-npc-memory-belief-communication-fixture-v1.json
+      - name: Replay global NPC information propagation fixture
+        run: python -m tools.global_npc_information_network implementation/global-npc-information-propagation-fixture-v1.json
       - name: Run global NPC AI regressions
         run: python -m unittest discover -s tests -p 'test_global_npc_*.py' -v
