@@ -61,8 +61,16 @@ Pass 280 social layer:
 - `implementation/global-npc-social-relationship-faction-fixture-v1.json`
 - `tests/test_global_npc_social_relationships_factions.py`
 
-Directional relationships, provenance-backed social change, explicit faction duties/permissions, non-hive-mind knowledge and rivalry-to-AutoPTU boundaries now have executable coverage.
+Directional relationships, provenance-backed social change, explicit faction duties/permissions, non-hive-mind knowledge and rivalry-to-AutoPTU boundaries have executable coverage.
 
-The immediate next slice should implement world travel planning and reservation of travel time so schedules and social commitments cannot teleport NPCs between locations. After that, deepen memory revision, NPC-to-NPC communication, dialogue projection and scalable event scheduling. All must consume the same global agenda rather than fork per region.
+Pass 281 travel layer:
+- `design/global-npc-world-travel-contract.md`
+- `tools/global_npc_travel.py`
+- `implementation/global-npc-travel-fixture-v1.json`
+- `tests/test_global_npc_travel.py`
+
+World-route planning, travel-time reservation, deterministic ETA, off-screen semantic movement, knowledge/permission-gated routes, replanning, no-teleport lateness, local projection boundaries and AutoPTU interruption handoff now have executable coverage.
+
+The immediate next slices should deepen memory/claim confidence and revision, NPC-to-NPC communication/social propagation, resource/inventory-aware intents, dialogue/context projection, local Minecraft behavior acknowledgement and scalable event scheduling for large named casts. These systems must consume the same global agenda/travel/social state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
