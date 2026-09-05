@@ -1,0 +1,95 @@
+{
+  "fixture_id": "global-npc-publication-revision-fixture-v1",
+  "agents": [
+    {"agent_id": "agent-amber"},
+    {"agent_id": "agent-birch"},
+    {"agent_id": "agent-cinder"},
+    {"agent_id": "agent-delta"}
+  ],
+  "events": [
+    {
+      "event_id": "register-original",
+      "kind": "register",
+      "publication": {
+        "publication_id": "route-bulletin-v1",
+        "publisher_id": "civic-desk",
+        "source_claim_id": "claim-route-v1",
+        "service_id": "public-bulletin",
+        "channel_id": "public-channel",
+        "published_minute": 100,
+        "scope_ids": ["synthetic-district"],
+        "topic_id": "route-status",
+        "revision_kind": "ORIGINAL"
+      }
+    },
+    {
+      "event_id": "amber-receives-original",
+      "kind": "receive",
+      "agent_id": "agent-amber",
+      "publication_id": "route-bulletin-v1"
+    },
+    {
+      "event_id": "birch-receives-original",
+      "kind": "receive",
+      "agent_id": "agent-birch",
+      "publication_id": "route-bulletin-v1"
+    },
+    {
+      "event_id": "register-correction",
+      "kind": "register",
+      "publication": {
+        "publication_id": "route-bulletin-v2",
+        "publisher_id": "civic-desk",
+        "source_claim_id": "claim-route-v2",
+        "service_id": "public-bulletin",
+        "channel_id": "public-channel",
+        "published_minute": 120,
+        "scope_ids": ["synthetic-district"],
+        "topic_id": "route-status",
+        "supersedes_publication_id": "route-bulletin-v1",
+        "revision_kind": "CORRECTION",
+        "revision_rationale": "new verified route report"
+      }
+    },
+    {
+      "event_id": "amber-receives-correction",
+      "kind": "receive",
+      "agent_id": "agent-amber",
+      "publication_id": "route-bulletin-v2"
+    },
+    {
+      "event_id": "cinder-receives-correction-only",
+      "kind": "receive",
+      "agent_id": "agent-cinder",
+      "publication_id": "route-bulletin-v2"
+    },
+    {
+      "event_id": "restart-registry",
+      "kind": "restart"
+    },
+    {
+      "event_id": "assess-amber",
+      "kind": "assess",
+      "agent_id": "agent-amber",
+      "publication_id": "route-bulletin-v1"
+    },
+    {
+      "event_id": "assess-birch",
+      "kind": "assess",
+      "agent_id": "agent-birch",
+      "publication_id": "route-bulletin-v1"
+    },
+    {
+      "event_id": "assess-cinder",
+      "kind": "assess",
+      "agent_id": "agent-cinder",
+      "publication_id": "route-bulletin-v1"
+    },
+    {
+      "event_id": "assess-delta",
+      "kind": "assess",
+      "agent_id": "agent-delta",
+      "publication_id": "route-bulletin-v1"
+    }
+  ]
+}
