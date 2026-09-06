@@ -1,7 +1,9 @@
+import copy
 import unittest
 
 from tools.global_npc_evidence_custody import (
     CustodyAction,
+    CustodyAssessment,
     CustodyIntegrityStatus,
     CustodyRecord,
     EvidenceCustodyRegistry,
@@ -141,18 +143,131 @@ class EvidenceCustodyTests(unittest.TestCase):
                 assessment_id="a-future", known_record_ids=("r1",), semantic_minute=110,
             )
 
-    def test_registry_snapshot_round_trip_preserves_records_and_assessments(self) -> None:
+    def test_late_documentation_creates_new_assessment_without_erasing_old_one(self) -> None:
+        ledger = KnowledgeLedger("investigator")
+        add_claim(ledger, "doc-collect", root="record:collect", minute=101)
+        add_claim(ledger, "doc-transfer", root="record:transfer", minute=120)
+        registry = EvidenceCustodyRegistry()
+        registry.add_record(record("r1", "doc-collect", 101, None, "collector"))
+        registry.add_record(record("r2", "doc-transfer", 102, "r1", "lab"))
+
+        earlier = assess_evidence_custody(
+            ledger, artifact(), registry,
+            assessment_id="assessment:early", known_record_ids=("r2",), semantic_minute=121,
+        )
+        later = assess_evidence_custody(
+            ledger, artifact(), registry,
+            assessment_id="assessment:reopened", known_record_ids=("r1", "r2"),
+            supersedes_assessment_id=earlier.assessment_id, semantic_minute=125,
+        )
+
+        self.assertIs(earlier.status, CustodyIntegrityStatus.DOCUMENTATION_GAP)
+        self.assertIs(later.status, CustodyIntegrityStatus.CONTINUITY_SUPPORTED)
+        self.assertEqual(registry.assessments[earlier.assessment_id], earlier)
+        self.assertEqual(
+            [row.assessment_id for row in registry.assessment_lineage(later.assessment_id)],
+            ["assessment:early", "assessment:reopened"],
+        )
+
+    def test_lineage_must_stay_with_same_investigator_and_evidence(self) -> None:
+        registry = EvidenceCustodyRegistry()
+        base = CustodyAssessment(
+            assessment_id="base", investigator_id="investigator", evidence_id="relay-brace-17",
+            semantic_minute=110, status=CustodyIntegrityStatus.UNASSESSED,
+            known_record_ids=(), support_claim_ids=(),
+        )
+        registry.add_assessment(base)
+        with self.assertRaisesRegex(ValueError, "investigators"):
+            registry.add_assessment(CustodyAssessment(
+                assessment_id="other-investigator", investigator_id="other", evidence_id="relay-brace-17",
+                semantic_minute=111, status=CustodyIntegrityStatus.UNASSESSED,
+                known_record_ids=(), support_claim_ids=(), supersedes_assessment_id="base",
+            ))
+        with self.assertRaisesRegex(ValueError, "evidence identity"):
+            registry.add_assessment(CustodyAssessment(
+                assessment_id="other-evidence", investigator_id="investigator", evidence_id="another-artifact",
+                semantic_minute=111, status=CustodyIntegrityStatus.UNASSESSED,
+                known_record_ids=(), support_claim_ids=(), supersedes_assessment_id="base",
+            ))
+
+    def test_lineage_rejects_unknown_predecessor_and_time_regression(self) -> None:
+        registry = EvidenceCustodyRegistry()
+        with self.assertRaisesRegex(ValueError, "missing assessment"):
+            registry.add_assessment(CustodyAssessment(
+                assessment_id="orphan", investigator_id="investigator", evidence_id="relay-brace-17",
+                semantic_minute=110, status=CustodyIntegrityStatus.UNASSESSED,
+                known_record_ids=(), support_claim_ids=(), supersedes_assessment_id="missing",
+            ))
+        registry.add_assessment(CustodyAssessment(
+            assessment_id="later", investigator_id="investigator", evidence_id="relay-brace-17",
+            semantic_minute=120, status=CustodyIntegrityStatus.UNASSESSED,
+            known_record_ids=(), support_claim_ids=(),
+        ))
+        with self.assertRaisesRegex(ValueError, "predates superseded"):
+            registry.add_assessment(CustodyAssessment(
+                assessment_id="earlier", investigator_id="investigator", evidence_id="relay-brace-17",
+                semantic_minute=119, status=CustodyIntegrityStatus.UNASSESSED,
+                known_record_ids=(), support_claim_ids=(), supersedes_assessment_id="later",
+            ))
+
+    def test_restore_detects_lineage_cycle_even_when_snapshot_rows_are_out_of_order(self) -> None:
+        registry = EvidenceCustodyRegistry()
+        snapshot = {
+            "schema": "OUROS_NPC_EVIDENCE_CUSTODY_V2",
+            "records": [],
+            "assessments": [
+                {
+                    "assessment_id": "b", "investigator_id": "investigator", "evidence_id": "relay-brace-17",
+                    "semantic_minute": 111, "status": "UNASSESSED", "known_record_ids": [],
+                    "support_claim_ids": [], "compromise_claim_ids": [], "supersedes_assessment_id": "a",
+                },
+                {
+                    "assessment_id": "a", "investigator_id": "investigator", "evidence_id": "relay-brace-17",
+                    "semantic_minute": 111, "status": "UNASSESSED", "known_record_ids": [],
+                    "support_claim_ids": [], "compromise_claim_ids": [], "supersedes_assessment_id": "b",
+                },
+            ],
+        }
+        with self.assertRaisesRegex(ValueError, "cycle"):
+            registry.restore(snapshot)
+
+    def test_registry_snapshot_round_trip_preserves_records_assessments_and_lineage(self) -> None:
+        ledger = KnowledgeLedger("investigator")
+        add_claim(ledger, "doc-collect", root="record:collect", minute=101)
+        registry = EvidenceCustodyRegistry()
+        registry.add_record(record("r1", "doc-collect", 101, None, "collector"))
+        first = assess_evidence_custody(
+            ledger, artifact(), registry,
+            assessment_id="z-first", known_record_ids=("r1",), semantic_minute=110,
+        )
+        assess_evidence_custody(
+            ledger, artifact(), registry,
+            assessment_id="a-second", known_record_ids=("r1",), semantic_minute=115,
+            supersedes_assessment_id=first.assessment_id,
+        )
+        restored = EvidenceCustodyRegistry.restore(registry.snapshot())
+        self.assertEqual(restored.records, registry.records)
+        self.assertEqual(restored.assessments, registry.assessments)
+        self.assertEqual(
+            [row.assessment_id for row in restored.assessment_lineage("a-second")],
+            ["z-first", "a-second"],
+        )
+
+    def test_v1_snapshot_restores_without_inventing_lineage(self) -> None:
         ledger = KnowledgeLedger("investigator")
         add_claim(ledger, "doc-collect", root="record:collect", minute=101)
         registry = EvidenceCustodyRegistry()
         registry.add_record(record("r1", "doc-collect", 101, None, "collector"))
         assess_evidence_custody(
             ledger, artifact(), registry,
-            assessment_id="a-persist", known_record_ids=("r1",), semantic_minute=110,
+            assessment_id="legacy", known_record_ids=("r1",), semantic_minute=110,
         )
-        restored = EvidenceCustodyRegistry.restore(registry.snapshot())
-        self.assertEqual(restored.records, registry.records)
-        self.assertEqual(restored.assessments, registry.assessments)
+        snapshot = copy.deepcopy(registry.snapshot())
+        snapshot["schema"] = "OUROS_NPC_EVIDENCE_CUSTODY_V1"
+        for row in snapshot["assessments"]:
+            row.pop("supersedes_assessment_id", None)
+        restored = EvidenceCustodyRegistry.restore(snapshot)
+        self.assertIsNone(restored.assessments["legacy"].supersedes_assessment_id)
 
 
 if __name__ == "__main__":
