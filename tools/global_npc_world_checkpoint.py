@@ -8,7 +8,10 @@ from pathlib import Path
 from typing import Mapping
 
 from tools.global_npc_ai import AgentMode, NpcAgentState, agent_from_dict
+from tools.global_npc_assessment_decision_dependency import AssessmentDecisionDependencyRegistry
+from tools.global_npc_assessment_decision_review import AssessmentDecisionReviewRegistry
 from tools.global_npc_deception_runtime import DeceptionInformationEventQueue
+from tools.global_npc_decision_consequence_repair import DecisionConsequenceRepairRegistry
 from tools.global_npc_evidence_custody import EvidenceCustodyRegistry
 from tools.global_npc_information_network import CommunicationChannel, InformationEventQueue
 from tools.global_npc_infrastructure_failure_attribution import InfrastructureAttributionRegistry
@@ -17,8 +20,9 @@ from tools.global_npc_replanning import NpcReplanQueue
 from tools.global_npc_world_event_coordinator import AgentAgendaProfile, GlobalNpcWorldEventCoordinator
 
 
-CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V4"
+CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V5"
 LEGACY_CHECKPOINT_SCHEMAS = {
+    "OUROS_NPC_WORLD_CHECKPOINT_V4",
     "OUROS_NPC_WORLD_CHECKPOINT_V3",
     "OUROS_NPC_WORLD_CHECKPOINT_V2",
     "OUROS_NPC_WORLD_CHECKPOINT_V1",
@@ -34,6 +38,9 @@ class RestoredWorldCheckpoint:
     ledger_store: KnowledgeLedgerStore
     infrastructure_attribution_registry: InfrastructureAttributionRegistry
     evidence_custody_registry: EvidenceCustodyRegistry
+    assessment_decision_dependency_registry: AssessmentDecisionDependencyRegistry
+    assessment_decision_review_registry: AssessmentDecisionReviewRegistry
+    decision_consequence_repair_registry: DecisionConsequenceRepairRegistry
     publication_runtime_snapshot: Mapping[str, object] | None
 
 
@@ -84,6 +91,9 @@ def build_checkpoint(
     semantic_minute: int,
     infrastructure_attribution_registry: InfrastructureAttributionRegistry | None = None,
     evidence_custody_registry: EvidenceCustodyRegistry | None = None,
+    assessment_decision_dependency_registry: AssessmentDecisionDependencyRegistry | None = None,
+    assessment_decision_review_registry: AssessmentDecisionReviewRegistry | None = None,
+    decision_consequence_repair_registry: DecisionConsequenceRepairRegistry | None = None,
     publication_runtime_snapshot: Mapping[str, object] | None = None,
 ) -> dict:
     """Create one deterministic logical snapshot of coupled global-NPC state.
@@ -95,13 +105,13 @@ def build_checkpoint(
     ledger_store = KnowledgeLedgerStore(dict(coordinator.information_queue.ledgers))
     attribution_registry = infrastructure_attribution_registry or InfrastructureAttributionRegistry()
     custody_registry = evidence_custody_registry or EvidenceCustodyRegistry()
+    dependency_registry = assessment_decision_dependency_registry or AssessmentDecisionDependencyRegistry()
+    review_registry = assessment_decision_review_registry or AssessmentDecisionReviewRegistry()
+    consequence_registry = decision_consequence_repair_registry or DecisionConsequenceRepairRegistry()
     payload = {
         "schema": CHECKPOINT_SCHEMA,
         "semantic_minute": int(semantic_minute),
-        "agents": [
-            _agent_snapshot(coordinator.agents[agent_id])
-            for agent_id in sorted(coordinator.agents)
-        ],
+        "agents": [_agent_snapshot(coordinator.agents[agent_id]) for agent_id in sorted(coordinator.agents)],
         "knowledge_ledgers": ledger_store.snapshot(),
         "information_queue_kind": _queue_kind(coordinator.information_queue),
         "information_queue": coordinator.information_queue.snapshot(),
@@ -109,16 +119,15 @@ def build_checkpoint(
         "materialized_delivery_event_ids": sorted(coordinator.materialized_delivery_event_ids),
         "infrastructure_attribution": attribution_registry.snapshot(),
         "evidence_custody": custody_registry.snapshot(),
+        "assessment_decision_dependencies": dependency_registry.snapshot(),
+        "assessment_decision_reviews": review_registry.snapshot(),
+        "decision_consequence_repairs": consequence_registry.snapshot(),
         "publication_runtime": None if publication_runtime_snapshot is None else dict(publication_runtime_snapshot),
     }
     return payload | {"sha256": _digest_payload(payload)}
 
 
-def _validate_references(
-    *,
-    queue: InformationEventQueue,
-    coordinator: GlobalNpcWorldEventCoordinator,
-) -> None:
+def _validate_references(*, queue: InformationEventQueue, coordinator: GlobalNpcWorldEventCoordinator) -> None:
     ledgers = queue.ledgers
     envelopes = [entry[2] for entry in queue.pending] + list(queue.awaiting_local_ack.values())
     for envelope in envelopes:
@@ -151,26 +160,23 @@ def _restore_information_queue(
     raise ValueError(f"unsupported information queue kind: {kind}")
 
 
-def _restore_infrastructure_attribution(payload: Mapping[str, object]) -> InfrastructureAttributionRegistry:
-    raw = payload.get("infrastructure_attribution")
+def _restore_registry(payload: Mapping[str, object], key: str, factory, restore):
+    raw = payload.get(key)
     if raw is None:
         if payload.get("schema") in LEGACY_CHECKPOINT_SCHEMAS:
-            return InfrastructureAttributionRegistry()
-        raise ValueError("infrastructure_attribution checkpoint is required")
+            return factory()
+        raise ValueError(f"{key} checkpoint is required")
     if not isinstance(raw, Mapping):
-        raise ValueError("infrastructure_attribution checkpoint must be a mapping")
-    return InfrastructureAttributionRegistry.restore(raw)
+        raise ValueError(f"{key} checkpoint must be a mapping")
+    return restore(raw)
+
+
+def _restore_infrastructure_attribution(payload: Mapping[str, object]) -> InfrastructureAttributionRegistry:
+    return _restore_registry(payload, "infrastructure_attribution", InfrastructureAttributionRegistry, InfrastructureAttributionRegistry.restore)
 
 
 def _restore_evidence_custody(payload: Mapping[str, object]) -> EvidenceCustodyRegistry:
-    raw = payload.get("evidence_custody")
-    if raw is None:
-        if payload.get("schema") in LEGACY_CHECKPOINT_SCHEMAS:
-            return EvidenceCustodyRegistry()
-        raise ValueError("evidence_custody checkpoint is required")
-    if not isinstance(raw, Mapping):
-        raise ValueError("evidence_custody checkpoint must be a mapping")
-    return EvidenceCustodyRegistry.restore(raw)
+    return _restore_registry(payload, "evidence_custody", EvidenceCustodyRegistry, EvidenceCustodyRegistry.restore)
 
 
 def _validate_infrastructure_attribution(
@@ -243,6 +249,85 @@ def _validate_evidence_custody(
                 raise ValueError(f"custody assessment predates compromise claim: {assessment.assessment_id}:{claim_id}")
 
 
+def _validate_decision_chain(
+    dependencies: AssessmentDecisionDependencyRegistry,
+    reviews: AssessmentDecisionReviewRegistry,
+    consequences: DecisionConsequenceRepairRegistry,
+    custody: EvidenceCustodyRegistry,
+    ledger_store: KnowledgeLedgerStore,
+    *,
+    semantic_minute: int,
+) -> None:
+    for decision in dependencies.decisions.values():
+        if decision.semantic_minute > semantic_minute:
+            raise ValueError(f"assessment-dependent decision comes from the future: {decision.decision_id}")
+        assessment = custody.assessments.get(decision.basis_assessment_id)
+        if assessment is None:
+            raise ValueError(f"decision references missing basis assessment: {decision.decision_id}")
+        if assessment.semantic_minute > decision.semantic_minute:
+            raise ValueError(f"decision predates basis assessment: {decision.decision_id}")
+        ledger = ledger_store.ledgers.get(decision.actor_id)
+        if ledger is None:
+            raise ValueError(f"decision references missing actor ledger: {decision.decision_id}")
+        claim = ledger.claims.get(decision.basis_claim_id)
+        if claim is None:
+            raise ValueError(f"decision basis claim is missing: {decision.decision_id}")
+        if claim.semantic_minute > decision.semantic_minute:
+            raise ValueError(f"decision predates basis claim: {decision.decision_id}")
+        if claim.provenance_root != f"custody-assessment:{assessment.assessment_id}":
+            raise ValueError(f"decision basis provenance mismatch: {decision.decision_id}")
+        if claim.subject != f"custody:{assessment.evidence_id}" or claim.value != assessment.status.value:
+            raise ValueError(f"decision basis conclusion mismatch: {decision.decision_id}")
+
+    for review in reviews.reviews.values():
+        if review.semantic_minute > semantic_minute:
+            raise ValueError(f"assessment decision review comes from the future: {review.review_id}")
+        decision = dependencies.decisions.get(review.decision_id)
+        if decision is None:
+            raise ValueError(f"review references missing decision: {review.review_id}")
+        if review.actor_id != decision.actor_id:
+            raise ValueError(f"review actor mismatch: {review.review_id}")
+        assessment = custody.assessments.get(review.superseding_assessment_id)
+        if assessment is None:
+            raise ValueError(f"review references missing superseding assessment: {review.review_id}")
+        lineage_ids = tuple(row.assessment_id for row in custody.assessment_lineage(assessment.assessment_id))
+        if decision.basis_assessment_id not in lineage_ids[:-1]:
+            raise ValueError(f"review assessment does not supersede decision basis: {review.review_id}")
+        ledger = ledger_store.ledgers.get(review.actor_id)
+        if ledger is None:
+            raise ValueError(f"review references missing actor ledger: {review.review_id}")
+        claim = ledger.claims.get(review.superseding_claim_id)
+        if claim is None:
+            raise ValueError(f"review basis claim is missing: {review.review_id}")
+        if claim.semantic_minute > review.semantic_minute:
+            raise ValueError(f"review predates basis claim: {review.review_id}")
+        if claim.provenance_root != f"custody-assessment:{assessment.assessment_id}":
+            raise ValueError(f"review basis provenance mismatch: {review.review_id}")
+
+    for consequence in consequences.consequences.values():
+        decision = dependencies.decisions.get(consequence.decision_id)
+        if decision is None:
+            raise ValueError(f"consequence references missing decision: {consequence.consequence_id}")
+        if consequence.applied_semantic_minute > semantic_minute:
+            raise ValueError(f"decision consequence comes from the future: {consequence.consequence_id}")
+        if consequence.applied_semantic_minute < decision.semantic_minute:
+            raise ValueError(f"decision consequence predates decision: {consequence.consequence_id}")
+
+    for repair in consequences.repairs.values():
+        consequence = consequences.consequences.get(repair.consequence_id)
+        review = reviews.reviews.get(repair.review_id)
+        if consequence is None or review is None:
+            raise ValueError(f"repair references missing consequence or review: {repair.repair_id}")
+        if repair.semantic_minute > semantic_minute:
+            raise ValueError(f"consequence repair comes from the future: {repair.repair_id}")
+        if review.decision_id != consequence.decision_id:
+            raise ValueError(f"repair review does not match consequence decision: {repair.repair_id}")
+        if repair.actor_id != review.actor_id:
+            raise ValueError(f"repair actor mismatch: {repair.repair_id}")
+        if repair.semantic_minute < max(consequence.applied_semantic_minute, review.semantic_minute):
+            raise ValueError(f"repair predates consequence or review: {repair.repair_id}")
+
+
 def restore_checkpoint(
     snapshot: Mapping[str, object],
     *,
@@ -254,28 +339,41 @@ def restore_checkpoint(
     ledger_store = KnowledgeLedgerStore.restore(payload["knowledge_ledgers"])
     queue = _restore_information_queue(payload, channels=channels, ledgers=ledger_store.ledgers)
     replan_queue = NpcReplanQueue.from_snapshot(payload["replan_queue"])
-    agents = {
-        str(row["agent_id"]): agent_from_dict(row)
-        for row in payload.get("agents", [])
-    }
+    agents = {str(row["agent_id"]): agent_from_dict(row) for row in payload.get("agents", [])}
     coordinator = GlobalNpcWorldEventCoordinator(
         information_queue=queue,
         replan_queue=replan_queue,
         agents=agents,
         agendas=agendas,
     )
-    coordinator.materialized_delivery_event_ids = {
-        str(value) for value in payload.get("materialized_delivery_event_ids", [])
-    }
+    coordinator.materialized_delivery_event_ids = {str(value) for value in payload.get("materialized_delivery_event_ids", [])}
     attribution_registry = _restore_infrastructure_attribution(payload)
     custody_registry = _restore_evidence_custody(payload)
-    _validate_references(queue=queue, coordinator=coordinator)
-    _validate_infrastructure_attribution(
-        attribution_registry,
-        ledger_store,
-        semantic_minute=int(payload["semantic_minute"]),
+    dependency_registry = _restore_registry(
+        payload,
+        "assessment_decision_dependencies",
+        AssessmentDecisionDependencyRegistry,
+        AssessmentDecisionDependencyRegistry.restore,
     )
-    _validate_evidence_custody(
+    review_registry = _restore_registry(
+        payload,
+        "assessment_decision_reviews",
+        AssessmentDecisionReviewRegistry,
+        AssessmentDecisionReviewRegistry.restore,
+    )
+    consequence_registry = _restore_registry(
+        payload,
+        "decision_consequence_repairs",
+        DecisionConsequenceRepairRegistry,
+        DecisionConsequenceRepairRegistry.restore,
+    )
+    _validate_references(queue=queue, coordinator=coordinator)
+    _validate_infrastructure_attribution(attribution_registry, ledger_store, semantic_minute=int(payload["semantic_minute"]))
+    _validate_evidence_custody(custody_registry, ledger_store, semantic_minute=int(payload["semantic_minute"]))
+    _validate_decision_chain(
+        dependency_registry,
+        review_registry,
+        consequence_registry,
         custody_registry,
         ledger_store,
         semantic_minute=int(payload["semantic_minute"]),
@@ -289,6 +387,9 @@ def restore_checkpoint(
         ledger_store=ledger_store,
         infrastructure_attribution_registry=attribution_registry,
         evidence_custody_registry=custody_registry,
+        assessment_decision_dependency_registry=dependency_registry,
+        assessment_decision_review_registry=review_registry,
+        decision_consequence_repair_registry=consequence_registry,
         publication_runtime_snapshot=runtime,
     )
 
@@ -357,10 +458,7 @@ def replay_fixture(path: str | Path) -> dict:
                 "digest": checkpoint["sha256"],
             })
         elif kind == "cycle":
-            cycle = coordinator.process_cycle(
-                int(event["semantic_minute"]),
-                delivery_budget=int(event["delivery_budget"]),
-            )
+            cycle = coordinator.process_cycle(int(event["semantic_minute"]), delivery_budget=int(event["delivery_budget"]))
             results.append({
                 "event_id": event["event_id"],
                 "processed": cycle.delivery_processed_count,
