@@ -205,7 +205,21 @@ def assess_infrastructure_failure(
     actor_links: set[str] = set()
     intent_links: set[str] = set()
 
-    for ref in sorted(evidence, key=lambda item: (item.claim_id, item.kind.value, item.linked_actor_id or "")):
+    evidence_priority = {
+        InfrastructureEvidenceKind.ACCIDENTAL_CAUSE: 0,
+        InfrastructureEvidenceKind.TAMPERING_TRACE: 1,
+        InfrastructureEvidenceKind.ACTOR_LINK: 2,
+        InfrastructureEvidenceKind.INTENT_EVIDENCE: 3,
+        InfrastructureEvidenceKind.CONTRIBUTION_LINK: 4,
+    }
+    for ref in sorted(
+        evidence,
+        key=lambda item: (
+            evidence_priority[item.kind],
+            item.claim_id,
+            item.linked_actor_id or "",
+        ),
+    ):
         if ref.incident_id != incident.incident_id:
             raise ValueError("causal evidence targets a different infrastructure incident")
         claim = discoverer.claims[ref.claim_id]
