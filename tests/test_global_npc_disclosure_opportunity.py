@@ -84,7 +84,11 @@ class GlobalNpcDisclosureOpportunityTests(unittest.TestCase):
 
     def dispatch(self, *, scheduled=(), unscheduled=()):
         return DispatchResult(
-            selection=AudienceSelection(selected_agent_ids=("traveler",), scored_candidates=()),
+            selection=AudienceSelection(
+                selected_agent_ids=("traveler",),
+                scores=(("traveler", 1),),
+                rejected=(),
+            ),
             scheduled=tuple(scheduled),
             unscheduled=tuple(unscheduled),
         )
