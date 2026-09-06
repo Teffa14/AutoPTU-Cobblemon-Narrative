@@ -12,15 +12,17 @@ Pass 317 adds research and proposed design for olfactory ecology, scent-trace pr
 
 ### AutoPTU-Java
 
-Inspected head: `704722ffecbef9e003abe1870829843f29f029c7` (PR #385, `Add declarative round-window history state`).
+Final inspected head: `d6cd74d835085dcb0b20724c49effe774c23f73a` (PR #386, `Wire declarative round-window histories into lifecycle`).
 
-This commit adds a server-core store for specific round-indexed histories, including Echoed Voice, Fusion Bolt and Fusion Flare, with tests and comparison against the pinned Python oracle. It is positive evidence for a reusable slice of round-history retention/pruning. It does not verify the complete turn/round lifecycle, dynamic environmental zones, delayed scent transport, statuses, reactions or general tactical policy.
+This commit materializes the declarative round-window histories in authoritative battle runtime state, registers pruning at `ROUND_START_POST_INITIATIVE`, and adds lifecycle oracle-parity coverage against the pinned Python behavior. It is stronger evidence than PR #385 for this narrow history/lifecycle seam because the state now participates in authoritative round rollover rather than existing only as a standalone store.
+
+It still does not verify the complete turn/round lifecycle, dynamic environmental zones, delayed scent transport, status handling, reactions, move families in general or tactical policy. No full capability family is promoted from this representative integration.
 
 ### AutoPTU Python
 
-Inspected head: `729bae2d424963ff9bb3f4159c9a7ac9152128a7`.
+Final inspected head: `729bae2d424963ff9bb3f4159c9a7ac9152128a7`.
 
-The current change remains presentation-only for this audit. No narrative dependency is promoted from it.
+The current change remains explicitly presentation-only. No narrative dependency is promoted from it.
 
 ## Permanent capability categories
 
@@ -34,7 +36,7 @@ Core calculations — VERIFIED within audited deterministic contracts. No olfact
 
 Action economy / initiative — VERIFIED within audited contracts for structured tactical scenes.
 
-Full turn/round lifecycle — PARTIAL. PR #385 strengthens a narrow round-history seam but does not establish phase-complete environmental timing.
+Full turn/round lifecycle — PARTIAL. PR #386 verifies authoritative post-initiative pruning for the declarative round-window history family against Python, but it does not establish phase-complete lifecycle behavior or environmental timing.
 
 Full stateful damage pipeline — PARTIAL. Not required by the reduced investigation; relevant only if a separate hazard causes real damage.
 
