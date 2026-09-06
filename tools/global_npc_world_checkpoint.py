@@ -10,13 +10,17 @@ from typing import Mapping
 from tools.global_npc_ai import AgentMode, NpcAgentState, agent_from_dict
 from tools.global_npc_deception_runtime import DeceptionInformationEventQueue
 from tools.global_npc_information_network import CommunicationChannel, InformationEventQueue
+from tools.global_npc_infrastructure_failure_attribution import InfrastructureAttributionRegistry
 from tools.global_npc_memory import KnowledgeLedger, KnowledgeLedgerStore, record_direct_observation
 from tools.global_npc_replanning import NpcReplanQueue
 from tools.global_npc_world_event_coordinator import AgentAgendaProfile, GlobalNpcWorldEventCoordinator
 
 
-CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V2"
-LEGACY_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V1"
+CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V3"
+LEGACY_CHECKPOINT_SCHEMAS = {
+    "OUROS_NPC_WORLD_CHECKPOINT_V2",
+    "OUROS_NPC_WORLD_CHECKPOINT_V1",
+}
 STANDARD_QUEUE_KIND = "STANDARD"
 DECEPTION_QUEUE_KIND = "DECEPTION"
 
@@ -26,6 +30,7 @@ class RestoredWorldCheckpoint:
     semantic_minute: int
     coordinator: GlobalNpcWorldEventCoordinator
     ledger_store: KnowledgeLedgerStore
+    infrastructure_attribution_registry: InfrastructureAttributionRegistry
     publication_runtime_snapshot: Mapping[str, object] | None
 
 
@@ -53,7 +58,7 @@ def _digest_payload(payload: Mapping[str, object]) -> str:
 
 
 def _validated_payload(snapshot: Mapping[str, object]) -> dict:
-    if snapshot.get("schema") not in {CHECKPOINT_SCHEMA, LEGACY_CHECKPOINT_SCHEMA}:
+    if snapshot.get("schema") not in {CHECKPOINT_SCHEMA, *LEGACY_CHECKPOINT_SCHEMAS}:
         raise ValueError("unsupported global NPC world checkpoint schema")
     digest = snapshot.get("sha256")
     if not isinstance(digest, str) or not digest:
@@ -74,6 +79,7 @@ def build_checkpoint(
     coordinator: GlobalNpcWorldEventCoordinator,
     *,
     semantic_minute: int,
+    infrastructure_attribution_registry: InfrastructureAttributionRegistry | None = None,
     publication_runtime_snapshot: Mapping[str, object] | None = None,
 ) -> dict:
     """Create one deterministic logical snapshot of coupled global-NPC state.
@@ -83,6 +89,7 @@ def build_checkpoint(
     claimed by this module.
     """
     ledger_store = KnowledgeLedgerStore(dict(coordinator.information_queue.ledgers))
+    attribution_registry = infrastructure_attribution_registry or InfrastructureAttributionRegistry()
     payload = {
         "schema": CHECKPOINT_SCHEMA,
         "semantic_minute": int(semantic_minute),
@@ -95,6 +102,7 @@ def build_checkpoint(
         "information_queue": coordinator.information_queue.snapshot(),
         "replan_queue": coordinator.replan_queue.to_snapshot(),
         "materialized_delivery_event_ids": sorted(coordinator.materialized_delivery_event_ids),
+        "infrastructure_attribution": attribution_registry.snapshot(),
         "publication_runtime": None if publication_runtime_snapshot is None else dict(publication_runtime_snapshot),
     }
     return payload | {"sha256": _digest_payload(payload)}
@@ -137,6 +145,37 @@ def _restore_information_queue(
     raise ValueError(f"unsupported information queue kind: {kind}")
 
 
+def _restore_infrastructure_attribution(payload: Mapping[str, object]) -> InfrastructureAttributionRegistry:
+    raw = payload.get("infrastructure_attribution")
+    if raw is None:
+        if payload.get("schema") in LEGACY_CHECKPOINT_SCHEMAS:
+            return InfrastructureAttributionRegistry()
+        raise ValueError("infrastructure_attribution checkpoint is required")
+    if not isinstance(raw, Mapping):
+        raise ValueError("infrastructure_attribution checkpoint must be a mapping")
+    return InfrastructureAttributionRegistry.restore(raw)
+
+
+def _validate_infrastructure_attribution(
+    registry: InfrastructureAttributionRegistry,
+    ledger_store: KnowledgeLedgerStore,
+    *,
+    semantic_minute: int,
+) -> None:
+    for finding in registry.findings.values():
+        if finding.semantic_minute > semantic_minute:
+            raise ValueError(f"infrastructure finding comes from the future: {finding.finding_id}")
+        ledger = ledger_store.ledgers.get(finding.discoverer_id)
+        if ledger is None:
+            raise ValueError(f"infrastructure finding references missing discoverer ledger: {finding.finding_id}")
+        for claim_id in finding.evidence_claim_ids:
+            claim = ledger.claims.get(claim_id)
+            if claim is None:
+                raise ValueError(f"infrastructure finding evidence claim is missing: {finding.finding_id}:{claim_id}")
+            if claim.semantic_minute > finding.semantic_minute:
+                raise ValueError(f"infrastructure finding predates its evidence: {finding.finding_id}:{claim_id}")
+
+
 def restore_checkpoint(
     snapshot: Mapping[str, object],
     *,
@@ -161,7 +200,13 @@ def restore_checkpoint(
     coordinator.materialized_delivery_event_ids = {
         str(value) for value in payload.get("materialized_delivery_event_ids", [])
     }
+    attribution_registry = _restore_infrastructure_attribution(payload)
     _validate_references(queue=queue, coordinator=coordinator)
+    _validate_infrastructure_attribution(
+        attribution_registry,
+        ledger_store,
+        semantic_minute=int(payload["semantic_minute"]),
+    )
     runtime = payload.get("publication_runtime")
     if runtime is not None and not isinstance(runtime, Mapping):
         raise ValueError("publication_runtime checkpoint must be a mapping or null")
@@ -169,6 +214,7 @@ def restore_checkpoint(
         semantic_minute=int(payload["semantic_minute"]),
         coordinator=coordinator,
         ledger_store=ledger_store,
+        infrastructure_attribution_registry=attribution_registry,
         publication_runtime_snapshot=runtime,
     )
 

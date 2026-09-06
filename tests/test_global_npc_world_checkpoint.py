@@ -8,6 +8,11 @@ from tools.global_npc_ai import AgentMode, NpcAgentState
 from tools.global_npc_deception import author_deceptive_statement, perceived_source
 from tools.global_npc_deception_runtime import DeceptionInformationEventQueue
 from tools.global_npc_information_network import CommunicationChannel, InformationEventQueue
+from tools.global_npc_infrastructure_failure_attribution import (
+    InfrastructureAttributionFinding,
+    InfrastructureAttributionRegistry,
+    InfrastructureAttributionStatus,
+)
 from tools.global_npc_memory import KnowledgeLedger, record_direct_observation
 from tools.global_npc_replanning import NpcReplanQueue
 from tools.global_npc_world_checkpoint import build_checkpoint, replay_fixture, restore_checkpoint
@@ -28,6 +33,12 @@ class GlobalNpcWorldCheckpointTests(unittest.TestCase):
             agents=agents,
         )
         return coordinator, channels
+
+    @staticmethod
+    def _redigest(checkpoint: dict) -> None:
+        payload = {key: value for key, value in checkpoint.items() if key != "sha256"}
+        canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        checkpoint["sha256"] = hashlib.sha256(canonical).hexdigest()
 
     def test_pending_delivery_survives_checkpoint_and_delivers_once(self):
         coordinator, channels = self._world()
@@ -57,7 +68,7 @@ class GlobalNpcWorldCheckpointTests(unittest.TestCase):
         queue.schedule_statement(statement=statement, event_id="delivery:lie", message_id="message:lie", receiver_id="receiver", new_claim_id="received:lie", channel_id="wire", created_minute=2)
 
         checkpoint = build_checkpoint(coordinator, semantic_minute=3)
-        self.assertEqual(checkpoint["schema"], "OUROS_NPC_WORLD_CHECKPOINT_V2")
+        self.assertEqual(checkpoint["schema"], "OUROS_NPC_WORLD_CHECKPOINT_V3")
         self.assertEqual(checkpoint["information_queue_kind"], "DECEPTION")
         restored = restore_checkpoint(checkpoint, channels=channels)
         self.assertIsInstance(restored.coordinator.information_queue, DeceptionInformationEventQueue)
@@ -78,6 +89,103 @@ class GlobalNpcWorldCheckpointTests(unittest.TestCase):
         replay = restarted.coordinator.process_cycle(20, delivery_budget=2)
         self.assertEqual(replay.delivery_processed_count, 0)
         self.assertEqual(len(restarted.ledger_store.require("receiver").claims), 1)
+
+    def test_infrastructure_attribution_survives_with_evidence_basis(self):
+        coordinator, channels = self._world()
+        record_direct_observation(
+            coordinator.information_queue.ledgers["sender"],
+            claim_id="cut-fastener",
+            subject="relay:r17:failure-cause",
+            value="CUT_TRACE",
+            semantic_minute=5,
+            confidence=95,
+        )
+        finding = InfrastructureAttributionFinding(
+            finding_id="finding:relay-r17",
+            discoverer_id="sender",
+            incident_id="incident:relay-r17",
+            infrastructure_id="relay-r17",
+            semantic_minute=8,
+            status=InfrastructureAttributionStatus.TAMPERING_CORROBORATED,
+            evidence_claim_ids=("cut-fastener",),
+        )
+        registry = InfrastructureAttributionRegistry()
+        registry.add(finding)
+
+        checkpoint = build_checkpoint(
+            coordinator,
+            semantic_minute=10,
+            infrastructure_attribution_registry=registry,
+        )
+        restored = restore_checkpoint(checkpoint, channels=channels)
+        self.assertEqual(restored.infrastructure_attribution_registry.findings, registry.findings)
+        self.assertIn("cut-fastener", restored.ledger_store.require("sender").claims)
+
+        restarted = restore_checkpoint(
+            build_checkpoint(
+                restored.coordinator,
+                semantic_minute=12,
+                infrastructure_attribution_registry=restored.infrastructure_attribution_registry,
+            ),
+            channels=channels,
+        )
+        self.assertEqual(
+            restarted.infrastructure_attribution_registry.findings["finding:relay-r17"].status,
+            InfrastructureAttributionStatus.TAMPERING_CORROBORATED,
+        )
+
+    def test_infrastructure_finding_without_restored_evidence_fails_closed(self):
+        coordinator, channels = self._world()
+        registry = InfrastructureAttributionRegistry()
+        registry.add(
+            InfrastructureAttributionFinding(
+                finding_id="finding:orphan",
+                discoverer_id="sender",
+                incident_id="incident:relay-r17",
+                infrastructure_id="relay-r17",
+                semantic_minute=8,
+                status=InfrastructureAttributionStatus.TAMPERING_CORROBORATED,
+                evidence_claim_ids=("missing-claim",),
+            )
+        )
+        checkpoint = build_checkpoint(
+            coordinator,
+            semantic_minute=10,
+            infrastructure_attribution_registry=registry,
+        )
+        with self.assertRaisesRegex(ValueError, "evidence claim is missing"):
+            restore_checkpoint(checkpoint, channels=channels)
+
+    def test_infrastructure_finding_from_future_fails_closed(self):
+        coordinator, channels = self._world()
+        registry = InfrastructureAttributionRegistry()
+        registry.add(
+            InfrastructureAttributionFinding(
+                finding_id="finding:future",
+                discoverer_id="sender",
+                incident_id="incident:relay-r17",
+                infrastructure_id="relay-r17",
+                semantic_minute=11,
+                status=InfrastructureAttributionStatus.CAUSE_UNRESOLVED,
+                evidence_claim_ids=(),
+            )
+        )
+        checkpoint = build_checkpoint(
+            coordinator,
+            semantic_minute=10,
+            infrastructure_attribution_registry=registry,
+        )
+        with self.assertRaisesRegex(ValueError, "comes from the future"):
+            restore_checkpoint(checkpoint, channels=channels)
+
+    def test_legacy_v2_checkpoint_restores_with_empty_infrastructure_registry(self):
+        coordinator, channels = self._world()
+        checkpoint = build_checkpoint(coordinator, semantic_minute=4)
+        checkpoint["schema"] = "OUROS_NPC_WORLD_CHECKPOINT_V2"
+        checkpoint.pop("infrastructure_attribution")
+        self._redigest(checkpoint)
+        restored = restore_checkpoint(checkpoint, channels=channels)
+        self.assertEqual(restored.infrastructure_attribution_registry.findings, {})
 
     def test_materialization_guard_survives_checkpoint(self):
         coordinator, channels = self._world()
@@ -101,9 +209,7 @@ class GlobalNpcWorldCheckpointTests(unittest.TestCase):
         coordinator, channels = self._world()
         checkpoint = build_checkpoint(coordinator, semantic_minute=4)
         checkpoint["information_queue_kind"] = "UNKNOWN"
-        payload = {key: value for key, value in checkpoint.items() if key != "sha256"}
-        canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-        checkpoint["sha256"] = hashlib.sha256(canonical).hexdigest()
+        self._redigest(checkpoint)
         with self.assertRaisesRegex(ValueError, "unsupported information queue kind"):
             restore_checkpoint(checkpoint, channels=channels)
 
