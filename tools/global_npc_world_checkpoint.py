@@ -9,6 +9,7 @@ from typing import Mapping
 
 from tools.global_npc_ai import AgentMode, NpcAgentState, agent_from_dict
 from tools.global_npc_deception_runtime import DeceptionInformationEventQueue
+from tools.global_npc_evidence_custody import EvidenceCustodyRegistry
 from tools.global_npc_information_network import CommunicationChannel, InformationEventQueue
 from tools.global_npc_infrastructure_failure_attribution import InfrastructureAttributionRegistry
 from tools.global_npc_memory import KnowledgeLedger, KnowledgeLedgerStore, record_direct_observation
@@ -16,8 +17,9 @@ from tools.global_npc_replanning import NpcReplanQueue
 from tools.global_npc_world_event_coordinator import AgentAgendaProfile, GlobalNpcWorldEventCoordinator
 
 
-CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V3"
+CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V4"
 LEGACY_CHECKPOINT_SCHEMAS = {
+    "OUROS_NPC_WORLD_CHECKPOINT_V3",
     "OUROS_NPC_WORLD_CHECKPOINT_V2",
     "OUROS_NPC_WORLD_CHECKPOINT_V1",
 }
@@ -31,6 +33,7 @@ class RestoredWorldCheckpoint:
     coordinator: GlobalNpcWorldEventCoordinator
     ledger_store: KnowledgeLedgerStore
     infrastructure_attribution_registry: InfrastructureAttributionRegistry
+    evidence_custody_registry: EvidenceCustodyRegistry
     publication_runtime_snapshot: Mapping[str, object] | None
 
 
@@ -80,6 +83,7 @@ def build_checkpoint(
     *,
     semantic_minute: int,
     infrastructure_attribution_registry: InfrastructureAttributionRegistry | None = None,
+    evidence_custody_registry: EvidenceCustodyRegistry | None = None,
     publication_runtime_snapshot: Mapping[str, object] | None = None,
 ) -> dict:
     """Create one deterministic logical snapshot of coupled global-NPC state.
@@ -90,6 +94,7 @@ def build_checkpoint(
     """
     ledger_store = KnowledgeLedgerStore(dict(coordinator.information_queue.ledgers))
     attribution_registry = infrastructure_attribution_registry or InfrastructureAttributionRegistry()
+    custody_registry = evidence_custody_registry or EvidenceCustodyRegistry()
     payload = {
         "schema": CHECKPOINT_SCHEMA,
         "semantic_minute": int(semantic_minute),
@@ -103,6 +108,7 @@ def build_checkpoint(
         "replan_queue": coordinator.replan_queue.to_snapshot(),
         "materialized_delivery_event_ids": sorted(coordinator.materialized_delivery_event_ids),
         "infrastructure_attribution": attribution_registry.snapshot(),
+        "evidence_custody": custody_registry.snapshot(),
         "publication_runtime": None if publication_runtime_snapshot is None else dict(publication_runtime_snapshot),
     }
     return payload | {"sha256": _digest_payload(payload)}
@@ -156,6 +162,17 @@ def _restore_infrastructure_attribution(payload: Mapping[str, object]) -> Infras
     return InfrastructureAttributionRegistry.restore(raw)
 
 
+def _restore_evidence_custody(payload: Mapping[str, object]) -> EvidenceCustodyRegistry:
+    raw = payload.get("evidence_custody")
+    if raw is None:
+        if payload.get("schema") in LEGACY_CHECKPOINT_SCHEMAS:
+            return EvidenceCustodyRegistry()
+        raise ValueError("evidence_custody checkpoint is required")
+    if not isinstance(raw, Mapping):
+        raise ValueError("evidence_custody checkpoint must be a mapping")
+    return EvidenceCustodyRegistry.restore(raw)
+
+
 def _validate_infrastructure_attribution(
     registry: InfrastructureAttributionRegistry,
     ledger_store: KnowledgeLedgerStore,
@@ -174,6 +191,56 @@ def _validate_infrastructure_attribution(
                 raise ValueError(f"infrastructure finding evidence claim is missing: {finding.finding_id}:{claim_id}")
             if claim.semantic_minute > finding.semantic_minute:
                 raise ValueError(f"infrastructure finding predates its evidence: {finding.finding_id}:{claim_id}")
+
+
+def _validate_evidence_custody(
+    registry: EvidenceCustodyRegistry,
+    ledger_store: KnowledgeLedgerStore,
+    *,
+    semantic_minute: int,
+) -> None:
+    for record in registry.records.values():
+        if record.semantic_minute > semantic_minute:
+            raise ValueError(f"custody record comes from the future: {record.record_id}")
+        if record.previous_record_id is not None:
+            previous = registry.records.get(record.previous_record_id)
+            if previous is None:
+                continue
+            if previous.evidence_id != record.evidence_id:
+                raise ValueError(f"custody record crosses evidence identity: {record.record_id}")
+            if previous.semantic_minute > record.semantic_minute:
+                raise ValueError(f"custody record predates its predecessor: {record.record_id}")
+
+    for assessment in registry.assessments.values():
+        if assessment.semantic_minute > semantic_minute:
+            raise ValueError(f"custody assessment comes from the future: {assessment.assessment_id}")
+        ledger = ledger_store.ledgers.get(assessment.investigator_id)
+        if ledger is None:
+            raise ValueError(f"custody assessment references missing investigator ledger: {assessment.assessment_id}")
+        known_documentation_claim_ids: set[str] = set()
+        for record_id in assessment.known_record_ids:
+            record = registry.records.get(record_id)
+            if record is None:
+                raise ValueError(f"custody assessment references missing record: {assessment.assessment_id}:{record_id}")
+            if record.evidence_id != assessment.evidence_id:
+                raise ValueError(f"custody assessment mixes evidence identities: {assessment.assessment_id}:{record_id}")
+            if record.semantic_minute > assessment.semantic_minute:
+                raise ValueError(f"custody assessment predates known record: {assessment.assessment_id}:{record_id}")
+            known_documentation_claim_ids.add(record.documentation_claim_id)
+        for claim_id in assessment.support_claim_ids:
+            claim = ledger.claims.get(claim_id)
+            if claim is None:
+                raise ValueError(f"custody support claim is missing: {assessment.assessment_id}:{claim_id}")
+            if claim.semantic_minute > assessment.semantic_minute:
+                raise ValueError(f"custody assessment predates support claim: {assessment.assessment_id}:{claim_id}")
+            if claim_id not in known_documentation_claim_ids:
+                raise ValueError(f"custody support claim has no known record: {assessment.assessment_id}:{claim_id}")
+        for claim_id in assessment.compromise_claim_ids:
+            claim = ledger.claims.get(claim_id)
+            if claim is None:
+                raise ValueError(f"custody compromise claim is missing: {assessment.assessment_id}:{claim_id}")
+            if claim.semantic_minute > assessment.semantic_minute:
+                raise ValueError(f"custody assessment predates compromise claim: {assessment.assessment_id}:{claim_id}")
 
 
 def restore_checkpoint(
@@ -201,9 +268,15 @@ def restore_checkpoint(
         str(value) for value in payload.get("materialized_delivery_event_ids", [])
     }
     attribution_registry = _restore_infrastructure_attribution(payload)
+    custody_registry = _restore_evidence_custody(payload)
     _validate_references(queue=queue, coordinator=coordinator)
     _validate_infrastructure_attribution(
         attribution_registry,
+        ledger_store,
+        semantic_minute=int(payload["semantic_minute"]),
+    )
+    _validate_evidence_custody(
+        custody_registry,
         ledger_store,
         semantic_minute=int(payload["semantic_minute"]),
     )
@@ -215,6 +288,7 @@ def restore_checkpoint(
         coordinator=coordinator,
         ledger_store=ledger_store,
         infrastructure_attribution_registry=attribution_registry,
+        evidence_custody_registry=custody_registry,
         publication_runtime_snapshot=runtime,
     )
 
