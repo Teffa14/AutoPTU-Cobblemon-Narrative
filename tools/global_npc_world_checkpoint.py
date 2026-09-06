@@ -8,13 +8,17 @@ from pathlib import Path
 from typing import Mapping
 
 from tools.global_npc_ai import AgentMode, NpcAgentState, agent_from_dict
+from tools.global_npc_deception_runtime import DeceptionInformationEventQueue
 from tools.global_npc_information_network import CommunicationChannel, InformationEventQueue
 from tools.global_npc_memory import KnowledgeLedger, KnowledgeLedgerStore, record_direct_observation
 from tools.global_npc_replanning import NpcReplanQueue
 from tools.global_npc_world_event_coordinator import AgentAgendaProfile, GlobalNpcWorldEventCoordinator
 
 
-CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V1"
+CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V2"
+LEGACY_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V1"
+STANDARD_QUEUE_KIND = "STANDARD"
+DECEPTION_QUEUE_KIND = "DECEPTION"
 
 
 @dataclass(frozen=True)
@@ -49,7 +53,7 @@ def _digest_payload(payload: Mapping[str, object]) -> str:
 
 
 def _validated_payload(snapshot: Mapping[str, object]) -> dict:
-    if snapshot.get("schema") != CHECKPOINT_SCHEMA:
+    if snapshot.get("schema") not in {CHECKPOINT_SCHEMA, LEGACY_CHECKPOINT_SCHEMA}:
         raise ValueError("unsupported global NPC world checkpoint schema")
     digest = snapshot.get("sha256")
     if not isinstance(digest, str) or not digest:
@@ -58,6 +62,12 @@ def _validated_payload(snapshot: Mapping[str, object]) -> dict:
     if _digest_payload(payload) != digest:
         raise ValueError("global NPC world checkpoint digest mismatch")
     return payload
+
+
+def _queue_kind(queue: InformationEventQueue) -> str:
+    if isinstance(queue, DeceptionInformationEventQueue):
+        return DECEPTION_QUEUE_KIND
+    return STANDARD_QUEUE_KIND
 
 
 def build_checkpoint(
@@ -81,6 +91,7 @@ def build_checkpoint(
             for agent_id in sorted(coordinator.agents)
         ],
         "knowledge_ledgers": ledger_store.snapshot(),
+        "information_queue_kind": _queue_kind(coordinator.information_queue),
         "information_queue": coordinator.information_queue.snapshot(),
         "replan_queue": coordinator.replan_queue.to_snapshot(),
         "materialized_delivery_event_ids": sorted(coordinator.materialized_delivery_event_ids),
@@ -109,6 +120,23 @@ def _validate_references(
         )
 
 
+def _restore_information_queue(
+    payload: Mapping[str, object],
+    *,
+    channels: Mapping[str, CommunicationChannel],
+    ledgers: dict[str, KnowledgeLedger],
+) -> InformationEventQueue:
+    kind = str(payload.get("information_queue_kind", STANDARD_QUEUE_KIND))
+    queue_snapshot = payload["information_queue"]
+    if not isinstance(queue_snapshot, Mapping):
+        raise ValueError("information_queue checkpoint must be a mapping")
+    if kind == STANDARD_QUEUE_KIND:
+        return InformationEventQueue.restore(queue_snapshot, channels=dict(channels), ledgers=ledgers)
+    if kind == DECEPTION_QUEUE_KIND:
+        return DeceptionInformationEventQueue.restore(queue_snapshot, channels=dict(channels), ledgers=ledgers)
+    raise ValueError(f"unsupported information queue kind: {kind}")
+
+
 def restore_checkpoint(
     snapshot: Mapping[str, object],
     *,
@@ -118,11 +146,7 @@ def restore_checkpoint(
     """Validate the complete checkpoint before returning restored live objects."""
     payload = _validated_payload(snapshot)
     ledger_store = KnowledgeLedgerStore.restore(payload["knowledge_ledgers"])
-    queue = InformationEventQueue.restore(
-        payload["information_queue"],
-        channels=dict(channels),
-        ledgers=ledger_store.ledgers,
-    )
+    queue = _restore_information_queue(payload, channels=channels, ledgers=ledger_store.ledgers)
     replan_queue = NpcReplanQueue.from_snapshot(payload["replan_queue"])
     agents = {
         str(row["agent_id"]): agent_from_dict(row)
