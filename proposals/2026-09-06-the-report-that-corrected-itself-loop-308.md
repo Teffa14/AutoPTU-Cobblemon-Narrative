@@ -1,0 +1,24 @@
+# The Report That Corrected Itself — pass 308
+
+Status: PROPOSED / NON-CANON
+Date: 2026-09-06
+
+A relay-failure inquiry has already produced a defensible but incomplete conclusion. An investigator documented a break in the custody chain of a recovered component. Weeks later, a routine archive move uncovers a transfer receipt that was filed under the wrong service order. The discovery does not erase the earlier gap. It gives the same investigator enough new evidence to issue a later assessment that explicitly supersedes the first.
+
+The narrative premise is that correction has its own history. The first conclusion may already have affected maintenance priorities, a technician's reputation, a faction argument or a route reopening decision. People who never receive the corrected assessment can continue to operate from the earlier information. People who receive both can understand why the conclusion changed.
+
+The mystery can branch without changing the underlying custody mechanic. The recovered receipt may close the chain completely. It may instead expose a conflicting transfer record. A later independent observation may corroborate compromise. None of those outcomes establishes who sabotaged the relay or whether sabotage occurred; those questions remain with infrastructure-failure attribution and other evidence.
+
+A useful NPC triangle is an investigator who revises their own conclusion when the new record arrives, a dispatcher who acted on the first assessment and now must decide whether to propagate the correction, and a maintenance worker whose social standing was affected before the correction reached the wider network. These are role archetypes only; no named NPC, faction, settlement or institution is canonized.
+
+The exploration loop begins in a previously visited records annex. Durable world change makes new shelves, returned boxes or restored storage accessible. The player can identify the misplaced service-order packet, connect it to the existing physical-evidence identity, return it to the investigator, and then revisit actors who received the old conclusion. Environmental re-reading provides the discovery; lineage provides the historical explanation.
+
+Reduced implementation version: the annex is a deterministic world location with safe/blocked navigation nodes. Archive discovery is an authored world observation with provenance. The missing receipt becomes a claim in the investigator's `KnowledgeLedger`. `assess_evidence_custody()` creates a new immutable assessment with `supersedes_assessment_id` pointing to the earlier one. Communication and replanning use existing world-simulation systems. No tactical battle is required.
+
+Full encounter version: the annex has partially collapsed after weather damage. Access may involve unstable walkways, active debris zones, timed structural shifts, a rescue interruption and a confrontation over possession of the archive box. The evidence itself must survive the scene without the narrative layer inventing PTU item durability or preservation rules.
+
+Permanent capability dependencies for that full version are: targeting/footprints/range/LoS for any tactical interaction across the annex; base movement legality for ordinary traversal; complete movement for forced movement, interception, rescue pulls or knockback; core calculations for authoritative deterministic combat math; action economy/initiative for tactical sequencing; full turn/round lifecycle for timed collapse or delayed structural effects; full stateful damage pipeline for actual hazard damage; status lifecycle for persistent conditions; terrain/weather/hazards/zones/reactions for unstable surfaces, debris and reactions; move-specific behavior, Abilities, Items and Trainer Features/perks only where the authored solution uses those exact mechanics; AI legal-action infrastructure for legal tactical choices; AI tactical policy for autonomous rescue/combat decisions; Minecraft/Cobblemon/Craftics adapter/playback for end-to-end world projection and visible execution.
+
+Reduced tactical fallback: keep the damaged-annex premise while representing unstable areas as static blocked nodes. Weather remains presentation/context. Remove wind knockback, reaction rescues, delayed collapses, persistent statuses and dynamic zones. Any confrontation uses only capability families currently verified for the exact actions selected. The custody discovery and later correction remain unchanged.
+
+Canon questions remain open: what Ouros institution maintains these archives; whether that institution has a duty to publish corrections; what legal or social meaning custody has; what PTU/Caelo Skills or Features can authenticate records or inspect physical evidence; and which Pokémon sensory capabilities can discover traces. None are answered by this proposal.
