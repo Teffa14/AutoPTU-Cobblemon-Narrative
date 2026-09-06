@@ -68,7 +68,7 @@ class GlobalNpcWorldCheckpointTests(unittest.TestCase):
         queue.schedule_statement(statement=statement, event_id="delivery:lie", message_id="message:lie", receiver_id="receiver", new_claim_id="received:lie", channel_id="wire", created_minute=2)
 
         checkpoint = build_checkpoint(coordinator, semantic_minute=3)
-        self.assertEqual(checkpoint["schema"], "OUROS_NPC_WORLD_CHECKPOINT_V3")
+        self.assertEqual(checkpoint["schema"], "OUROS_NPC_WORLD_CHECKPOINT_V4")
         self.assertEqual(checkpoint["information_queue_kind"], "DECEPTION")
         restored = restore_checkpoint(checkpoint, channels=channels)
         self.assertIsInstance(restored.coordinator.information_queue, DeceptionInformationEventQueue)
