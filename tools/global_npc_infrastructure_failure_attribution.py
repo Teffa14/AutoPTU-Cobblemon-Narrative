@@ -17,14 +17,24 @@ INFRASTRUCTURE_ATTRIBUTION_SNAPSHOT_SCHEMA = "OUROS_NPC_INFRASTRUCTURE_FAILURE_A
 class InfrastructureEvidenceKind(str, Enum):
     ACCIDENTAL_CAUSE = "ACCIDENTAL_CAUSE"
     TAMPERING_TRACE = "TAMPERING_TRACE"
+    CONTRIBUTION_LINK = "CONTRIBUTION_LINK"
     ACTOR_LINK = "ACTOR_LINK"
     INTENT_EVIDENCE = "INTENT_EVIDENCE"
+
+
+class InfrastructureCauseStructure(str, Enum):
+    UNRESOLVED = "UNRESOLVED"
+    ACCIDENT_ONLY = "ACCIDENT_ONLY"
+    TAMPERING_ONLY = "TAMPERING_ONLY"
+    CONTESTED = "CONTESTED"
+    CONCURRENT = "CONCURRENT"
 
 
 class InfrastructureAttributionStatus(str, Enum):
     CAUSE_UNRESOLVED = "CAUSE_UNRESOLVED"
     ACCIDENTAL_CAUSE_SUPPORTED = "ACCIDENTAL_CAUSE_SUPPORTED"
     TAMPERING_CORROBORATED = "TAMPERING_CORROBORATED"
+    CONTRIBUTING_CAUSES_CORROBORATED = "CONTRIBUTING_CAUSES_CORROBORATED"
     SABOTEUR_LINKED = "SABOTEUR_LINKED"
     SABOTAGE_INTENT_ATTRIBUTED = "SABOTAGE_INTENT_ATTRIBUTED"
     CAUSE_CONTESTED = "CAUSE_CONTESTED"
@@ -67,6 +77,7 @@ class InfrastructureAttributionFinding:
     status: InfrastructureAttributionStatus
     evidence_claim_ids: tuple[str, ...]
     linked_actor_id: str | None = None
+    cause_structure: InfrastructureCauseStructure = InfrastructureCauseStructure.UNRESOLVED
 
     def to_snapshot(self) -> dict:
         return {
@@ -78,19 +89,36 @@ class InfrastructureAttributionFinding:
             "status": self.status.value,
             "evidence_claim_ids": list(self.evidence_claim_ids),
             "linked_actor_id": self.linked_actor_id,
+            "cause_structure": self.cause_structure.value,
         }
 
     @classmethod
     def from_snapshot(cls, raw: Mapping[str, object]) -> "InfrastructureAttributionFinding":
+        status = InfrastructureAttributionStatus(str(raw["status"]))
+        raw_structure = raw.get("cause_structure")
+        if raw_structure is None:
+            legacy_map = {
+                InfrastructureAttributionStatus.CAUSE_UNRESOLVED: InfrastructureCauseStructure.UNRESOLVED,
+                InfrastructureAttributionStatus.ACCIDENTAL_CAUSE_SUPPORTED: InfrastructureCauseStructure.ACCIDENT_ONLY,
+                InfrastructureAttributionStatus.TAMPERING_CORROBORATED: InfrastructureCauseStructure.TAMPERING_ONLY,
+                InfrastructureAttributionStatus.SABOTEUR_LINKED: InfrastructureCauseStructure.TAMPERING_ONLY,
+                InfrastructureAttributionStatus.SABOTAGE_INTENT_ATTRIBUTED: InfrastructureCauseStructure.TAMPERING_ONLY,
+                InfrastructureAttributionStatus.CAUSE_CONTESTED: InfrastructureCauseStructure.CONTESTED,
+                InfrastructureAttributionStatus.CONTRIBUTING_CAUSES_CORROBORATED: InfrastructureCauseStructure.CONCURRENT,
+            }
+            cause_structure = legacy_map[status]
+        else:
+            cause_structure = InfrastructureCauseStructure(str(raw_structure))
         return cls(
             finding_id=str(raw["finding_id"]),
             discoverer_id=str(raw["discoverer_id"]),
             incident_id=str(raw["incident_id"]),
             infrastructure_id=str(raw["infrastructure_id"]),
             semantic_minute=int(raw["semantic_minute"]),
-            status=InfrastructureAttributionStatus(str(raw["status"])),
+            status=status,
             evidence_claim_ids=tuple(str(value) for value in raw.get("evidence_claim_ids", [])),
             linked_actor_id=None if raw.get("linked_actor_id") is None else str(raw["linked_actor_id"]),
+            cause_structure=cause_structure,
         )
 
 
@@ -162,7 +190,9 @@ def assess_infrastructure_failure(
     """Assess cause and responsibility from evidence actually available to one NPC.
 
     Repeated claims from one provenance root count once. Failure alone never implies
-    sabotage. Actor access/opportunity alone never proves tampering or intent.
+    sabotage. Actor access/opportunity alone never proves tampering or intent. Independent
+    accidental and tampering evidence remain contested unless a separate contribution-link
+    claim supports a combined causal explanation.
     """
     if semantic_minute < incident.observed_semantic_minute:
         raise ValueError("attribution cannot precede the infrastructure failure")
@@ -171,6 +201,7 @@ def assess_infrastructure_failure(
     ordered_ids: list[str] = []
     accidental = False
     tampering = False
+    contribution_link = False
     actor_links: set[str] = set()
     intent_links: set[str] = set()
 
@@ -195,6 +226,10 @@ def assess_infrastructure_failure(
             if ref.linked_actor_id is not None:
                 raise ValueError("tampering trace records physical cause, not actor identity")
             tampering = True
+        elif ref.kind is InfrastructureEvidenceKind.CONTRIBUTION_LINK:
+            if ref.linked_actor_id is not None:
+                raise ValueError("contribution-link evidence records causal composition, not actor identity")
+            contribution_link = True
         elif ref.kind is InfrastructureEvidenceKind.ACTOR_LINK:
             if not ref.linked_actor_id:
                 raise ValueError("actor-link evidence requires linked_actor_id")
@@ -208,12 +243,29 @@ def assess_infrastructure_failure(
         else:
             raise ValueError("unsupported infrastructure evidence kind")
 
-    if accidental and tampering:
+    if contribution_link and not (accidental and tampering):
+        raise ValueError("contribution-link evidence requires independent accidental and tampering support")
+
+    linked_candidates = sorted(actor_links)
+    intent_candidates = sorted(actor_links & intent_links)
+
+    if accidental and tampering and contribution_link:
+        cause_structure = InfrastructureCauseStructure.CONCURRENT
+        if len(intent_candidates) == 1:
+            status = InfrastructureAttributionStatus.SABOTAGE_INTENT_ATTRIBUTED
+            linked_actor_id = intent_candidates[0]
+        elif len(linked_candidates) == 1:
+            status = InfrastructureAttributionStatus.SABOTEUR_LINKED
+            linked_actor_id = linked_candidates[0]
+        else:
+            status = InfrastructureAttributionStatus.CONTRIBUTING_CAUSES_CORROBORATED
+            linked_actor_id = None
+    elif accidental and tampering:
+        cause_structure = InfrastructureCauseStructure.CONTESTED
         status = InfrastructureAttributionStatus.CAUSE_CONTESTED
         linked_actor_id = None
     elif tampering:
-        linked_candidates = sorted(actor_links)
-        intent_candidates = sorted(actor_links & intent_links)
+        cause_structure = InfrastructureCauseStructure.TAMPERING_ONLY
         if len(intent_candidates) == 1:
             status = InfrastructureAttributionStatus.SABOTAGE_INTENT_ATTRIBUTED
             linked_actor_id = intent_candidates[0]
@@ -224,9 +276,11 @@ def assess_infrastructure_failure(
             status = InfrastructureAttributionStatus.TAMPERING_CORROBORATED
             linked_actor_id = None
     elif accidental:
+        cause_structure = InfrastructureCauseStructure.ACCIDENT_ONLY
         status = InfrastructureAttributionStatus.ACCIDENTAL_CAUSE_SUPPORTED
         linked_actor_id = None
     else:
+        cause_structure = InfrastructureCauseStructure.UNRESOLVED
         status = InfrastructureAttributionStatus.CAUSE_UNRESOLVED
         linked_actor_id = None
 
@@ -239,4 +293,5 @@ def assess_infrastructure_failure(
         status=status,
         evidence_claim_ids=tuple(ordered_ids),
         linked_actor_id=linked_actor_id,
+        cause_structure=cause_structure,
     )
