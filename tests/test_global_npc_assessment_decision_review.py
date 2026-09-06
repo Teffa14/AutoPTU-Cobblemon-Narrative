@@ -16,8 +16,16 @@ from tools.global_npc_memory import Claim, KnowledgeLedger, SourceKind
 class AssessmentDecisionReviewTests(unittest.TestCase):
     def setUp(self):
         self.custody = EvidenceCustodyRegistry()
-        self.old = CustodyAssessment("old", "investigator", "sample", 10, CustodyIntegrityStatus.DOCUMENTATION_GAP, (), ())
-        self.new = CustodyAssessment("new", "investigator", "sample", 30, CustodyIntegrityStatus.CONTINUITY_SUPPORTED, (), (), "old")
+        self.old = CustodyAssessment(
+            assessment_id="old", investigator_id="investigator", evidence_id="sample",
+            semantic_minute=10, status=CustodyIntegrityStatus.DOCUMENTATION_GAP,
+            known_record_ids=(), support_claim_ids=(),
+        )
+        self.new = CustodyAssessment(
+            assessment_id="new", investigator_id="investigator", evidence_id="sample",
+            semantic_minute=30, status=CustodyIntegrityStatus.CONTINUITY_SUPPORTED,
+            known_record_ids=(), support_claim_ids=(), supersedes_assessment_id="old",
+        )
         self.custody.add_assessment(self.old)
         self.custody.add_assessment(self.new)
         self.actor = KnowledgeLedger("authority")
@@ -75,7 +83,11 @@ class AssessmentDecisionReviewTests(unittest.TestCase):
             )
 
     def test_rejects_unrelated_assessment(self):
-        other = CustodyAssessment("other", "investigator", "other-sample", 32, CustodyIntegrityStatus.CONTINUITY_SUPPORTED, (), ())
+        other = CustodyAssessment(
+            assessment_id="other", investigator_id="investigator", evidence_id="other-sample",
+            semantic_minute=32, status=CustodyIntegrityStatus.CONTINUITY_SUPPORTED,
+            known_record_ids=(), support_claim_ids=(),
+        )
         self.custody.add_assessment(other)
         self.actor.add(self._claim("new-claim", self.new, 35))
         self.actor.add(self._claim("other-claim", other, 35))
