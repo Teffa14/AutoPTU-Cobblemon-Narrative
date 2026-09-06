@@ -104,7 +104,7 @@ class GlobalNpcWorldCheckpointCustodyTests(unittest.TestCase):
             semantic_minute=12,
             evidence_custody_registry=registry,
         )
-        self.assertEqual(checkpoint["schema"], "OUROS_NPC_WORLD_CHECKPOINT_V4")
+        self.assertEqual(checkpoint["schema"], "OUROS_NPC_WORLD_CHECKPOINT_V5")
         restored = restore_checkpoint(checkpoint, channels=channels)
 
         self.assertEqual(restored.evidence_custody_registry.records, registry.records)
