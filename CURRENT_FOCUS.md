@@ -51,7 +51,8 @@ NPC AI must also work for non-ecology goals such as work, travel, training, comm
 - causally coupled world-agent state must restore from a coherent checkpoint rather than unrelated component moments;
 - memory accessibility may change without deleting historical claims or provenance;
 - cues and archive lookup may affect retrieval or provide external evidence without silently rewriting private memory;
-- a deceptive assertion is a new communicative event; subjective source attribution never overwrites actual information provenance.
+- a deceptive assertion is a new communicative event; subjective source attribution never overwrites actual information provenance;
+- deceptive communication must survive restart as deceptive communication, including statement identity and subjective attribution; checkpoint restore may not sanitize it into an ordinary retransmission.
 
 ## Current executable foundation
 
@@ -170,7 +171,7 @@ Pass 292 atomic logical world checkpoint:
 - `implementation/global-npc-world-checkpoint-fixture-v1.json`
 - `tests/test_global_npc_world_checkpoint.py`
 
-A validated `OUROS_NPC_WORLD_CHECKPOINT_V1` packages semantic time, managed agent state, private ledgers, information/replan queues, coordinator idempotency guard and optional publication runtime state as one logical recovery unit with integrity checks. Physical crash-safe storage and AutoPTU session reconciliation remain separate integration responsibilities.
+A validated world checkpoint packages semantic time, managed agent state, private ledgers, information/replan queues, coordinator idempotency guard and optional publication runtime state as one logical recovery unit with integrity checks. Physical crash-safe storage and AutoPTU session reconciliation remain separate integration responsibilities.
 
 Pass 293 non-destructive memory retrieval:
 - `design/global-npc-memory-retrieval-access-contract.md`
@@ -193,6 +194,21 @@ Pass 295 deception and subjective source-attribution layer:
 
 A deliberate false-content or false-source statement becomes a new communicative provenance root while preserving the real immediate speaker. `SourceAttributionStore` can represent declared or later confused source attribution without mutating historical `Claim` provenance. This enables conflicting-testimony investigations without an omniscient lie detector.
 
-The immediate next slices should integrate deception with the normal communication/audience runtime, add explicit motive/policy gates for when an NPC chooses to deceive, connect source attribution with recall cues and belief-aware dialogue, deepen sustained-load fairness/backlog aging, add large-audience indexing, add resource/inventory-aware intents, reconcile durable checkpoints with AutoPTU session persistence, and complete production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
+Pass 296 deception delivery runtime:
+- `design/global-npc-deception-delivery-contract.md`
+- `tools/global_npc_deception_runtime.py`
+- `tests/test_global_npc_deception_runtime.py`
+
+Deliberate false-content and false-source statements can now resolve an explicit audience and travel through semantic channels with ordinary latency, backlog, local acknowledgement, confidence attenuation and idempotency. Delivery materializes the authored assertion only at the receiver while the speaker retains the evidence basis they actually possessed.
+
+Pass 297 deception checkpoint integration:
+- `design/global-npc-deception-checkpoint-integration-contract.md`
+- updated `tools/global_npc_world_checkpoint.py`
+- updated `tests/test_global_npc_world_checkpoint.py`
+- `design/global-npc-ai-readiness-snapshot-pass-297.md`
+
+`OUROS_NPC_WORLD_CHECKPOINT_V2` now records the concrete information-queue kind and restores `DeceptionInformationEventQueue` with its statements, event mapping and `SourceAttributionStore`. Pending deceptive messages survive restart without becoming ordinary retransmissions; delivered deceptive messages remain idempotent after a second restart. Legacy V1 checkpoints restore as standard-queue checkpoints, and unknown queue kinds fail closed.
+
+The immediate next slices should add explicit motive/policy gates for when an NPC chooses to deceive, connect deception discovery to trust/relationship consequences, support sincere retransmission of misinformation without reclassifying the relay as a liar, connect source attribution and recall to belief-aware dialogue, deepen sustained-load fairness/backlog aging, add large-audience indexing, add resource/inventory-aware intents, reconcile durable checkpoints with AutoPTU session persistence, and complete production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
