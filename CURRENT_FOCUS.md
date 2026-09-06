@@ -46,7 +46,12 @@ NPC AI must also work for non-ecology goals such as work, travel, training, comm
 - successful private delivery may wake only its explicit managed receiver; failed, deferred or unacknowledged communication cannot alter agenda eligibility;
 - a public publication/transmission never implies universal receipt or belief; public audience expansion must produce explicit per-agent receipt events;
 - a correction, update or retraction is a new publication event with its own audience expansion; receiving one version never guarantees receiving another;
-- publication history, receipt history and NPC belief history must remain separately queryable.
+- publication history, receipt history and NPC belief history must remain separately queryable;
+- restart is not forgetting: private evidence ledgers persist and belief is recomputed from restored evidence;
+- causally coupled world-agent state must restore from a coherent checkpoint rather than unrelated component moments;
+- memory accessibility may change without deleting historical claims or provenance;
+- cues and archive lookup may affect retrieval or provide external evidence without silently rewriting private memory;
+- a deceptive assertion is a new communicative event; subjective source attribution never overwrites actual information provenance.
 
 ## Current executable foundation
 
@@ -149,8 +154,45 @@ Pass 290 publication revision delivery runtime:
 - `implementation/global-npc-publication-revision-runtime-fixture-v1.json`
 - `tests/test_global_npc_publication_revision_runtime.py`
 
-Each revision now resolves its public audience independently, schedules ordinary receipt envelopes, survives runtime-state snapshot/restore, records only completed receipts and wakes only actual managed recipients through the existing world-event coordinator. NPCs can validly retain original-only, correction-only, both-version or no-version histories without retroactive belief rewriting.
+Each revision resolves its public audience independently, schedules ordinary receipt envelopes, survives runtime-state snapshot/restore, records only completed receipts and wakes only actual managed recipients through the existing world-event coordinator. NPCs can validly retain original-only, correction-only, both-version or no-version histories without retroactive belief rewriting.
 
-The immediate next slices should deepen sustained-load fairness/backlog aging across private and public queues, add durable atomic persistence across public expansion/runtime state, information queues, knowledge ledgers and coordinator guards, add large-audience indexing, forgetting and memory revision, deception/source confusion, resource/inventory-aware intents, belief-aware dialogue/context projection and production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
+Pass 291 durable private knowledge persistence:
+- `design/global-npc-durable-knowledge-ledger-persistence-contract.md`
+- updated `tools/global_npc_memory.py`
+- `implementation/global-npc-memory-persistence-fixture-v1.json`
+- `tests/test_global_npc_memory_persistence.py`
+
+Private claim history now survives restart with source identity, confidence, semantic time, parent/message lineage and provenance roots intact. Belief is recomputed from restored evidence; restart cannot create forgetting or hive-mind knowledge.
+
+Pass 292 atomic logical world checkpoint:
+- `design/global-npc-atomic-world-checkpoint-contract.md`
+- `tools/global_npc_world_checkpoint.py`
+- `implementation/global-npc-world-checkpoint-fixture-v1.json`
+- `tests/test_global_npc_world_checkpoint.py`
+
+A validated `OUROS_NPC_WORLD_CHECKPOINT_V1` packages semantic time, managed agent state, private ledgers, information/replan queues, coordinator idempotency guard and optional publication runtime state as one logical recovery unit with integrity checks. Physical crash-safe storage and AutoPTU session reconciliation remain separate integration responsibilities.
+
+Pass 293 non-destructive memory retrieval:
+- `design/global-npc-memory-retrieval-access-contract.md`
+- `tools/global_npc_memory_retrieval.py`
+- `tests/test_global_npc_memory_retrieval.py`
+
+Historical claims remain intact while current recall can be `RECALLED_WITH_SOURCE`, `CONTENT_ONLY` or `INACCESSIBLE`. Recalled belief is evaluated through the existing belief engine using only currently accessible claims.
+
+Pass 294 cue-assisted recall and archive boundary:
+- `design/global-npc-memory-cue-retrieval-contract.md`
+- `tools/global_npc_memory_cues.py`
+- `tests/test_global_npc_memory_cues.py`
+
+Explicit place/object/person/record/rehearsal cues may improve retrieval without changing stored claims. Archive lookup remains external evidence and does not silently become personal memory.
+
+Pass 295 deception and subjective source-attribution layer:
+- `design/global-npc-deception-source-attribution-contract.md`
+- `tools/global_npc_deception.py`
+- `tests/test_global_npc_deception.py`
+
+A deliberate false-content or false-source statement becomes a new communicative provenance root while preserving the real immediate speaker. `SourceAttributionStore` can represent declared or later confused source attribution without mutating historical `Claim` provenance. This enables conflicting-testimony investigations without an omniscient lie detector.
+
+The immediate next slices should integrate deception with the normal communication/audience runtime, add explicit motive/policy gates for when an NPC chooses to deceive, connect source attribution with recall cues and belief-aware dialogue, deepen sustained-load fairness/backlog aging, add large-audience indexing, add resource/inventory-aware intents, reconcile durable checkpoints with AutoPTU session persistence, and complete production Minecraft acknowledgement. These systems must consume the same global agenda/travel/social/memory/information/replanning state rather than fork per region.
 
 Do not make the next NPC-AI pass Marea-specific unless Marea is only being used to test the global contract.
