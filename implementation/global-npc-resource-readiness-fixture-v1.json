@@ -1,0 +1,52 @@
+{
+  "fixture_id": "global-npc-resource-readiness-v1",
+  "status": "NON_CANON_REGRESSION_FIXTURE",
+  "semantic_now_tick": 12,
+  "resources": [
+    {
+      "resource_id": "resource:field-meter:a",
+      "capability_refs": ["FIELD_METER"],
+      "state": "AVAILABLE",
+      "location_ref": "fixture:field-office"
+    },
+    {
+      "resource_id": "resource:field-meter:b",
+      "capability_refs": ["FIELD_METER"],
+      "state": "AVAILABLE",
+      "location_ref": "fixture:field-office"
+    }
+  ],
+  "readiness_records": [
+    {
+      "record_id": "readiness:a:inspection",
+      "resource_id": "resource:field-meter:a",
+      "status": "INSPECTION_PENDING",
+      "source_record_ref": "maintenance:verification:a",
+      "effective_from_tick": 10,
+      "valid_until_tick": null
+    },
+    {
+      "record_id": "readiness:b:ready",
+      "resource_id": "resource:field-meter:b",
+      "status": "READY_FOR_AUTHORED_USE",
+      "source_record_ref": "maintenance:verification:b",
+      "effective_from_tick": 11,
+      "valid_until_tick": 20
+    }
+  ],
+  "expectations": {
+    "resource:field-meter:a": {
+      "planner_state": "UNAVAILABLE",
+      "reason": "RESOURCE_INSPECTION_PENDING"
+    },
+    "resource:field-meter:b": {
+      "planner_state": "AVAILABLE",
+      "source_record_ref": "maintenance:verification:b"
+    },
+    "invariants": [
+      "READINESS_PROJECTION_DOES_NOT_MUTATE_SOURCE_RECORDS",
+      "READINESS_PROJECTION_DOES_NOT_PERFORM_TECHNICAL_WORK",
+      "READY_WORLD_RESOURCE_DOES_NOT_PROVE_PTU_ITEM_EFFECT_LEGALITY"
+    ]
+  }
+}
