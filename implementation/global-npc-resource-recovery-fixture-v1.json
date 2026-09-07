@@ -1,0 +1,65 @@
+{
+  "schema": "OUROS_GLOBAL_NPC_RESOURCE_RECOVERY_V1",
+  "status": "NON_CANON_REGRESSION_FIXTURE",
+  "cases": [
+    {
+      "case_id": "request_known_holder",
+      "blocked_intent_id": "work:survey",
+      "actor_id": "npc:worker",
+      "capability_ref": "FIELD_METER",
+      "resource_id": "resource:meter-held",
+      "resource_state": "IN_USE",
+      "holder_actor_id": "npc:technician",
+      "expected_recovery_kind": "REQUEST_RESOURCE",
+      "expected_target_ref": "npc:technician",
+      "invariant": "REQUEST_RESOURCE != TRANSFER_RESOURCE"
+    },
+    {
+      "case_id": "travel_to_own_reserved_resource",
+      "blocked_intent_id": "work:survey",
+      "actor_id": "npc:worker",
+      "capability_ref": "FIELD_METER",
+      "resource_id": "resource:meter-reserved",
+      "resource_state": "RESERVED",
+      "reserved_for_actor_id": "npc:worker",
+      "resource_location_ref": "place:warehouse",
+      "route_duration_minutes": 18,
+      "expected_recovery_kind": "TRAVEL_TO_RESERVED_RESOURCE",
+      "invariant": "TRAVEL_INTENT != TRAVEL_COMPLETE"
+    },
+    {
+      "case_id": "wait_behind_other_reservation",
+      "blocked_intent_id": "work:survey",
+      "actor_id": "npc:worker",
+      "capability_ref": "FIELD_METER",
+      "resource_id": "resource:meter-booked",
+      "resource_state": "RESERVED",
+      "reserved_for_actor_id": "npc:other",
+      "expected_recovery_kind": "WAIT_FOR_RESOURCE",
+      "invariant": "WAIT_FOR_RESOURCE != RESERVATION_RELEASED"
+    },
+    {
+      "case_id": "remote_unreserved_access_unknown",
+      "blocked_intent_id": "work:survey",
+      "actor_id": "npc:worker",
+      "capability_ref": "FIELD_METER",
+      "resource_id": "resource:meter-remote",
+      "resource_state": "AVAILABLE",
+      "resource_location_ref": "place:warehouse",
+      "expected_recovery_kind": null,
+      "expected_reason_code": "REMOTE_RESOURCE_ACCESS_NOT_ESTABLISHED",
+      "invariant": "RESOURCE_REMOTE != ACCESS_AUTHORIZED"
+    },
+    {
+      "case_id": "depleted_candidate_not_recovered",
+      "blocked_intent_id": "work:survey",
+      "actor_id": "npc:worker",
+      "capability_ref": "FIELD_METER",
+      "resource_id": "resource:meter-depleted",
+      "resource_state": "DEPLETED",
+      "expected_recovery_kind": null,
+      "expected_reason_code": "NO_KNOWN_RESOURCE_CANDIDATE",
+      "invariant": "KNOWN_RESOURCE_RECORD != USABLE_RESOURCE"
+    }
+  ]
+}
