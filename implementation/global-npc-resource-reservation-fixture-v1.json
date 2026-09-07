@@ -1,0 +1,39 @@
+{
+  "schema": "OUROS_GLOBAL_NPC_RESOURCE_RESERVATION_V1",
+  "status": "DESIGN_FIXTURE",
+  "canon": false,
+  "semantic_tick": 120,
+  "resource": {
+    "resource_id": "field-sample-kit-01",
+    "capability_refs": ["FIELD_SAMPLE_KIT"],
+    "state": "AVAILABLE",
+    "location_ref": "field-office-locker",
+    "holder_actor_id": null
+  },
+  "reservations": [
+    {
+      "reservation_id": "reserve-kit-nerea-01",
+      "resource_id": "field-sample-kit-01",
+      "actor_id": "researcher-a",
+      "start_tick": 120,
+      "end_tick": 180,
+      "state": "ACTIVE",
+      "purpose_ref": "sample-run-a"
+    }
+  ],
+  "expected": {
+    "at_tick_119": "SCHEDULED",
+    "at_tick_120": "ACTIVE",
+    "conflicting_120_150": "RESOURCE_WINDOW_CONFLICT",
+    "adjacent_180_220": "RESERVATION_ACCEPTED",
+    "checkout_by_other": "REJECT",
+    "checkout_by_reserving_actor": "IN_USE",
+    "at_tick_180": "EXPIRED"
+  },
+  "invariants": [
+    "RESERVATION_CREATED != RESOURCE_USED",
+    "RESOURCE_RESERVED != RESOURCE_HELD",
+    "RESERVATION_EXPIRED != RESOURCE_RETURNED",
+    "TEMPORARY_CONTROL != OWNERSHIP"
+  ]
+}
