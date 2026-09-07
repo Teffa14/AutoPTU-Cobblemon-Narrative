@@ -1,0 +1,45 @@
+{
+  "schema": "OUROS_NPC_RESOURCE_AVAILABILITY_FIXTURE_V1",
+  "status": "EXECUTABLE_FOUNDATION",
+  "canon": false,
+  "agents": [
+    {
+      "agent_id": "fixture:npc:field-worker",
+      "location_ref": "fixture:site:field-office"
+    },
+    {
+      "agent_id": "fixture:npc:second-worker",
+      "location_ref": "fixture:site:field-office"
+    }
+  ],
+  "resources": [
+    {
+      "resource_id": "fixture:resource:shared-field-kit",
+      "capability_refs": ["FIELD_SAMPLE_KIT"],
+      "quantity": 1,
+      "state": "AVAILABLE",
+      "location_ref": "fixture:site:field-office"
+    },
+    {
+      "resource_id": "fixture:resource:vial-lot",
+      "capability_refs": ["SAMPLE_VIAL"],
+      "quantity": 2,
+      "state": "AVAILABLE",
+      "location_ref": "fixture:site:field-office"
+    }
+  ],
+  "acceptance_cases": [
+    "same-location capability can satisfy a world intent",
+    "resource elsewhere does not teleport into readiness",
+    "reservation for another actor blocks reuse",
+    "reservation for the same actor remains planning-ready",
+    "insufficient quantity blocks consumable-dependent work",
+    "blocked high-priority work does not suppress lower-priority ready work",
+    "structured mechanics handoff occurs only after world resource readiness"
+  ],
+  "notes": [
+    "This fixture creates no PTU Item behavior.",
+    "Reservation, checkout, transfer, consumption and return are future explicit state transitions.",
+    "Minecraft inventory state is not authoritative resource state."
+  ]
+}
