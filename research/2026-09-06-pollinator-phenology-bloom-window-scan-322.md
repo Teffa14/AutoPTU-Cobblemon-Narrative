@@ -41,12 +41,15 @@ Sources:
 - Pokémon Pokédex, Combee: https://www.pokemon.com/br/pokedex/combee
 - Pokémon Pokédex, Ribombee: https://www.pokemon.com/br/pokedex/ribombee
 
-### Long campaigns benefit when place-state returns later
+### PTU communities support asynchronous, lore-heavy regional play
 
-Public PTU actual plays such as Pokémon Rollout! show a long-running campaign structure with recurring trainers, locations, conflicts, and later returns to earlier context. This pass takes only the high-level lesson that local consequences can remain relevant across many sessions. It does not copy characters, regions, dialogue, plots, gyms, or episode content.
+A current public `Roarin' Unova` listing uses Pokémon Tabletop United in asynchronous play-by-post form and explicitly combines a region-level historical premise with social play, mysteries, lore, and gym progression. The useful abstraction for Ouros is organizational rather than fictional: world research, travel, social scenes, mysteries, and mechanical challenges can coexist when players are not forced into a combat-only cadence.
 
-Source:
-- Pokémon Rollout! public podcast listing: https://www.podchaser.com/podcasts/pokemon-rollout-238076
+This pass does not copy its Unova setting, 1920s premise, characters, factions, gyms, mystery content, or homebrew.
+
+Sources:
+- StartPlaying, `Roarin' Unova | The first Pokémon League challenge, circa 1920`: https://startplaying.games/adventure/cmtady2ew00kvl40402n96aaj
+- Public campaign recruitment context, August 2026: https://www.reddit.com/r/lfgpremium/comments/1vjrvdf/roarin_unova_a_pok%C3%A9mon_adventure_set_in_the_unova/
 
 ## Reusable Ouros model
 
