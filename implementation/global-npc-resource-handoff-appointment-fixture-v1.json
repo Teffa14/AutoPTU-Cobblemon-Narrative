@@ -1,6 +1,13 @@
 {
   "fixture_id": "global-npc-resource-handoff-appointment-v1",
   "status": "NON_CANON_REGRESSION_CONTRACT",
+  "windows": [
+    {
+      "id": "handoff-appointment-regression-window",
+      "input_events": [],
+      "expected": {}
+    }
+  ],
   "authorization": {
     "authorization_id": "handoff-auth:field-meter",
     "request_id": "request:field-meter",
