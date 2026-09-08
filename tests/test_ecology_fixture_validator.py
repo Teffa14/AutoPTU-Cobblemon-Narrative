@@ -6,6 +6,8 @@ import json
 import unittest
 from pathlib import Path
 
+from tools.ecology_fixture_scope import ecology_fixture_paths
+
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "tools" / "validate_ecology_fixtures.py"
 SPEC = importlib.util.spec_from_file_location("validate_ecology_fixtures", MODULE_PATH)
@@ -15,9 +17,10 @@ SPEC.loader.exec_module(validator)
 
 
 class EcologyFixtureValidatorTest(unittest.TestCase):
-    def test_all_repository_fixtures_validate(self) -> None:
-        paths = sorted((ROOT / "implementation").glob("*fixture-v1.json"))
-        self.assertTrue(paths, "expected at least one implementation fixture")
+    def test_all_ecology_owned_fixtures_validate(self) -> None:
+        paths = ecology_fixture_paths(ROOT)
+        self.assertTrue(paths, "expected at least one ecology implementation fixture")
+        self.assertFalse(any(path.name.startswith("global-npc-") for path in paths))
         for path in paths:
             with self.subTest(path=path.name):
                 validator.validate_file(path)
