@@ -1,0 +1,42 @@
+{
+  "schema": "OUROS_RESOURCE_HANDOFF_ATTEMPT_CHECKPOINT_REGRESSION_V1",
+  "status": "NON_CANON_REGRESSION_FIXTURE",
+  "cases": [
+    {
+      "id": "failed_attempt_survives_restart",
+      "authorization_id": "handoff-auth:meter:nerea",
+      "attempt_id": "handoff-attempt:meter:1",
+      "attempt_outcome": "PROVIDER_ABSENT",
+      "expected_attempt_count_after_restore": 1,
+      "expected_transfer_count_after_restore": 0
+    },
+    {
+      "id": "ordinary_failure_then_later_success",
+      "authorization_id": "handoff-auth:meter:nerea",
+      "attempt_tick": 40,
+      "attempt_outcome": "RESOURCE_ABSENT",
+      "transfer_tick": 50,
+      "expected_restore": "ACCEPT"
+    },
+    {
+      "id": "attempt_after_transfer",
+      "authorization_id": "handoff-auth:meter:nerea",
+      "transfer_tick": 50,
+      "attempt_tick": 55,
+      "expected_restore": "REJECT"
+    },
+    {
+      "id": "terminal_refusal_then_transfer",
+      "authorization_id": "handoff-auth:meter:nerea",
+      "attempt_tick": 40,
+      "attempt_outcome": "PROVIDER_REFUSED",
+      "transfer_tick": 50,
+      "expected_restore": "REJECT"
+    },
+    {
+      "id": "legacy_v2_has_no_attempt_history",
+      "source_schema": "OUROS_NPC_RESOURCE_CHECKPOINT_V2",
+      "expected_attempt_count_after_restore": 0
+    }
+  ]
+}
