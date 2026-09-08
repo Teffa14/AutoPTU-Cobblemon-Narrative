@@ -1,0 +1,48 @@
+{
+  "schema": "OUROS_GLOBAL_NPC_RESOURCE_HANDOFF_ATTEMPT_FIXTURE_V1",
+  "status": "NON_CANON_TEST_FIXTURE",
+  "description": "Authorized proxy reaches the correct pickup location but provider is absent; custody remains unchanged and affected actors replan.",
+  "handoff_authorization": {
+    "authorization_id": "handoff-auth:field-meter",
+    "provider_actor_id": "npc:technician",
+    "accountable_actor_id": "npc:surveyor",
+    "receiving_actor_id": "npc:assistant",
+    "resource_id": "resource:field-meter-a",
+    "handoff_location_ref": "place:repair-row",
+    "valid_from_tick": 200,
+    "valid_until_tick": 240
+  },
+  "attempt": {
+    "attempt_id": "handoff-attempt:field-meter:1",
+    "authorization_id": "handoff-auth:field-meter",
+    "actor_id": "npc:assistant",
+    "location_ref": "place:repair-row",
+    "at_tick": 215,
+    "outcome": "PROVIDER_ABSENT",
+    "observation_ref": "observation:repair-row-counter-unattended"
+  },
+  "expected": {
+    "authorization_state_at_216": "ACTIVE",
+    "custody_transfer_created": false,
+    "holder_changed": false,
+    "replan_actor_ids": [
+      "npc:assistant",
+      "npc:surveyor",
+      "npc:technician"
+    ],
+    "theft_inferred": false,
+    "deception_inferred": false,
+    "autoptu_requested": false
+  },
+  "negative_cases": [
+    "unknown authorization",
+    "attempt after completed custody transfer",
+    "attempt at wrong location",
+    "attempt before valid window",
+    "attempt at or after expiry",
+    "attempt by unrelated bystander",
+    "provider refusal attributed to non-provider",
+    "recipient refusal attributed to non-recipient",
+    "duplicate attempt id"
+  ]
+}
