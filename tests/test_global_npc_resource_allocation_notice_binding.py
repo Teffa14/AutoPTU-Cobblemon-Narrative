@@ -155,17 +155,36 @@ def test_local_ack_envelope_remains_bindable_before_acknowledgement() -> None:
     assert notice_state(linked, queue, "notice-obligation:reservation:team-a") == AllocationNoticeState.WAITING_LOCAL_ACK
 
 
-def test_post_delivery_retroactive_link_fails_closed_when_address_provenance_is_gone() -> None:
+def test_post_delivery_retroactive_link_uses_archived_address_provenance() -> None:
     queue = _queue()
     ledger = _ledger()
     _schedule(queue)
     queue.process_due(60)
 
-    try:
-        link_notice_communication(ledger, queue, _link(linked_tick=60))
-        assert False, "expected metadata provenance validation"
-    except ValueError as exc:
-        assert "metadata unavailable" in str(exc)
+    linked = link_notice_communication(ledger, queue, _link(linked_tick=60))
+
+    assert notice_state(linked, queue, "notice-obligation:reservation:team-a") == AllocationNoticeState.DELIVERED
+    archived = queue.envelope_provenance("delivery:team-a")
+    assert archived is not None
+    assert archived.sender_id == "npc:allocator"
+    assert archived.receiver_id == "npc:team-a-lead"
+
+
+def test_post_delivery_link_remains_auditable_after_queue_restart() -> None:
+    queue = _queue()
+    ledger = _ledger()
+    _schedule(queue)
+    queue.process_due(60)
+
+    restored = InformationEventQueue.restore(
+        queue.snapshot(),
+        channels=queue.channels,
+        ledgers=queue.ledgers,
+    )
+    linked = link_notice_communication(ledger, restored, _link(linked_tick=61))
+
+    assert notice_state(linked, restored, "notice-obligation:reservation:team-a") == AllocationNoticeState.DELIVERED
+    assert restored.envelope_provenance("delivery:team-a").message_id == "message:delivery:team-a"
 
 
 def test_correctly_bound_notice_delivery_uses_existing_coordinator_to_wake_only_holder() -> None:

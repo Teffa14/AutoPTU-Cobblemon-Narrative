@@ -61,6 +61,7 @@ class InformationEventQueue:
     statuses: dict[str, DeliveryStatus] = field(default_factory=dict)
     delivered_event_ids: set[str] = field(default_factory=set)
     awaiting_local_ack: dict[str, InformationEnvelope] = field(default_factory=dict)
+    archived_envelopes: dict[str, InformationEnvelope] = field(default_factory=dict)
 
     def schedule(
         self,
@@ -75,7 +76,7 @@ class InformationEventQueue:
         created_minute: int,
         receiver_trust_in_sender: int = 0,
     ) -> InformationEnvelope:
-        if event_id in self.statuses or event_id in self.delivered_event_ids:
+        if event_id in self.statuses or event_id in self.delivered_event_ids or event_id in self.archived_envelopes:
             raise ValueError(f"event_id already exists: {event_id}")
         if sender_id not in self.ledgers or receiver_id not in self.ledgers:
             raise KeyError("sender and receiver must have ledgers")
@@ -98,6 +99,21 @@ class InformationEventQueue:
         self.statuses[event_id] = DeliveryStatus.QUEUED
         return envelope
 
+    def envelope_provenance(self, event_id: str) -> InformationEnvelope | None:
+        waiting = self.awaiting_local_ack.get(event_id)
+        if waiting is not None:
+            return waiting
+        for _, queued_event_id, envelope in self.pending:
+            if queued_event_id == event_id:
+                return envelope
+        return self.archived_envelopes.get(event_id)
+
+    def _archive_terminal_envelope(self, envelope: InformationEnvelope) -> None:
+        existing = self.archived_envelopes.get(envelope.event_id)
+        if existing is not None and existing != envelope:
+            raise ValueError(f"terminal envelope provenance collision: {envelope.event_id}")
+        self.archived_envelopes[envelope.event_id] = envelope
+
     def _process_envelope(self, envelope: InformationEnvelope, semantic_minute: int) -> dict:
         if envelope.event_id in self.delivered_event_ids:
             return {
@@ -109,6 +125,7 @@ class InformationEventQueue:
         channel = self.channels[envelope.channel_id]
         if not channel.available:
             self.statuses[envelope.event_id] = DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE
+            self._archive_terminal_envelope(envelope)
             return {
                 "event_id": envelope.event_id,
                 "receiver_id": envelope.receiver_id,
@@ -151,6 +168,7 @@ class InformationEventQueue:
         envelope = self.awaiting_local_ack.pop(event_id)
         if not accepted:
             self.statuses[event_id] = DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE
+            self._archive_terminal_envelope(envelope)
             return {
                 "event_id": event_id,
                 "receiver_id": envelope.receiver_id,
@@ -177,6 +195,7 @@ class InformationEventQueue:
         )
         self.delivered_event_ids.add(envelope.event_id)
         self.statuses[envelope.event_id] = DeliveryStatus.DELIVERED
+        self._archive_terminal_envelope(envelope)
         return {
             "event_id": envelope.event_id,
             "sender_id": envelope.sender_id,
@@ -198,6 +217,10 @@ class InformationEventQueue:
             "awaiting_local_ack": [
                 asdict(envelope)
                 for _, envelope in sorted(self.awaiting_local_ack.items())
+            ],
+            "archived_envelopes": [
+                asdict(envelope)
+                for _, envelope in sorted(self.archived_envelopes.items())
             ],
         }
 
@@ -225,6 +248,18 @@ class InformationEventQueue:
         for raw in snapshot.get("awaiting_local_ack", []):
             envelope = InformationEnvelope(**dict(raw))
             queue.awaiting_local_ack[envelope.event_id] = envelope
+        for raw in snapshot.get("archived_envelopes", []):
+            envelope = InformationEnvelope(**dict(raw))
+            if envelope.channel_id not in channels:
+                raise KeyError(f"snapshot references unknown archived channel: {envelope.channel_id}")
+            queue.archived_envelopes[envelope.event_id] = envelope
+        for event_id, envelope in queue.archived_envelopes.items():
+            if event_id not in queue.statuses:
+                raise KeyError(f"archived envelope references unknown queue event: {event_id}")
+            if queue.statuses[event_id] not in {DeliveryStatus.DELIVERED, DeliveryStatus.FAILED_CHANNEL_UNAVAILABLE}:
+                raise ValueError(f"archived envelope is not terminal: {event_id}")
+            if envelope.event_id != event_id:
+                raise ValueError("archived envelope event id mismatch")
         return queue
 
 
