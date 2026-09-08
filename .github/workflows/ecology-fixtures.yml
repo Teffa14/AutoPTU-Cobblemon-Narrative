@@ -6,6 +6,7 @@ on:
     paths:
       - 'implementation/**'
       - 'tools/validate_ecology_*.py'
+      - 'tools/ecology_fixture_scope.py'
       - 'tools/replay_ecology_*.py'
       - 'tests/test_*.py'
       - '.github/workflows/ecology-fixtures.yml'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'implementation/**'
       - 'tools/validate_ecology_*.py'
+      - 'tools/ecology_fixture_scope.py'
       - 'tools/replay_ecology_*.py'
       - 'tests/test_*.py'
       - '.github/workflows/ecology-fixtures.yml'
@@ -26,7 +28,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate ecology fixtures
-        run: python tools/validate_ecology_fixtures.py
+        run: python -m tools.validate_ecology_repository_scope
       - name: Validate persistent actor cross-fixture trace
         run: python tools/validate_ecology_cross_trace.py
       - name: Replay persistent actor ecology trace
