@@ -1,0 +1,36 @@
+{
+  "schema_version": "global-npc-resource-allocation-resolution-v1",
+  "status": "REGRESSION_FIXTURE_NOT_CANON",
+  "case_id": "two-legitimate-commitments-one-meter",
+  "resource_id": "meter:1",
+  "proposal_id": "proposal:later",
+  "conflicting_reservation_ids": [
+    "reservation:maintenance",
+    "reservation:survey"
+  ],
+  "authority_evidence": {
+    "authority_check_id": "authority:meter-window",
+    "actor_id": "allocator",
+    "action_ref": "ALLOCATE_RESOURCE_WINDOW",
+    "target_resource_id": "meter:1",
+    "state": "AUTHORIZED",
+    "checked_tick": 20,
+    "valid_until_tick": 60
+  },
+  "resolution": {
+    "resolution_id": "resolution:meter-window",
+    "resolution_kind": "SELECT_PROPOSED_WINDOW",
+    "decided_tick": 30,
+    "basis_refs": [
+      "policy:local-equipment-window",
+      "evidence:time-bounded-field-observation"
+    ]
+  },
+  "expected_boundaries": {
+    "reservation_cancelled": false,
+    "custody_transferred": false,
+    "resource_used": false,
+    "global_priority_rule_created": false,
+    "ptu_item_effect_proven": false
+  }
+}
