@@ -135,6 +135,7 @@ class DeceptionInformationEventQueue(InformationEventQueue):
         )
         self.delivered_event_ids.add(envelope.event_id)
         self.statuses[envelope.event_id] = DeliveryStatus.DELIVERED
+        self._archive_terminal_envelope(envelope)
         return {
             "event_id": envelope.event_id,
             "sender_id": envelope.sender_id,
@@ -185,6 +186,7 @@ class DeceptionInformationEventQueue(InformationEventQueue):
         queue.statuses = base.statuses
         queue.delivered_event_ids = base.delivered_event_ids
         queue.awaiting_local_ack = base.awaiting_local_ack
+        queue.archived_envelopes = base.archived_envelopes
 
         rows = snapshot.get("statements", [])
         if not isinstance(rows, list):
