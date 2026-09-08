@@ -1,0 +1,51 @@
+{
+  "schema": "OUROS_GLOBAL_NPC_RESOURCE_HANDOFF_RESCHEDULE_REGRESSION_V1",
+  "status": "NON_CANON_REGRESSION_FIXTURE",
+  "pass": 346,
+  "original_authorization": {
+    "authorization_id": "auth:old",
+    "request_id": "request:meter",
+    "provider_actor_id": "npc:teo",
+    "accountable_actor_id": "npc:nerea",
+    "receiving_actor_id": "npc:ema",
+    "resource_id": "resource:meter",
+    "mode": "PICKUP",
+    "handoff_location_ref": "place:repair-row",
+    "valid_from_tick": 30,
+    "valid_until_tick": 60
+  },
+  "source_notice": {
+    "notice_id": "notice:reschedule",
+    "kind": "RESCHEDULE_REQUEST",
+    "sender_actor_id": "npc:ema",
+    "receiver_actor_id": "npc:teo",
+    "communication_event_id": "delivery:reschedule",
+    "created_tick": 40,
+    "required_delivery_status_before_decision": "DELIVERED"
+  },
+  "proposal": {
+    "proposal_id": "proposal:later",
+    "proposed_location_ref": "place:field-office",
+    "proposed_valid_from_tick": 90,
+    "proposed_valid_until_tick": 120
+  },
+  "accepted_decision": {
+    "decision_id": "decision:accept",
+    "actor_id": "npc:teo",
+    "kind": "ACCEPT",
+    "at_tick": 46
+  },
+  "replacement": {
+    "replacement_id": "replacement:1",
+    "superseded_authorization_id": "auth:old",
+    "successor_authorization_id": "auth:new"
+  },
+  "expected": {
+    "old_authorization_record_preserved": true,
+    "old_authorization_operational_state": "SUPERSEDED",
+    "successor_authorization_operational_state": "CURRENT",
+    "stale_transfer_reason_code": "HANDOFF_AUTHORIZATION_SUPERSEDED",
+    "custody_changes_during_reschedule": false,
+    "minecraft_has_authority": false
+  }
+}
