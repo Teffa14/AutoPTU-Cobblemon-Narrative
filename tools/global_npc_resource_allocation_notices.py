@@ -3,11 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-from tools.global_npc_information_network import (
-    DeliveryStatus,
-    InformationEnvelope,
-    InformationEventQueue,
-)
+from tools.global_npc_information_network import DeliveryStatus, InformationEventQueue
 from tools.global_npc_resource_allocation_application import (
     AllocationApplicationKind,
     ResourceAllocationApplication,
@@ -132,22 +128,6 @@ def derive_displacement_notice_obligations(
     )
 
 
-def _pending_envelope(queue: InformationEventQueue, event_id: str) -> InformationEnvelope | None:
-    """Return addressable envelope metadata before final delivery.
-
-    A delivered event no longer has an envelope in the transport queue. Pass 351
-    therefore requires notice binding while recipient/sender provenance is still
-    directly inspectable and fails closed for post-delivery retroactive linking.
-    """
-    waiting = queue.awaiting_local_ack.get(event_id)
-    if waiting is not None:
-        return waiting
-    for _, queued_event_id, envelope in queue.pending:
-        if queued_event_id == event_id:
-            return envelope
-    return None
-
-
 def link_notice_communication(
     ledger: ResourceAllocationNoticeLedger,
     queue: InformationEventQueue,
@@ -167,9 +147,9 @@ def link_notice_communication(
     if any(item.communication_event_id == link.communication_event_id for item in ledger.links):
         raise ValueError("communication event already linked to an allocation notice")
 
-    envelope = _pending_envelope(queue, link.communication_event_id)
+    envelope = queue.envelope_provenance(link.communication_event_id)
     if envelope is None:
-        raise ValueError("communication envelope metadata unavailable for notice binding")
+        raise ValueError("communication envelope provenance unavailable for notice binding")
     if link.linked_tick < envelope.created_minute:
         raise ValueError("communication link cannot precede authored communication")
     if envelope.sender_id != link.sender_actor_id:
