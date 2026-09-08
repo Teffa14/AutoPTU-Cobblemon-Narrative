@@ -1,0 +1,36 @@
+{
+  "schema": "OUROS_GLOBAL_NPC_RESOURCE_ALLOCATION_NOTICE_REGRESSION_V1",
+  "case_id": "case-350-displaced-holder-notice",
+  "resource_id": "resource:meter-a",
+  "allocation_application_id": "application:meter-window",
+  "displaced_reservations": [
+    {
+      "reservation_id": "reservation:team-a",
+      "affected_actor_id": "npc:team-a-lead",
+      "expected_initial_notice_state": "REQUIRED"
+    },
+    {
+      "reservation_id": "reservation:team-b",
+      "affected_actor_id": "npc:team-b-lead",
+      "expected_initial_notice_state": "REQUIRED"
+    }
+  ],
+  "communication_projection": {
+    "reservation:team-a": {
+      "event_id": "delivery:team-a",
+      "before_delivery": "QUEUED",
+      "after_delivery": "DELIVERED"
+    },
+    "reservation:team-b": {
+      "event_id": null,
+      "state": "REQUIRED"
+    }
+  },
+  "invariants": [
+    "allocation application does not imply holder notification",
+    "one displaced reservation produces one provenance-bearing obligation",
+    "queued communication does not close the obligation",
+    "delivery to one actor does not inform another actor",
+    "source reservation history remains unchanged"
+  ]
+}
