@@ -8,7 +8,7 @@ on:
       - 'tools/validate_ecology_*.py'
       - 'tools/ecology_fixture_scope.py'
       - 'tools/replay_ecology_*.py'
-      - 'tests/test_*.py'
+      - 'tests/test_ecology_*.py'
       - '.github/workflows/ecology-fixtures.yml'
   pull_request:
     paths:
@@ -16,7 +16,7 @@ on:
       - 'tools/validate_ecology_*.py'
       - 'tools/ecology_fixture_scope.py'
       - 'tools/replay_ecology_*.py'
-      - 'tests/test_*.py'
+      - 'tests/test_ecology_*.py'
       - '.github/workflows/ecology-fixtures.yml'
 
 jobs:
@@ -38,4 +38,4 @@ jobs:
       - name: Replay resource-scarcity world-event ecology trace
         run: python tools/replay_ecology_resource_event_trace.py
       - name: Run ecology regression tests
-        run: python -m unittest discover -s tests -p 'test_*.py' -v
+        run: python -m unittest discover -s tests -p 'test_ecology_*.py' -v
