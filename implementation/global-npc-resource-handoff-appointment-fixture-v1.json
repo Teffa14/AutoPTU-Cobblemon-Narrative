@@ -1,0 +1,73 @@
+{
+  "fixture_id": "global-npc-resource-handoff-appointment-v1",
+  "status": "NON_CANON_REGRESSION_CONTRACT",
+  "authorization": {
+    "authorization_id": "handoff-auth:field-meter",
+    "request_id": "request:field-meter",
+    "provider_actor_id": "npc:provider",
+    "accountable_actor_id": "npc:surveyor",
+    "receiving_actor_id": "npc:courier",
+    "resource_id": "resource:field-meter-a",
+    "handoff_location_ref": "place:trailhead-counter",
+    "valid_from_tick": 120,
+    "valid_until_tick": 180
+  },
+  "cases": [
+    {
+      "case_id": "cancellation-queued",
+      "notice": {
+        "notice_id": "notice:cancel:1",
+        "kind": "CANCEL",
+        "sender_actor_id": "npc:provider",
+        "receiver_actor_id": "npc:courier",
+        "communication_event_id": "delivery:notice:cancel:1",
+        "created_tick": 100
+      },
+      "communication_status": "QUEUED",
+      "expected_coordination_state": "CANCELLATION_AUTHORED",
+      "expected_unaware_actor_ids": ["npc:courier", "npc:surveyor"]
+    },
+    {
+      "case_id": "cancellation-delivered",
+      "notice": {
+        "notice_id": "notice:cancel:2",
+        "kind": "CANCEL",
+        "sender_actor_id": "npc:provider",
+        "receiver_actor_id": "npc:courier",
+        "communication_event_id": "delivery:notice:cancel:2",
+        "created_tick": 100
+      },
+      "communication_status": "DELIVERED",
+      "expected_coordination_state": "CANCELLATION_DELIVERED",
+      "expected_unaware_actor_ids": ["npc:surveyor"]
+    },
+    {
+      "case_id": "mutual-confirmation",
+      "notices": [
+        {
+          "notice_id": "notice:confirm:provider",
+          "kind": "CONFIRM",
+          "sender_actor_id": "npc:provider",
+          "receiver_actor_id": "npc:courier",
+          "communication_event_id": "delivery:confirm:provider"
+        },
+        {
+          "notice_id": "notice:confirm:courier",
+          "kind": "CONFIRM",
+          "sender_actor_id": "npc:courier",
+          "receiver_actor_id": "npc:provider",
+          "communication_event_id": "delivery:confirm:courier"
+        }
+      ],
+      "communication_statuses": ["DELIVERED", "DELIVERED"],
+      "expected_coordination_state": "MUTUALLY_CONFIRMED"
+    }
+  ],
+  "invariants": [
+    "AUTHORED_NOTICE_DOES_NOT_IMPLY_RECEIPT",
+    "QUEUED_CANCELLATION_DOES_NOT_UPDATE_RECEIVER_KNOWLEDGE",
+    "RESCHEDULE_REQUEST_DOES_NOT_IMPLY_APPROVAL",
+    "APPOINTMENT_NOTICE_DOES_NOT_TRANSFER_RESOURCE",
+    "MINECRAFT_PRESENTATION_DOES_NOT_CREATE_COMMUNICATION_RECEIPT"
+  ]
+}
