@@ -7,6 +7,13 @@ from tools.global_npc_ai import AgentMode, NpcAgentState
 from tools.global_npc_information_network import CommunicationChannel, InformationEventQueue
 from tools.global_npc_memory import KnowledgeLedger
 from tools.global_npc_replanning import NpcReplanQueue
+from tools.global_npc_resource_checkpoint import snapshot_resource_state
+from tools.global_npc_resource_handoffs import (
+    HandoffMode,
+    ResourceCustodyTransfer,
+    ResourceHandoffAuthorization,
+    ResourceHandoffLedger,
+)
 from tools.global_npc_resource_requests import (
     ResourceRequest,
     ResourceRequestEvent,
@@ -17,6 +24,7 @@ from tools.global_npc_resource_reservations import ReservationLedger, ResourceRe
 from tools.global_npc_world_checkpoint import build_checkpoint
 from tools.global_npc_world_event_coordinator import GlobalNpcWorldEventCoordinator
 from tools.global_npc_world_resource_checkpoint import (
+    LEGACY_WORLD_RESOURCE_CHECKPOINT_SCHEMA,
     WORLD_RESOURCE_CHECKPOINT_SCHEMA,
     build_world_resource_checkpoint,
     restore_world_resource_checkpoint,
@@ -75,7 +83,38 @@ class GlobalNpcWorldResourceCheckpointTests(unittest.TestCase):
                 ),
             ),
         )
-        return reservations, requests
+        handoffs = ResourceHandoffLedger(
+            authorizations=(
+                ResourceHandoffAuthorization(
+                    authorization_id="handoff-auth:meter:ema",
+                    request_id="request:meter:ema",
+                    provider_actor_id="teo",
+                    accountable_actor_id="teo",
+                    receiving_actor_id="ema",
+                    resource_id="meter:field:7",
+                    mode=HandoffMode.PICKUP,
+                    handoff_location_ref="workshop",
+                    valid_from_tick=19,
+                    valid_until_tick=30,
+                    authority_ref="workshop:instrument-custody",
+                ),
+            ),
+            transfers=(
+                ResourceCustodyTransfer(
+                    transfer_id="handoff-transfer:meter:ema",
+                    authorization_id="handoff-auth:meter:ema",
+                    request_id="request:meter:ema",
+                    resource_id="meter:field:7",
+                    from_actor_id="teo",
+                    to_actor_id="ema",
+                    accountable_actor_id="teo",
+                    location_ref="workshop",
+                    at_tick=20,
+                    condition_ref="inspection:ready",
+                ),
+            ),
+        )
+        return reservations, requests, handoffs
 
     @staticmethod
     def _redigest(checkpoint: dict) -> None:
@@ -83,21 +122,54 @@ class GlobalNpcWorldResourceCheckpointTests(unittest.TestCase):
         canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
         checkpoint["sha256"] = hashlib.sha256(canonical).hexdigest()
 
-    def test_v6_round_trip_preserves_world_and_resource_history(self):
+    def _legacy_v6(self, coordinator, reservations, requests, *, semantic_minute=20):
+        checkpoint = build_checkpoint(coordinator, semantic_minute=semantic_minute)
+        checkpoint = {key: value for key, value in checkpoint.items() if key != "sha256"}
+        checkpoint["schema"] = LEGACY_WORLD_RESOURCE_CHECKPOINT_SCHEMA
+        checkpoint["resource_state"] = snapshot_resource_state(reservations, requests)
+        self._redigest(checkpoint)
+        return checkpoint
+
+    def test_v7_round_trip_preserves_world_and_handoff_history(self):
         coordinator, channels = self._world()
-        reservations, requests = self._resource_state()
+        reservations, requests, handoffs = self._resource_state()
+        checkpoint = build_world_resource_checkpoint(
+            coordinator,
+            semantic_minute=20,
+            reservation_ledger=reservations,
+            request_ledger=requests,
+            handoff_ledger=handoffs,
+        )
+        self.assertEqual(checkpoint["schema"], WORLD_RESOURCE_CHECKPOINT_SCHEMA)
+        self.assertEqual(checkpoint["resource_state"]["schema"], "OUROS_NPC_RESOURCE_CHECKPOINT_V2")
+        restored = restore_world_resource_checkpoint(checkpoint, channels=channels)
+        self.assertEqual(restored.world.semantic_minute, 20)
+        self.assertEqual(restored.reservation_ledger, reservations)
+        self.assertEqual(restored.request_ledger, requests)
+        self.assertEqual(restored.handoff_ledger, handoffs)
+        self.assertEqual(set(restored.world.coordinator.agents), {"ema", "teo"})
+
+    def test_v7_default_empty_handoff_ledger_is_explicit(self):
+        coordinator, channels = self._world()
+        reservations, requests, _ = self._resource_state()
         checkpoint = build_world_resource_checkpoint(
             coordinator,
             semantic_minute=20,
             reservation_ledger=reservations,
             request_ledger=requests,
         )
-        self.assertEqual(checkpoint["schema"], WORLD_RESOURCE_CHECKPOINT_SCHEMA)
         restored = restore_world_resource_checkpoint(checkpoint, channels=channels)
-        self.assertEqual(restored.world.semantic_minute, 20)
+        self.assertEqual(restored.handoff_ledger, ResourceHandoffLedger())
+
+    def test_v6_checkpoint_restores_resource_history_and_empty_handoffs(self):
+        coordinator, channels = self._world()
+        reservations, requests, _ = self._resource_state()
+        legacy = self._legacy_v6(coordinator, reservations, requests)
+        restored = restore_world_resource_checkpoint(legacy, channels=channels)
         self.assertEqual(restored.reservation_ledger, reservations)
         self.assertEqual(restored.request_ledger, requests)
-        self.assertEqual(set(restored.world.coordinator.agents), {"ema", "teo"})
+        self.assertEqual(restored.handoff_ledger, ResourceHandoffLedger())
+        self.assertEqual(restored.world.semantic_minute, 20)
 
     def test_v5_checkpoint_restores_empty_resource_ledgers_without_inference(self):
         coordinator, channels = self._world()
@@ -105,62 +177,98 @@ class GlobalNpcWorldResourceCheckpointTests(unittest.TestCase):
         restored = restore_world_resource_checkpoint(legacy, channels=channels)
         self.assertEqual(restored.reservation_ledger, ReservationLedger())
         self.assertEqual(restored.request_ledger, ResourceRequestLedger())
+        self.assertEqual(restored.handoff_ledger, ResourceHandoffLedger())
         self.assertEqual(restored.world.semantic_minute, 20)
 
-    def test_resource_tampering_is_covered_by_global_digest(self):
+    def test_handoff_tampering_is_covered_by_global_digest(self):
         coordinator, channels = self._world()
-        reservations, requests = self._resource_state()
+        reservations, requests, handoffs = self._resource_state()
         checkpoint = build_world_resource_checkpoint(
             coordinator,
             semantic_minute=20,
             reservation_ledger=reservations,
             request_ledger=requests,
+            handoff_ledger=handoffs,
         )
-        checkpoint["resource_state"]["requests"][0]["provider_actor_id"] = "intruder"
+        checkpoint["resource_state"]["custody_transfers"][0]["to_actor_id"] = "intruder"
         with self.assertRaisesRegex(ValueError, "digest mismatch"):
             restore_world_resource_checkpoint(checkpoint, channels=channels)
 
     def test_future_resource_event_fails_closed_after_valid_redigest(self):
         coordinator, channels = self._world()
-        reservations, requests = self._resource_state()
+        reservations, requests, handoffs = self._resource_state()
         checkpoint = build_world_resource_checkpoint(
             coordinator,
             semantic_minute=20,
             reservation_ledger=reservations,
             request_ledger=requests,
+            handoff_ledger=handoffs,
         )
         checkpoint["resource_state"]["request_events"][0]["at_tick"] = 21
         self._redigest(checkpoint)
         with self.assertRaisesRegex(ValueError, "event comes from the future"):
             restore_world_resource_checkpoint(checkpoint, channels=channels)
 
-    def test_unknown_nested_resource_schema_fails_closed(self):
+    def test_future_custody_transfer_fails_closed_after_valid_redigest(self):
         coordinator, channels = self._world()
-        reservations, requests = self._resource_state()
+        reservations, requests, handoffs = self._resource_state()
         checkpoint = build_world_resource_checkpoint(
             coordinator,
             semantic_minute=20,
             reservation_ledger=reservations,
             request_ledger=requests,
+            handoff_ledger=handoffs,
+        )
+        checkpoint["resource_state"]["custody_transfers"][0]["at_tick"] = 21
+        self._redigest(checkpoint)
+        with self.assertRaisesRegex(ValueError, "custody transfer comes from the future"):
+            restore_world_resource_checkpoint(checkpoint, channels=channels)
+
+    def test_unknown_nested_resource_schema_fails_closed(self):
+        coordinator, channels = self._world()
+        reservations, requests, handoffs = self._resource_state()
+        checkpoint = build_world_resource_checkpoint(
+            coordinator,
+            semantic_minute=20,
+            reservation_ledger=reservations,
+            request_ledger=requests,
+            handoff_ledger=handoffs,
         )
         checkpoint["resource_state"]["schema"] = "UNKNOWN"
         self._redigest(checkpoint)
         with self.assertRaisesRegex(ValueError, "unsupported resource checkpoint schema"):
             restore_world_resource_checkpoint(checkpoint, channels=channels)
 
-    def test_missing_v6_resource_state_fails_closed(self):
+    def test_missing_v7_resource_state_fails_closed(self):
         coordinator, channels = self._world()
-        reservations, requests = self._resource_state()
+        reservations, requests, handoffs = self._resource_state()
         checkpoint = build_world_resource_checkpoint(
             coordinator,
             semantic_minute=20,
             reservation_ledger=reservations,
             request_ledger=requests,
+            handoff_ledger=handoffs,
         )
         checkpoint.pop("resource_state")
         self._redigest(checkpoint)
         with self.assertRaisesRegex(ValueError, "resource_state checkpoint is required"):
             restore_world_resource_checkpoint(checkpoint, channels=channels)
+
+    def test_v7_restore_does_not_execute_handoff_again(self):
+        coordinator, channels = self._world()
+        reservations, requests, handoffs = self._resource_state()
+        checkpoint = build_world_resource_checkpoint(
+            coordinator,
+            semantic_minute=20,
+            reservation_ledger=reservations,
+            request_ledger=requests,
+            handoff_ledger=handoffs,
+        )
+        first = restore_world_resource_checkpoint(checkpoint, channels=channels)
+        second = restore_world_resource_checkpoint(copy.deepcopy(checkpoint), channels=channels)
+        self.assertEqual(first.handoff_ledger, handoffs)
+        self.assertEqual(second.handoff_ledger, handoffs)
+        self.assertEqual(len(second.handoff_ledger.transfers), 1)
 
 
 if __name__ == "__main__":
