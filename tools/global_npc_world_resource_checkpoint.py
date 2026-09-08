@@ -6,12 +6,15 @@ from dataclasses import dataclass
 from typing import Mapping
 
 from tools.global_npc_resource_appointment_checkpoint import (
+    RESOURCE_CHECKPOINT_APPOINTMENT_SCHEMA,
     restore_resource_state_with_appointment_notices,
     snapshot_resource_state_with_appointment_notices,
     validate_appointment_checkpoint_time,
 )
 from tools.global_npc_resource_attempt_checkpoint import (
+    RESOURCE_CHECKPOINT_ATTEMPT_SCHEMA,
     restore_resource_state_with_attempts,
+    snapshot_resource_state_with_attempts,
     validate_attempt_checkpoint_time,
 )
 from tools.global_npc_resource_checkpoint import (
@@ -73,11 +76,12 @@ def build_world_resource_checkpoint(
     appointment_ledger: ResourceHandoffAppointmentLedger | None = None,
     **world_checkpoint_kwargs,
 ) -> dict:
-    """Build one coherent world checkpoint through Pass 345 appointment history.
+    """Build one coherent world checkpoint through optional Pass 345 appointment history.
 
     The underlying world checkpoint remains owner of world-agent and communication
-    state. This adapter embeds the validated Pass 359 V4 resource bundle without
-    replaying resource operations, failed attempts, notices or deliveries.
+    state. When an appointment ledger is supplied, V9 embeds the validated Pass 359
+    V4 resource bundle. Callers that intentionally omit that owner retain the V3
+    resource shape and restore an explicit empty appointment ledger.
     """
     base = build_checkpoint(
         coordinator,
@@ -88,13 +92,23 @@ def build_world_resource_checkpoint(
     if payload.get("schema") != BASE_WORLD_CHECKPOINT_SCHEMA:
         raise ValueError("unexpected base world checkpoint schema")
     payload["schema"] = WORLD_RESOURCE_CHECKPOINT_SCHEMA
-    payload["resource_state"] = snapshot_resource_state_with_appointment_notices(
-        reservation_ledger,
-        request_ledger,
-        handoff_ledger or ResourceHandoffLedger(),
-        attempt_ledger or ResourceHandoffAttemptLedger(),
-        appointment_ledger or ResourceHandoffAppointmentLedger(),
-    )
+    handoffs = handoff_ledger or ResourceHandoffLedger()
+    attempts = attempt_ledger or ResourceHandoffAttemptLedger()
+    if appointment_ledger is None:
+        payload["resource_state"] = snapshot_resource_state_with_attempts(
+            reservation_ledger,
+            request_ledger,
+            handoffs,
+            attempts,
+        )
+    else:
+        payload["resource_state"] = snapshot_resource_state_with_appointment_notices(
+            reservation_ledger,
+            request_ledger,
+            handoffs,
+            attempts,
+            appointment_ledger,
+        )
     return payload | {"sha256": _digest_payload(payload)}
 
 
@@ -143,9 +157,9 @@ def restore_world_resource_checkpoint(
 ) -> RestoredWorldResourceCheckpoint:
     """Restore V9 and older checkpoints without inventing absent history.
 
-    V9 restores Pass 345 authored appointment provenance and cross-validates each
-    notice against the restored communication envelope. V8 restores its original
-    V3 failed-attempt bundle with an empty appointment ledger. V7 restores handoff
+    V9 accepts either its V4 appointment-aware resource bundle or an intentional V3
+    bundle from callers that did not supply appointment history. V8 restores its V3
+    failed-attempt bundle with an empty appointment ledger. V7 restores handoff
     history with empty attempt/appointment ledgers. V6 restores reservation/request
     history only. Older world-only checkpoints restore all resource ledgers empty.
     """
@@ -191,20 +205,30 @@ def restore_world_resource_checkpoint(
         validate_handoff_checkpoint_time(handoff_ledger, semantic_minute=semantic_minute)
         validate_attempt_checkpoint_time(attempt_ledger, semantic_minute=semantic_minute)
     else:
-        (
-            reservation_ledger,
-            request_ledger,
-            handoff_ledger,
-            attempt_ledger,
-            appointment_ledger,
-        ) = restore_resource_state_with_appointment_notices(raw_resource_state)
+        nested_schema = raw_resource_state.get("schema")
+        if nested_schema == RESOURCE_CHECKPOINT_ATTEMPT_SCHEMA:
+            reservation_ledger, request_ledger, handoff_ledger, attempt_ledger = restore_resource_state_with_attempts(
+                raw_resource_state
+            )
+            appointment_ledger = ResourceHandoffAppointmentLedger()
+        elif nested_schema == RESOURCE_CHECKPOINT_APPOINTMENT_SCHEMA:
+            (
+                reservation_ledger,
+                request_ledger,
+                handoff_ledger,
+                attempt_ledger,
+                appointment_ledger,
+            ) = restore_resource_state_with_appointment_notices(raw_resource_state)
+        else:
+            restore_resource_state_with_attempts(raw_resource_state)
+            raise AssertionError("unreachable nested resource schema")
         validate_handoff_checkpoint_time(handoff_ledger, semantic_minute=semantic_minute)
         validate_attempt_checkpoint_time(attempt_ledger, semantic_minute=semantic_minute)
         validate_appointment_checkpoint_time(appointment_ledger, semantic_minute=semantic_minute)
 
     validate_resource_checkpoint_time(request_ledger, semantic_minute=semantic_minute)
     world = _restore_embedded_world(payload, channels=channels, agendas=agendas)
-    if schema == WORLD_RESOURCE_CHECKPOINT_SCHEMA:
+    if appointment_ledger.notices:
         _validate_appointment_communication_bindings(appointment_ledger, world)
     return RestoredWorldResourceCheckpoint(
         world=world,
