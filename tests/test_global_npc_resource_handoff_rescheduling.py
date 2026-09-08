@@ -180,7 +180,7 @@ def test_superseded_authorization_cannot_execute_through_operational_wrapper() -
     )
     resource = WorldResource(
         resource_id="resource:meter",
-        capability_tags=frozenset({"FIELD_METER"}),
+        capability_refs=frozenset({"FIELD_METER"}),
         quantity=1,
         state=ResourceState.AVAILABLE,
         location_ref="place:repair-row",
@@ -215,7 +215,7 @@ def test_successor_authorization_executes_only_in_new_window_and_location() -> N
     )
     resource = WorldResource(
         resource_id="resource:meter",
-        capability_tags=frozenset({"FIELD_METER"}),
+        capability_refs=frozenset({"FIELD_METER"}),
         quantity=1,
         state=ResourceState.AVAILABLE,
         location_ref="place:field-office",
