@@ -14,13 +14,9 @@ Pass 359 proved that authored appointment notices can persist in `OUROS_NPC_RESO
 
 `OUROS_NPC_WORLD_CHECKPOINT_V9`
 
-The V9 world checkpoint contains the existing V5 world payload plus a V4 resource bundle. That resource bundle preserves:
+The V9 world checkpoint contains the existing V5 world payload plus a resource bundle. When the appointment owner is supplied, that bundle uses V4 and preserves Pass 339 reservations, Pass 342 requests and request events, Pass 343 handoff authorizations and custody transfers, Pass 344 failed handoff attempts and Pass 345 authored appointment notices.
 
-- Pass 339 reservations;
-- Pass 342 requests and request events;
-- Pass 343 handoff authorizations and custody transfers;
-- Pass 344 failed handoff attempts;
-- Pass 345 authored appointment notices.
+For compatibility with existing V8-era callers that intentionally do not supply an appointment ledger, V9 may embed the V3 resource shape. Restore then returns an explicit empty `ResourceHandoffAppointmentLedger`. It does not infer missing appointment history.
 
 The world payload remains the owner of the information queue and its delivery state.
 
@@ -28,22 +24,13 @@ The world payload remains the owner of the information queue and its delivery st
 
 For every restored `ResourceHandoffAppointmentNotice`, `communication_event_id` must resolve through the restored `InformationEventQueue.envelope_provenance()`.
 
-The envelope must match the resource-side notice on:
-
-- sender actor;
-- receiver actor;
-- source claim;
-- authored/created semantic minute.
-
-A mismatch fails closed. Restore does not rewrite either owner to make them agree.
+The envelope must match the resource-side notice on sender actor, receiver actor, source claim and authored/created semantic minute. A mismatch fails closed. Restore does not rewrite either owner to make them agree.
 
 ## Delivery ownership boundary
 
 `ResourceHandoffAppointmentLedger` records that a notice was authored and associates it with a communication event identity.
 
 `InformationEventQueue` owns whether that event is queued, waiting for local acknowledgement, delivered or terminally failed.
-
-Therefore:
 
 `NOTICE_AUTHORED != NOTICE_DELIVERED`
 
@@ -57,13 +44,11 @@ Pass 360 validates cross-owner provenance after both subsystems are restored. It
 
 V8 contains Pass 339/342/343/344 history but did not persist Pass 345 appointment notices. Restoring V8 therefore yields an explicit empty `ResourceHandoffAppointmentLedger`.
 
-V7 restores handoff history with empty attempt and appointment ledgers.
+V7 restores handoff history with empty attempt and appointment ledgers. V6 restores reservations and requests with empty handoff, attempt and appointment ledgers. V1–V5 world-only saves restore all resource ledgers empty.
 
-V6 restores reservations and requests with empty handoff, attempt and appointment ledgers.
+A V9 payload containing V3 means the caller did not supply appointment history. It is treated the same way: existing V3 facts are restored and appointment history remains explicitly empty.
 
-V1–V5 world-only saves restore all resource ledgers empty.
-
-No legacy migration infers a missing notice from current memory, custody, actor location, later dialogue, communication content or delivery history.
+No migration infers a missing notice from current memory, custody, actor location, later dialogue, communication content or delivery history.
 
 ## Temporal boundary
 
@@ -73,30 +58,13 @@ The checkpoint may contain a notice whose actual delivery is still in the future
 
 ## Idempotency
 
-Restore reconstructs ledgers and queues. It never calls:
-
-- request acceptance;
-- handoff authorization;
-- handoff execution;
-- failed-attempt registration;
-- appointment notice registration;
-- information scheduling;
-- information delivery.
+Restore reconstructs ledgers and queues. It never calls request acceptance, handoff authorization, handoff execution, failed-attempt registration, appointment notice registration, information scheduling or information delivery.
 
 A second restore produces the same historical state without another message or custody mutation.
 
 ## Fail-closed cases
 
-Restore rejects at minimum:
-
-- missing appointment communication provenance;
-- appointment sender different from envelope sender;
-- appointment receiver different from envelope receiver;
-- appointment source claim different from envelope source claim;
-- appointment creation tick different from envelope creation minute;
-- unsupported nested resource schema;
-- invalid global digest;
-- any pre-existing V4 resource validation failure.
+Restore rejects missing appointment communication provenance; sender, receiver, source-claim or creation-time mismatches; unsupported nested resource schemas; invalid global digests; and any pre-existing V4 resource validation failure.
 
 ## Narrative consequence
 
