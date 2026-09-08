@@ -1,0 +1,31 @@
+{
+  "fixture_id": "global-npc-resource-allocation-notice-recipient-binding-v1",
+  "status": "REGRESSION_CASE_INDEX",
+  "pass": 351,
+  "cases": [
+    {
+      "case_id": "wrong-recipient-cannot-satisfy-holder-notice",
+      "expected": "REJECT_LINK"
+    },
+    {
+      "case_id": "declared-sender-must-match-envelope-sender",
+      "expected": "REJECT_LINK"
+    },
+    {
+      "case_id": "link-cannot-predate-message-authorship",
+      "expected": "REJECT_LINK"
+    },
+    {
+      "case_id": "waiting-local-ack-retains-bindable-envelope-provenance",
+      "expected": "WAITING_LOCAL_ACK"
+    },
+    {
+      "case_id": "post-delivery-retroactive-link-fails-closed-without-envelope-metadata",
+      "expected": "REJECT_LINK"
+    },
+    {
+      "case_id": "correct-delivery-wakes-only-addressed-holder-through-pass-287",
+      "expected": "WAKE_AFFECTED_HOLDER_ONLY"
+    }
+  ]
+}
