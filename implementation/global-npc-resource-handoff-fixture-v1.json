@@ -1,0 +1,59 @@
+{
+  "schema": "OUROS_GLOBAL_NPC_RESOURCE_HANDOFF_FIXTURE_V1",
+  "status": "NON_CANON_TEST_FIXTURE",
+  "description": "Accepted request authorizes a named proxy pickup without teleporting custody to the requester.",
+  "request": {
+    "request_id": "request:field-meter",
+    "requester_actor_id": "npc:surveyor",
+    "provider_actor_id": "npc:technician",
+    "resource_id": "resource:field-meter-a",
+    "state": "ACCEPTED"
+  },
+  "resource_before": {
+    "resource_id": "resource:field-meter-a",
+    "holder_actor_id": "npc:technician",
+    "location_ref": "place:repair-row",
+    "state": "IN_USE"
+  },
+  "handoff_authorization": {
+    "authorization_id": "handoff-auth:field-meter",
+    "request_id": "request:field-meter",
+    "provider_actor_id": "npc:technician",
+    "accountable_actor_id": "npc:surveyor",
+    "receiving_actor_id": "npc:assistant",
+    "resource_id": "resource:field-meter-a",
+    "mode": "PICKUP",
+    "handoff_location_ref": "place:repair-row",
+    "valid_from_tick": 200,
+    "valid_until_tick": 240
+  },
+  "custody_transfer": {
+    "transfer_id": "custody-transfer:field-meter",
+    "authorization_id": "handoff-auth:field-meter",
+    "request_id": "request:field-meter",
+    "resource_id": "resource:field-meter-a",
+    "from_actor_id": "npc:technician",
+    "to_actor_id": "npc:assistant",
+    "accountable_actor_id": "npc:surveyor",
+    "location_ref": "place:repair-row",
+    "at_tick": 215,
+    "condition_ref": "condition:observed-at-handoff"
+  },
+  "expected_after": {
+    "holder_actor_id": "npc:assistant",
+    "location_ref": "place:repair-row",
+    "accountable_actor_id": "npc:surveyor",
+    "requester_possession_inferred": false,
+    "ownership_transfer_inferred": false,
+    "ptu_item_legality_inferred": false
+  },
+  "negative_cases": [
+    "pending request cannot authorize handoff",
+    "provider no longer holds unit",
+    "resource at wrong location",
+    "unauthorized proxy attempts pickup",
+    "handoff before valid window",
+    "handoff at or after expiry",
+    "single-use authorization reused"
+  ]
+}
