@@ -1,0 +1,26 @@
+{
+  "schema": "OUROS_NPC_RESOURCE_APPOINTMENT_CHECKPOINT_REGRESSION_V1",
+  "status": "IMPLEMENTED_REGRESSION_FIXTURE",
+  "canon_authority": "NONE",
+  "checkpoint_schema": "OUROS_NPC_RESOURCE_CHECKPOINT_V4",
+  "scenario": "appointment notice survives resource checkpoint without duplicating communication delivery state",
+  "invariants": [
+    "NOTICE_AUTHORED_DOES_NOT_IMPLY_NOTICE_DELIVERED",
+    "CONFIRMATION_MAY_PRECEDE_AUTHORIZATION_VALID_FROM",
+    "NOTICE_MUST_REFERENCE_EXISTING_AUTHORIZATION",
+    "NOTICE_ACTORS_MUST_BE_AUTHORIZATION_PARTICIPANTS",
+    "NOTICE_AT_OR_AFTER_AUTHORIZATION_EXPIRY_IS_INVALID",
+    "NOTICE_MAY_PRECEDE_LATER_CUSTODY_TRANSFER",
+    "NOTICE_AT_OR_AFTER_COMPLETED_TRANSFER_IS_INVALID",
+    "NOTICE_IDENTITY_AND_COMMUNICATION_EVENT_IDENTITY_ARE_UNIQUE",
+    "OLDER_RESOURCE_CHECKPOINTS_DO_NOT_INFER_APPOINTMENT_HISTORY",
+    "AUTHORED_NOTICE_CANNOT_ORIGINATE_AFTER_CHECKPOINT_SEMANTIC_TIME"
+  ],
+  "ownership": {
+    "resource_checkpoint": "authored appointment notice and communication-event reference",
+    "information_runtime": "queue envelope, delivery state and receipt",
+    "memory_belief": "what a participant currently knows or recalls",
+    "handoff_runtime": "physical custody transfer"
+  },
+  "next_boundary": "integrate resource V4 into coherent world checkpoint and cross-validate communication provenance without duplicating delivery ownership"
+}
