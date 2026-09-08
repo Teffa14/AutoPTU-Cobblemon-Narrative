@@ -254,12 +254,13 @@ class GlobalNpcWorldResourceCheckpointTests(unittest.TestCase):
     def test_future_handoff_attempt_fails_closed_after_valid_redigest(self):
         coordinator, channels = self._world()
         reservations, requests, handoffs, attempts = self._resource_state()
+        handoffs_without_transfer = ResourceHandoffLedger(authorizations=handoffs.authorizations)
         checkpoint = build_world_resource_checkpoint(
             coordinator,
             semantic_minute=20,
             reservation_ledger=reservations,
             request_ledger=requests,
-            handoff_ledger=handoffs,
+            handoff_ledger=handoffs_without_transfer,
             attempt_ledger=attempts,
         )
         checkpoint["resource_state"]["handoff_attempts"][0]["at_tick"] = 21
