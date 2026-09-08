@@ -281,7 +281,7 @@ class GlobalNpcWorldResourceCheckpointTests(unittest.TestCase):
         )
         checkpoint["resource_state"]["schema"] = "UNKNOWN"
         self._redigest(checkpoint)
-        with self.assertRaisesRegex(ValueError, "unsupported resource attempt checkpoint schema"):
+        with self.assertRaisesRegex(ValueError, "unsupported resource .* checkpoint schema"):
             restore_world_resource_checkpoint(checkpoint, channels=channels)
 
     def test_missing_v8_resource_state_fails_closed(self):

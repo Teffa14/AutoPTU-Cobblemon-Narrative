@@ -5,6 +5,7 @@ import json
 from dataclasses import dataclass
 from typing import Mapping
 
+from tools.global_npc_information_network import DeliveryStatus
 from tools.global_npc_resource_appointment_checkpoint import (
     RESOURCE_CHECKPOINT_APPOINTMENT_SCHEMA,
     restore_resource_state_with_appointment_notices,
@@ -25,8 +26,15 @@ from tools.global_npc_resource_checkpoint import (
 )
 from tools.global_npc_resource_handoff_appointments import ResourceHandoffAppointmentLedger
 from tools.global_npc_resource_handoff_attempts import ResourceHandoffAttemptLedger
+from tools.global_npc_resource_handoff_rescheduling import ResourceHandoffRescheduleLedger
 from tools.global_npc_resource_handoffs import ResourceHandoffLedger
 from tools.global_npc_resource_requests import ResourceRequestLedger
+from tools.global_npc_resource_reschedule_checkpoint import (
+    RESOURCE_CHECKPOINT_RESCHEDULE_SCHEMA,
+    restore_resource_state_with_reschedules,
+    snapshot_resource_state_with_reschedules,
+    validate_reschedule_checkpoint_time,
+)
 from tools.global_npc_resource_reservations import ReservationLedger
 from tools.global_npc_world_checkpoint import (
     CHECKPOINT_SCHEMA as BASE_WORLD_CHECKPOINT_SCHEMA,
@@ -39,7 +47,8 @@ from tools.global_npc_world_checkpoint import (
 LEGACY_WORLD_RESOURCE_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V6"
 LEGACY_WORLD_RESOURCE_HANDOFF_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V7"
 LEGACY_WORLD_RESOURCE_ATTEMPT_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V8"
-WORLD_RESOURCE_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V9"
+LEGACY_WORLD_RESOURCE_APPOINTMENT_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V9"
+WORLD_RESOURCE_CHECKPOINT_SCHEMA = "OUROS_NPC_WORLD_CHECKPOINT_V10"
 
 
 @dataclass(frozen=True)
@@ -50,6 +59,7 @@ class RestoredWorldResourceCheckpoint:
     handoff_ledger: ResourceHandoffLedger
     attempt_ledger: ResourceHandoffAttemptLedger
     appointment_ledger: ResourceHandoffAppointmentLedger
+    reschedule_ledger: ResourceHandoffRescheduleLedger
 
 
 def _canonical_bytes(payload: Mapping[str, object]) -> bytes:
@@ -74,14 +84,16 @@ def build_world_resource_checkpoint(
     handoff_ledger: ResourceHandoffLedger | None = None,
     attempt_ledger: ResourceHandoffAttemptLedger | None = None,
     appointment_ledger: ResourceHandoffAppointmentLedger | None = None,
+    reschedule_ledger: ResourceHandoffRescheduleLedger | None = None,
     **world_checkpoint_kwargs,
 ) -> dict:
-    """Build one coherent world checkpoint through optional Pass 345 appointment history.
+    """Build one coherent world checkpoint through optional Pass 346 reschedule history.
 
     The underlying world checkpoint remains owner of world-agent and communication
-    state. When an appointment ledger is supplied, V9 embeds the validated Pass 359
-    V4 resource bundle. Callers that intentionally omit that owner retain the V3
-    resource shape and restore an explicit empty appointment ledger.
+    state. V10 embeds the most advanced resource bundle supplied by the caller. A
+    reschedule owner requires appointment history because its source notice is part of
+    the causal lineage. Omitting newer owners remains an explicit request to persist
+    only the older facts that were actually supplied.
     """
     base = build_checkpoint(
         coordinator,
@@ -94,20 +106,31 @@ def build_world_resource_checkpoint(
     payload["schema"] = WORLD_RESOURCE_CHECKPOINT_SCHEMA
     handoffs = handoff_ledger or ResourceHandoffLedger()
     attempts = attempt_ledger or ResourceHandoffAttemptLedger()
-    if appointment_ledger is None:
-        payload["resource_state"] = snapshot_resource_state_with_attempts(
+    if reschedule_ledger is not None:
+        if appointment_ledger is None:
+            raise ValueError("reschedule history requires appointment history")
+        payload["resource_state"] = snapshot_resource_state_with_reschedules(
             reservation_ledger,
             request_ledger,
             handoffs,
             attempts,
+            appointment_ledger,
+            reschedule_ledger,
         )
-    else:
+    elif appointment_ledger is not None:
         payload["resource_state"] = snapshot_resource_state_with_appointment_notices(
             reservation_ledger,
             request_ledger,
             handoffs,
             attempts,
             appointment_ledger,
+        )
+    else:
+        payload["resource_state"] = snapshot_resource_state_with_attempts(
+            reservation_ledger,
+            request_ledger,
+            handoffs,
+            attempts,
         )
     return payload | {"sha256": _digest_payload(payload)}
 
@@ -149,23 +172,44 @@ def _validate_appointment_communication_bindings(
             raise ValueError(f"handoff appointment notice timestamp mismatch: {notice.notice_id}")
 
 
+def _validate_reschedule_delivery_bindings(
+    reschedule_ledger: ResourceHandoffRescheduleLedger,
+    appointment_ledger: ResourceHandoffAppointmentLedger,
+    world: RestoredWorldCheckpoint,
+) -> None:
+    """Reassert the runtime fact that only a delivered request can be decided.
+
+    Resource history owns proposal/decision lineage. Communications owns transport.
+    Restore validates their shared identifier instead of copying delivery state into the
+    resource ledger or inferring delivery from a later acceptance.
+    """
+    notices = {row.notice_id: row for row in appointment_ledger.notices}
+    queue = world.coordinator.information_queue
+    for decision in reschedule_ledger.decisions:
+        proposal = next(row for row in reschedule_ledger.proposals if row.proposal_id == decision.proposal_id)
+        notice = notices[proposal.source_notice_id]
+        if queue.statuses.get(notice.communication_event_id) != DeliveryStatus.DELIVERED:
+            raise ValueError(f"reschedule decision source request was not delivered: {decision.decision_id}")
+
+
 def restore_world_resource_checkpoint(
     snapshot: Mapping[str, object],
     *,
     channels,
     agendas=None,
 ) -> RestoredWorldResourceCheckpoint:
-    """Restore V9 and older checkpoints without inventing absent history.
+    """Restore V10 and older checkpoints without inventing absent history.
 
-    V9 accepts either its V4 appointment-aware resource bundle or an intentional V3
-    bundle from callers that did not supply appointment history. V8 restores its V3
-    failed-attempt bundle with an empty appointment ledger. V7 restores handoff
-    history with empty attempt/appointment ledgers. V6 restores reservation/request
-    history only. Older world-only checkpoints restore all resource ledgers empty.
+    V10 accepts V5 reschedule-aware, V4 appointment-aware, or intentional V3 resource
+    bundles. V9 restores appointment history with an empty reschedule ledger. V8
+    restores failed attempts with empty appointment/reschedule history. V7 restores
+    handoffs only; V6 restores reservation/request history. Older world-only saves
+    restore every resource ledger empty.
     """
     schema = snapshot.get("schema")
     supported = {
         WORLD_RESOURCE_CHECKPOINT_SCHEMA,
+        LEGACY_WORLD_RESOURCE_APPOINTMENT_CHECKPOINT_SCHEMA,
         LEGACY_WORLD_RESOURCE_ATTEMPT_CHECKPOINT_SCHEMA,
         LEGACY_WORLD_RESOURCE_HANDOFF_CHECKPOINT_SCHEMA,
         LEGACY_WORLD_RESOURCE_CHECKPOINT_SCHEMA,
@@ -179,6 +223,7 @@ def restore_world_resource_checkpoint(
             handoff_ledger=ResourceHandoffLedger(),
             attempt_ledger=ResourceHandoffAttemptLedger(),
             appointment_ledger=ResourceHandoffAppointmentLedger(),
+            reschedule_ledger=ResourceHandoffRescheduleLedger(),
         )
 
     payload = _validate_global_digest(snapshot)
@@ -192,19 +237,22 @@ def restore_world_resource_checkpoint(
         handoff_ledger = ResourceHandoffLedger()
         attempt_ledger = ResourceHandoffAttemptLedger()
         appointment_ledger = ResourceHandoffAppointmentLedger()
+        reschedule_ledger = ResourceHandoffRescheduleLedger()
     elif schema == LEGACY_WORLD_RESOURCE_HANDOFF_CHECKPOINT_SCHEMA:
         reservation_ledger, request_ledger, handoff_ledger = restore_resource_state_with_handoffs(raw_resource_state)
         attempt_ledger = ResourceHandoffAttemptLedger()
         appointment_ledger = ResourceHandoffAppointmentLedger()
+        reschedule_ledger = ResourceHandoffRescheduleLedger()
         validate_handoff_checkpoint_time(handoff_ledger, semantic_minute=semantic_minute)
     elif schema == LEGACY_WORLD_RESOURCE_ATTEMPT_CHECKPOINT_SCHEMA:
         reservation_ledger, request_ledger, handoff_ledger, attempt_ledger = restore_resource_state_with_attempts(
             raw_resource_state
         )
         appointment_ledger = ResourceHandoffAppointmentLedger()
+        reschedule_ledger = ResourceHandoffRescheduleLedger()
         validate_handoff_checkpoint_time(handoff_ledger, semantic_minute=semantic_minute)
         validate_attempt_checkpoint_time(attempt_ledger, semantic_minute=semantic_minute)
-    else:
+    elif schema == LEGACY_WORLD_RESOURCE_APPOINTMENT_CHECKPOINT_SCHEMA:
         nested_schema = raw_resource_state.get("schema")
         if nested_schema == RESOURCE_CHECKPOINT_ATTEMPT_SCHEMA:
             reservation_ledger, request_ledger, handoff_ledger, attempt_ledger = restore_resource_state_with_attempts(
@@ -222,14 +270,50 @@ def restore_world_resource_checkpoint(
         else:
             restore_resource_state_with_attempts(raw_resource_state)
             raise AssertionError("unreachable nested resource schema")
+        reschedule_ledger = ResourceHandoffRescheduleLedger()
         validate_handoff_checkpoint_time(handoff_ledger, semantic_minute=semantic_minute)
         validate_attempt_checkpoint_time(attempt_ledger, semantic_minute=semantic_minute)
         validate_appointment_checkpoint_time(appointment_ledger, semantic_minute=semantic_minute)
+    else:
+        nested_schema = raw_resource_state.get("schema")
+        if nested_schema == RESOURCE_CHECKPOINT_ATTEMPT_SCHEMA:
+            reservation_ledger, request_ledger, handoff_ledger, attempt_ledger = restore_resource_state_with_attempts(
+                raw_resource_state
+            )
+            appointment_ledger = ResourceHandoffAppointmentLedger()
+            reschedule_ledger = ResourceHandoffRescheduleLedger()
+        elif nested_schema == RESOURCE_CHECKPOINT_APPOINTMENT_SCHEMA:
+            (
+                reservation_ledger,
+                request_ledger,
+                handoff_ledger,
+                attempt_ledger,
+                appointment_ledger,
+            ) = restore_resource_state_with_appointment_notices(raw_resource_state)
+            reschedule_ledger = ResourceHandoffRescheduleLedger()
+        elif nested_schema == RESOURCE_CHECKPOINT_RESCHEDULE_SCHEMA:
+            (
+                reservation_ledger,
+                request_ledger,
+                handoff_ledger,
+                attempt_ledger,
+                appointment_ledger,
+                reschedule_ledger,
+            ) = restore_resource_state_with_reschedules(raw_resource_state)
+        else:
+            restore_resource_state_with_reschedules(raw_resource_state)
+            raise AssertionError("unreachable nested resource schema")
+        validate_handoff_checkpoint_time(handoff_ledger, semantic_minute=semantic_minute)
+        validate_attempt_checkpoint_time(attempt_ledger, semantic_minute=semantic_minute)
+        validate_appointment_checkpoint_time(appointment_ledger, semantic_minute=semantic_minute)
+        validate_reschedule_checkpoint_time(reschedule_ledger, semantic_minute=semantic_minute)
 
     validate_resource_checkpoint_time(request_ledger, semantic_minute=semantic_minute)
     world = _restore_embedded_world(payload, channels=channels, agendas=agendas)
     if appointment_ledger.notices:
         _validate_appointment_communication_bindings(appointment_ledger, world)
+    if reschedule_ledger.decisions:
+        _validate_reschedule_delivery_bindings(reschedule_ledger, appointment_ledger, world)
     return RestoredWorldResourceCheckpoint(
         world=world,
         reservation_ledger=reservation_ledger,
@@ -237,4 +321,5 @@ def restore_world_resource_checkpoint(
         handoff_ledger=handoff_ledger,
         attempt_ledger=attempt_ledger,
         appointment_ledger=appointment_ledger,
+        reschedule_ledger=reschedule_ledger,
     )
