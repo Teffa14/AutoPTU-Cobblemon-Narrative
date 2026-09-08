@@ -1,0 +1,48 @@
+{
+  "schema": "OUROS_GLOBAL_NPC_RESOURCE_ALLOCATION_APPLICATION_REGRESSION_V1",
+  "status": "IMPLEMENTED_TEST_FIXTURE",
+  "resource_id": "meter-field-01",
+  "source_reservations": [
+    {
+      "reservation_id": "reservation-observation-old",
+      "actor_id": "actor-observation-team",
+      "start_tick": 120,
+      "end_tick": 180,
+      "state": "ACTIVE"
+    },
+    {
+      "reservation_id": "reservation-maintenance-old",
+      "actor_id": "actor-maintenance-team",
+      "start_tick": 140,
+      "end_tick": 200,
+      "state": "ACTIVE"
+    }
+  ],
+  "allocation_resolution": {
+    "resolution_id": "allocation-resolution-349-a",
+    "proposal_id": "handoff-reschedule-proposal-349-a",
+    "resolution_kind": "SELECT_PROPOSED_WINDOW",
+    "decided_tick": 110,
+    "conflicting_reservation_ids": [
+      "reservation-maintenance-old",
+      "reservation-observation-old"
+    ]
+  },
+  "allocation_application": {
+    "application_id": "allocation-application-349-a",
+    "applied_tick": 111,
+    "expected_kind": "DISPLACE_CONFLICTING_RESERVATIONS",
+    "expected_displaced_reservation_ids": [
+      "reservation-maintenance-old",
+      "reservation-observation-old"
+    ]
+  },
+  "expected_boundaries": {
+    "source_ledger_remains_active": true,
+    "derived_operational_view_projects_displaced_reservations_as_cancelled": true,
+    "holder_cancellation_is_not_inferred": true,
+    "notification_is_not_inferred": true,
+    "custody_transfer_is_not_inferred": true,
+    "resource_readiness_is_not_inferred": true
+  }
+}
