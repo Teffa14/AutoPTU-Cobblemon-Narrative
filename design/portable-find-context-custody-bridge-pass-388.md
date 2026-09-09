@@ -1,6 +1,6 @@
 # Portable Find Context/Custody Bridge — Pass 388
 
-Status: DESIGN / PROPOSED CONTRACT. Not canon.
+Status: DESIGN / IMPLEMENTED BRIDGE CONTRACT. Not canon.
 
 ## Intent
 
@@ -22,27 +22,46 @@ A find moving after discovery must never rewrite its original site observation.
 
 ## Bridge record
 
-Proposed record: `PortableFindResourceBinding`.
+Implemented record: `PortableFindResourceBinding`.
 
-Minimum fields:
+Schema: `OUROS_PORTABLE_FIND_RESOURCE_BINDING_V1`.
+
+Owner: `tools/global_npc_portable_find_resource_binding.py`.
+
+Fields:
 - `binding_id`
 - `observation_id`
 - `resource_id`
 - `bound_at_semantic_minute`
 - `bound_by_actor_id`
 - `authority_ref`
+- `observation_sha256`
 
 Validation requirements:
 - the observation exists;
 - its kind is exactly `PORTABLE_FIND`;
-- the resource exists;
+- the resource exists in the explicitly supplied declared-resource mapping;
+- the mapping key matches the resource's own `resource_id`;
 - binding time is not earlier than observation time;
 - one observation cannot bind to two resources;
 - one resource cannot claim two discovery observations unless a later explicit assemblage abstraction is designed;
+- the binding stores a digest of the exact historical observation and restore fails if that provenance changes;
 - binding does not move the resource;
 - binding does not change holder, location, reservation, state or quantity;
 - binding does not authorize a handoff;
 - binding does not prove legal ownership.
+
+## Pass 389 resource-catalog boundary
+
+Inspection of `tools/global_npc_world_resource_checkpoint.py` exposed a recovery boundary that must stay explicit.
+
+`OUROS_NPC_WORLD_CHECKPOINT_V10` persists the resource reservation/request/handoff/attempt/appointment/reschedule bundle that the caller supplies. It does not currently own a complete catalog of every `WorldResource` definition.
+
+For that reason, `PortableFindResourceBindingLedger` receives `declared_resources: Mapping[str, WorldResource]` explicitly during bind, validate, snapshot and restore. It does not infer a resource's existence from handoff history, holder state, a site observation, Minecraft presentation or an identifier-shaped string.
+
+A later outer recovery manifest must select the coherent declared-resource state and then restore the binding against it. Until that owner exists, callers are responsible for supplying the selected declared-resource mapping.
+
+The binding deliberately fingerprints the historical observation but does not fingerprint mutable `WorldResource` fields. Current holder, location, reservation and operational state may change legitimately after discovery while the historical identity link remains valid.
 
 ## Recovery sequence
 
@@ -52,7 +71,7 @@ A portable-find recovery should be represented by explicit stages.
 2. `SiteEvidenceLedger` records the `PORTABLE_FIND` observation.
 3. The observation may materialize into that observer's private knowledge through the existing observation bridge.
 4. A stable `WorldResource` identity is created or admitted by the world-resource owner.
-5. `PortableFindResourceBinding` links the resource identity to the historical observation.
+5. `PortableFindResourceBindingLedger` links the resource identity to the historical observation.
 6. If the object is physically removed or passed to another actor, the ordinary resource/custody owners record that change.
 7. If removal changes the physical site, a new site revision records the site change separately.
 8. Any later interpretation remains based on observations and private evidence, not on current possession alone.
@@ -91,11 +110,12 @@ A receiver can physically possess the object and still lack its discovery contex
 A later mismatch between resource state and context record is valid world state, not automatic corruption.
 
 Examples:
-- the site record exists but the resource is missing;
+- the site record exists but the resource is missing from the selected declared-resource state;
 - the resource is held by a different actor than expected;
 - the item reaches a repository but its context report is delayed;
 - a handoff condition record conflicts with a later inspection;
-- an actor possesses the object but received an incomplete provenance report.
+- an actor possesses the object but received an incomplete provenance report;
+- one physical object carries a field number and a later catalog/accession number that different NPCs do not yet know are aliases.
 
 Each mismatch can become an investigation seed without deciding theft, fraud, negligence or error in advance.
 
@@ -103,14 +123,31 @@ Each mismatch can become an investigation seed without deciding theft, fraud, ne
 
 Do not append portable-find custody directly into `OUROS_PERSISTENT_WORLD_EVIDENCE_CHECKPOINT_V1`.
 
-The evidence checkpoint should preserve the binding itself because it is the cross-system identity relation, but `WorldResource` and `ResourceHandoffLedger` remain owned by their existing resource checkpoint chain.
+The evidence checkpoint should eventually preserve the binding itself because it is the cross-system identity relation, but `WorldResource` and `ResourceHandoffLedger` remain owned by their existing resource checkpoint chain.
+
+Pass 389 intentionally leaves `PortableFindResourceBindingLedger` standalone rather than silently changing checkpoint ownership. Its snapshot/restore API is now executable and ready for a versioned persistent-world-evidence checkpoint integration.
 
 A later outer recovery manifest may bind by digest:
 - global-NPC checkpoint state;
-- persistent-world-evidence checkpoint state;
-- resource/custody checkpoint state.
+- persistent-world-evidence checkpoint state including the portable-find binding ledger;
+- resource/custody checkpoint state;
+- the selected declared-resource catalog once that catalog has an explicit recovery owner.
 
-It should validate that every bound `resource_id` exists in the selected resource recovery state without merging those owners.
+It should validate that every bound `resource_id` exists in the selected declared-resource state without merging those owners.
+
+## Executable acceptance — Pass 389
+
+`tests/test_global_npc_portable_find_resource_binding.py` proves:
+- normal bind and deterministic snapshot/restore;
+- lookup by observation and resource identity;
+- rejection of non-portable observations;
+- rejection of missing resources;
+- rejection of a binding that predates discovery;
+- one-to-one observation/resource binding in V1;
+- restore failure when historical observation provenance changes;
+- rejection of binding state from the future when a recovery minute is supplied;
+- operational holder/location/state changes do not invalidate the historical identity relation;
+- malformed declared-resource key/identity mappings fail closed.
 
 ## Reduced encounter contract
 
