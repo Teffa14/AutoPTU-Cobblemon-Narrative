@@ -125,7 +125,7 @@ def test_v16_rejects_future_selection_even_when_resigned() -> None:
 
 
 def test_v15_migration_keeps_plan_selection_history_empty() -> None:
-    channels, _, _, _, checkpoint = _build_v15()
+    channels, _, _, checkpoint = _build_v15()
     restored = restore_world_plan_selection_provenance_checkpoint(checkpoint, channels=channels)
     assert restored.plan_selection_provenance.selections == {}
 
