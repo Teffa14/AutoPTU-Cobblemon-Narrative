@@ -30,7 +30,7 @@ class ReconciledPersistentWorldRecoveryManifest:
     global_npc_checkpoint_sha256: str
     persistent_world_evidence_checkpoint_sha256: str
     world_resource_catalog_checkpoint_sha256: str | None
-    resource_holder_transition_checkpoint_sha256: str | None
+    resource_holder_transition_checkpoint_sha256: str | None = None
 
 
 def _canonical_bytes(payload: Mapping[str, object]) -> bytes:
@@ -165,7 +165,6 @@ def reconcile_persistent_world_recovery_manifest(
             global_npc_checkpoint_sha256=global_digest,
             persistent_world_evidence_checkpoint_sha256=evidence_digest,
             world_resource_catalog_checkpoint_sha256=None,
-            resource_holder_transition_checkpoint_sha256=None,
         )
 
     if world_resource_catalog_checkpoint is None:
@@ -186,7 +185,6 @@ def reconcile_persistent_world_recovery_manifest(
             global_npc_checkpoint_sha256=global_digest,
             persistent_world_evidence_checkpoint_sha256=evidence_digest,
             world_resource_catalog_checkpoint_sha256=resource_digest,
-            resource_holder_transition_checkpoint_sha256=None,
         )
 
     if resource_holder_transition_checkpoint is None:
