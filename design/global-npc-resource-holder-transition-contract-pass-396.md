@@ -30,7 +30,7 @@ Events are immutable.
 
 For one resource, a later journaled transition must begin from the holder produced by the previous journaled transition.
 
-Backdated insertion behind the latest recorded semantic time is rejected.
+Semantic ticks must increase strictly for successive holder changes of the same resource. V1 has no causal ordinal inside one tick, so two same-tick holder changes are rejected instead of being silently ordered by identifier.
 
 Duplicate transition IDs are rejected.
 
