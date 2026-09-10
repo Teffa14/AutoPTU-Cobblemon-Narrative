@@ -95,8 +95,8 @@ def record_holder_transition(
     history = holder_history(ledger, transition.resource_id)
     if history:
         latest = history[-1]
-        if transition.at_tick < latest.at_tick:
-            raise ValueError("holder transitions must be recorded in semantic order")
+        if transition.at_tick <= latest.at_tick:
+            raise ValueError("holder transitions require strictly increasing semantic order")
         if transition.from_actor_id != latest.to_actor_id:
             raise ValueError("holder transition breaks resource holder continuity")
 
