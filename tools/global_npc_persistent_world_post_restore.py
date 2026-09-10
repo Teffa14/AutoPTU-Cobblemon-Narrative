@@ -9,6 +9,9 @@ from tools.global_npc_holder_history_baseline_issuance import (
 from tools.global_npc_holder_history_coverage import HolderHistoryCoverageBaseline
 from tools.global_npc_resource_handoffs import ResourceHandoffLedger
 from tools.global_npc_resource_reservations import ReservationLedger
+from tools.holder_history_coverage_baseline_checkpoint import (
+    restore_holder_history_coverage_baselines,
+)
 from tools.persistent_world_recovery_manifest import ReconciledPersistentWorldRecoveryManifest
 from tools.resource_holder_transition_checkpoint import RestoredResourceHolderTransitions
 from tools.world_resource_catalog_checkpoint import (
@@ -40,22 +43,20 @@ def validate_persistent_world_post_restore(
     handoff_ledger: ResourceHandoffLedger,
     holder_transitions: RestoredResourceHolderTransitions | None = None,
     resource_catalog_checkpoint_snapshot: Mapping[str, object] | None = None,
+    holder_history_coverage_baseline_checkpoint_snapshot: Mapping[str, object] | None = None,
     complete_holder_history_resource_ids: frozenset[str] = frozenset(),
 ) -> PersistentWorldPostRestoreValidation:
-    """Run cross-owner checks, then optionally issue a future-facing holder baseline.
+    """Run cross-owner checks and advance future-facing holder coverage safely.
 
-    When a V3 recovery caller supplies the exact WorldResource catalog checkpoint selected
-    by the outer manifest, this stage validates that generation against the manifest digest
-    and restored catalog. Only after historical reconciliation succeeds does it reissue
-    bounded holder-history baselines from that checkpoint.
+    V4 may supply the exact holder-history baseline checkpoint selected by the outer
+    recovery manifest. Only baseline records strictly older than the recovery cut are
+    admitted into reconciliation. A baseline issued at the same semantic minute as the
+    current catalog is future-facing evidence for later cuts and cannot prove the state
+    that produced it.
 
-    Those baselines are an authoritative starting cut for future holder continuity. They
-    are never fed back into reconciliation of the same cut, because doing so would make
-    current catalog state prove itself and could hide incomplete pre-checkpoint history.
-
-    A V3 caller that does not retain the raw selected catalog checkpoint can still perform
-    the older conservative reconciliation, but receives no baseline certificates. Callers
-    can no longer inject authored bounded-baseline objects into this activation boundary.
+    When the exact WorldResource catalog checkpoint is retained, a successful recovery
+    can still issue deterministic baselines at the current cut for future generations.
+    Historical reconciliation always runs before those new certificates are emitted.
     """
     if resource_catalog.semantic_minute != recovery_manifest.semantic_minute:
         raise ValueError("post-restore resource catalog semantic minute mismatch")
@@ -66,7 +67,7 @@ def validate_persistent_world_post_restore(
     holder_digest = recovery_manifest.resource_holder_transition_checkpoint_sha256
     if holder_digest is not None:
         if holder_transitions is None:
-            raise ValueError("V3 post-restore validation requires restored holder transitions")
+            raise ValueError("V3/V4 post-restore validation requires restored holder transitions")
         if holder_transitions.semantic_minute != recovery_manifest.semantic_minute:
             raise ValueError("post-restore holder transition semantic minute mismatch")
 
@@ -86,8 +87,32 @@ def validate_persistent_world_post_restore(
         if resource_catalog_checkpoint_snapshot is not None:
             raise ValueError("legacy recovery path does not issue holder-history baselines")
 
+    baseline_digest = recovery_manifest.holder_history_coverage_baseline_checkpoint_sha256
+    historical_baselines: tuple[HolderHistoryCoverageBaseline, ...] = ()
+    if baseline_digest is not None:
+        if holder_history_coverage_baseline_checkpoint_snapshot is None:
+            raise ValueError("V4 post-restore validation requires holder history coverage baseline checkpoint")
+        restored_baselines = restore_holder_history_coverage_baselines(
+            holder_history_coverage_baseline_checkpoint_snapshot,
+            recovery_semantic_minute=recovery_manifest.semantic_minute,
+        )
+        if restored_baselines.semantic_minute != recovery_manifest.semantic_minute:
+            raise ValueError("post-restore holder history coverage baseline semantic minute mismatch")
+        supplied_baseline_digest = holder_history_coverage_baseline_checkpoint_snapshot.get("sha256")
+        if supplied_baseline_digest != baseline_digest:
+            raise ValueError("post-restore holder history coverage baseline digest does not match recovery manifest")
+        historical_baselines = tuple(
+            baseline
+            for baseline in restored_baselines.baselines
+            if baseline.at_tick < recovery_manifest.semantic_minute
+        )
+    elif holder_history_coverage_baseline_checkpoint_snapshot is not None:
+        raise ValueError("legacy recovery manifest did not select holder history coverage baseline")
+
     if complete_holder_history_resource_ids and holder_transitions is None:
         raise ValueError("complete holder history requires restored holder transitions")
+    if complete_holder_history_resource_ids and historical_baselines:
+        raise ValueError("use restored holder history coverage baselines or explicit complete ids, not both")
 
     report = reconcile_world_resource_history(
         resource_catalog.resources,
@@ -96,6 +121,7 @@ def validate_persistent_world_post_restore(
         semantic_minute=recovery_manifest.semantic_minute,
         holder_transition_ledger=(holder_transitions.ledger if holder_transitions is not None else None),
         complete_holder_history_resource_ids=complete_holder_history_resource_ids,
+        holder_history_coverage_baselines=historical_baselines,
     )
     if not report.safe_to_restore:
         reason_codes = ",".join(
