@@ -72,6 +72,8 @@ def snapshot_resource_holder_transitions(
         raise ValueError("semantic_minute must be a non-negative integer")
 
     ordered = _canonical_transitions(ledger)
+    if any(transition.at_tick > semantic_minute for transition in ordered):
+        raise ValueError("holder transition cannot be later than checkpoint semantic_minute")
     payload = {
         "schema": RESOURCE_HOLDER_TRANSITION_CHECKPOINT_SCHEMA,
         "semantic_minute": semantic_minute,
@@ -157,6 +159,8 @@ def restore_resource_holder_transitions(
         raise ValueError("resource holder transition checkpoint transitions must be a list")
 
     transitions = tuple(_deserialize_transition(raw) for raw in raw_transitions)
+    if any(transition.at_tick > semantic_minute for transition in transitions):
+        raise ValueError("holder transition cannot be later than checkpoint semantic_minute")
     ledger = ResourceHolderTransitionLedger()
     for transition in transitions:
         ledger = record_holder_transition(ledger, transition)
