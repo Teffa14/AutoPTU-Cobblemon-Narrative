@@ -4,6 +4,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Iterable
 
+from tools.global_npc_holder_history_coverage import (
+    HolderHistoryCoverageBaseline,
+    derive_complete_holder_history_resource_ids,
+)
 from tools.global_npc_resource_handoffs import ResourceHandoffLedger, custody_history
 from tools.global_npc_resource_holder_transitions import (
     ResourceHolderTransitionLedger,
@@ -89,20 +93,23 @@ def reconcile_world_resource_history(
     semantic_minute: int,
     holder_transition_ledger: ResourceHolderTransitionLedger | None = None,
     complete_holder_history_resource_ids: frozenset[str] = frozenset(),
+    holder_history_coverage_baselines: tuple[HolderHistoryCoverageBaseline, ...] = (),
 ) -> WorldResourceReconciliationReport:
     """Compare current resource state with historical ledgers conservatively.
 
     The current catalog remains authoritative for present operational state. Historical
     reservation, custody and holder-transition ledgers can confirm compatible facts or
-    prove narrow contradictions, but only an explicitly audited holder history may be
-    treated as complete for a resource. Missing or unaudited holder transitions remain
-    indeterminate because legal mutation paths can exist outside the journal.
+    prove narrow contradictions. Holder history becomes conflict-grade evidence only
+    when completeness is supplied by a bounded authoritative baseline or by the legacy
+    explicit audited-id argument. Missing or unaudited transitions stay indeterminate.
     """
     if isinstance(semantic_minute, bool) or not isinstance(semantic_minute, int):
         raise ValueError("semantic_minute must be an integer")
     if semantic_minute < 0:
         raise ValueError("semantic_minute must be non-negative")
-    if complete_holder_history_resource_ids and holder_transition_ledger is None:
+    if complete_holder_history_resource_ids and holder_history_coverage_baselines:
+        raise ValueError("use holder history coverage baselines or explicit complete ids, not both")
+    if (complete_holder_history_resource_ids or holder_history_coverage_baselines) and holder_transition_ledger is None:
         raise ValueError("complete holder history requires a holder transition ledger")
 
     catalog: dict[str, WorldResource] = {}
@@ -111,7 +118,17 @@ def reconcile_world_resource_history(
             raise ValueError("duplicate world resource id")
         catalog[resource.resource_id] = resource
 
-    unknown_complete_ids = complete_holder_history_resource_ids - set(catalog)
+    if holder_history_coverage_baselines:
+        effective_complete_ids = derive_complete_holder_history_resource_ids(
+            catalog.values(),
+            holder_history_coverage_baselines,
+            holder_transition_ledger,
+            through_tick=semantic_minute,
+        )
+    else:
+        effective_complete_ids = complete_holder_history_resource_ids
+
+    unknown_complete_ids = effective_complete_ids - set(catalog)
     if unknown_complete_ids:
         raise ValueError("complete holder history references resource absent from current catalog")
 
@@ -217,7 +234,7 @@ def reconcile_world_resource_history(
                 resource_id,
                 through_tick=semantic_minute,
             )
-            history_is_complete = resource_id in complete_holder_history_resource_ids
+            history_is_complete = resource_id in effective_complete_ids
             if transitions:
                 latest_transition = transitions[-1]
                 if history_is_complete:
