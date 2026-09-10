@@ -6,6 +6,9 @@ from tools.global_npc_holder_history_coverage import HolderHistoryCoverageBaseli
 from tools.global_npc_holder_history_generation_rollover import (
     carry_forward_issued_holder_history_baselines,
 )
+from tools.global_npc_holder_history_v4_generation import (
+    validate_exact_v4_holder_history_generation,
+)
 from tools.global_npc_persistent_world_post_restore import validate_persistent_world_post_restore
 from tools.global_npc_resource_handoffs import ResourceHandoffLedger
 from tools.global_npc_resource_holder_transitions import (
@@ -19,19 +22,14 @@ from tools.global_npc_world_action_interruption_provenance_checkpoint import (
     WORLD_ACTION_INTERRUPTION_PROVENANCE_CHECKPOINT_SCHEMA,
 )
 from tools.holder_history_coverage_baseline_checkpoint import (
-    HOLDER_HISTORY_COVERAGE_BASELINE_CHECKPOINT_SCHEMA,
     snapshot_holder_history_coverage_baselines,
 )
 from tools.persistent_world_evidence_checkpoint import PERSISTENT_WORLD_EVIDENCE_CHECKPOINT_SCHEMA
 from tools.persistent_world_recovery_manifest import (
     ReconciledPersistentWorldRecoveryManifest,
     build_persistent_world_recovery_manifest,
-    reconcile_persistent_world_recovery_manifest,
 )
-from tools.resource_holder_transition_checkpoint import (
-    restore_resource_holder_transitions,
-    snapshot_resource_holder_transitions,
-)
+from tools.resource_holder_transition_checkpoint import snapshot_resource_holder_transitions
 from tools.world_resource_catalog_checkpoint import (
     restore_world_resource_catalog,
     snapshot_world_resource_catalog,
@@ -89,15 +87,16 @@ class HolderHistoryFullV4RolloverTests(unittest.TestCase):
             resource_holder_transition_checkpoint_sha256="bootstrap-holder",
             holder_history_coverage_baseline_checkpoint_sha256=baseline_snapshot["sha256"],
         )
+        restored_holder = type("Restored", (), {
+            "semantic_minute": 20,
+            "ledger": ResourceHolderTransitionLedger((handoff_15,)),
+        })()
         validation = validate_persistent_world_post_restore(
             manifest,
             restore_world_resource_catalog(catalog_snapshot),
             reservation_ledger=ReservationLedger(),
             handoff_ledger=ResourceHandoffLedger(),
-            holder_transitions=type("Restored", (), {
-                "semantic_minute": 20,
-                "ledger": ResourceHolderTransitionLedger((handoff_15,)),
-            })(),
+            holder_transitions=restored_holder,
             resource_catalog_checkpoint_snapshot=catalog_snapshot,
             holder_history_coverage_baseline_checkpoint_snapshot=baseline_snapshot,
         )
@@ -129,24 +128,15 @@ class HolderHistoryFullV4RolloverTests(unittest.TestCase):
             resource_holder_transition_checkpoint=holder_checkpoint,
             holder_history_coverage_baseline_checkpoint=baseline_snapshot,
         )
-        reconciled_manifest = reconcile_persistent_world_recovery_manifest(
+        validation = validate_exact_v4_holder_history_generation(
             manifest_snapshot,
             global_npc_checkpoint=global_checkpoint,
             persistent_world_evidence_checkpoint=evidence_checkpoint,
             world_resource_catalog_checkpoint=catalog_checkpoint,
             resource_holder_transition_checkpoint=holder_checkpoint,
             holder_history_coverage_baseline_checkpoint=baseline_snapshot,
-        )
-        validation = validate_persistent_world_post_restore(
-            reconciled_manifest,
-            restore_world_resource_catalog(catalog_checkpoint),
             reservation_ledger=ReservationLedger(),
             handoff_ledger=ResourceHandoffLedger(),
-            holder_transitions=restore_resource_holder_transitions(
-                holder_checkpoint, recovery_semantic_minute=minute
-            ),
-            resource_catalog_checkpoint_snapshot=catalog_checkpoint,
-            holder_history_coverage_baseline_checkpoint_snapshot=baseline_snapshot,
         )
         return validation, manifest_snapshot, catalog_checkpoint, holder_checkpoint
 
@@ -198,18 +188,7 @@ class HolderHistoryFullV4RolloverTests(unittest.TestCase):
         selected_40 = carry_forward_issued_holder_history_baselines(
             validated_20, checkpoint_semantic_minute=40
         )
-        other_baseline = HolderHistoryCoverageBaseline(
-            baseline_id="other-baseline",
-            resource_id="survey-case-1",
-            at_tick=20,
-            holder_actor_id="npc-z",
-            source_ref="other-catalog-20",
-        )
-        wrong_selected_40 = snapshot_holder_history_coverage_baselines(
-            (other_baseline,), semantic_minute=40
-        )
         handoff_30 = self.transition("handoff-30", "npc-b", "npc-c", 30)
-
         global_checkpoint = signed_checkpoint(
             WORLD_ACTION_INTERRUPTION_PROVENANCE_CHECKPOINT_SCHEMA, 40, "global-40"
         )
@@ -229,14 +208,26 @@ class HolderHistoryFullV4RolloverTests(unittest.TestCase):
             resource_holder_transition_checkpoint=holder_checkpoint,
             holder_history_coverage_baseline_checkpoint=selected_40,
         )
+        wrong_baseline = snapshot_holder_history_coverage_baselines(
+            (HolderHistoryCoverageBaseline(
+                baseline_id="other-baseline",
+                resource_id="survey-case-1",
+                at_tick=20,
+                holder_actor_id="npc-z",
+                source_ref="other-catalog-20",
+            ),),
+            semantic_minute=40,
+        )
         with self.assertRaisesRegex(ValueError, "holder history coverage baseline checkpoint digest mismatch"):
-            reconcile_persistent_world_recovery_manifest(
+            validate_exact_v4_holder_history_generation(
                 manifest,
                 global_npc_checkpoint=global_checkpoint,
                 persistent_world_evidence_checkpoint=evidence_checkpoint,
                 world_resource_catalog_checkpoint=catalog_checkpoint,
                 resource_holder_transition_checkpoint=holder_checkpoint,
-                holder_history_coverage_baseline_checkpoint=wrong_selected_40,
+                holder_history_coverage_baseline_checkpoint=wrong_baseline,
+                reservation_ledger=ReservationLedger(),
+                handoff_ledger=ResourceHandoffLedger(),
             )
 
 
