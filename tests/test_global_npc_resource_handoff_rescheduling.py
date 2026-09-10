@@ -203,7 +203,7 @@ def test_superseded_authorization_cannot_execute_through_operational_wrapper() -
     assert result.resource == resource
 
 
-def test_successor_authorization_executes_only_in_new_window_and_location() -> None:
+def test_current_legacy_executor_requires_holder_transition_ledger() -> None:
     handoffs, appointments, queue, reschedules = _foundation()
     reschedules = record_reschedule_decision(reschedules, appointments, queue, _decision())
     reschedules, handoffs, _ = create_successor_authorization(
@@ -233,5 +233,8 @@ def test_successor_authorization_executes_only_in_new_window_and_location() -> N
         at_tick=95,
     )
     result = execute_current_authorized_handoff(reschedules, handoffs, resource, transfer)
-    assert result.accepted
-    assert result.resource.holder_actor_id == "npc:ema"
+    assert not result.accepted
+    assert result.reason_code == "HOLDER_TRANSITION_LEDGER_REQUIRED"
+    assert result.resource == resource
+    assert result.ledger == handoffs
+    assert result.ledger.transfers == ()
