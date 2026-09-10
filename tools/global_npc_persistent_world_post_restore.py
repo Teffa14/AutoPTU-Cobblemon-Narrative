@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from tools.global_npc_holder_history_coverage import HolderHistoryCoverageBaseline
 from tools.global_npc_resource_handoffs import ResourceHandoffLedger
 from tools.global_npc_resource_reservations import ReservationLedger
 from tools.persistent_world_recovery_manifest import ReconciledPersistentWorldRecoveryManifest
@@ -31,6 +32,7 @@ def validate_persistent_world_post_restore(
     handoff_ledger: ResourceHandoffLedger,
     holder_transitions: RestoredResourceHolderTransitions | None = None,
     complete_holder_history_resource_ids: frozenset[str] = frozenset(),
+    holder_history_coverage_baselines: tuple[HolderHistoryCoverageBaseline, ...] = (),
 ) -> PersistentWorldPostRestoreValidation:
     """Run cross-owner checks after coherent checkpoint selection and owner restore.
 
@@ -40,9 +42,8 @@ def validate_persistent_world_post_restore(
     corresponding restored owner before it can use holder evidence.
 
     Explicit conflicts fail closed. Indeterminate findings remain visible and do not
-    authorize rewriting catalog state or inventing missing resource history. Holder
-    history becomes conflict-grade evidence only for resource ids whose mutation paths
-    the caller has explicitly audited as complete.
+    authorize rewriting catalog state or inventing missing resource history. Bounded
+    holder baselines may prove continuity only after their own authoritative cut.
     """
     if resource_catalog.semantic_minute != recovery_manifest.semantic_minute:
         raise ValueError("post-restore resource catalog semantic minute mismatch")
@@ -57,7 +58,7 @@ def validate_persistent_world_post_restore(
             raise ValueError("post-restore holder transition semantic minute mismatch")
     elif holder_transitions is not None:
         raise ValueError("legacy recovery manifest did not select holder transitions")
-    if complete_holder_history_resource_ids and holder_transitions is None:
+    if (complete_holder_history_resource_ids or holder_history_coverage_baselines) and holder_transitions is None:
         raise ValueError("complete holder history requires restored holder transitions")
 
     report = reconcile_world_resource_history(
@@ -67,6 +68,7 @@ def validate_persistent_world_post_restore(
         semantic_minute=recovery_manifest.semantic_minute,
         holder_transition_ledger=(holder_transitions.ledger if holder_transitions is not None else None),
         complete_holder_history_resource_ids=complete_holder_history_resource_ids,
+        holder_history_coverage_baselines=holder_history_coverage_baselines,
     )
     if not report.safe_to_restore:
         reason_codes = ",".join(
