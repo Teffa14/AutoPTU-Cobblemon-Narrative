@@ -13,7 +13,6 @@ from tools.global_npc_resource_handoffs import (
     ResourceHandoffAuthorization,
     ResourceHandoffLedger,
     ResourceHandoffResult,
-    execute_authorized_handoff,
     register_handoff_authorization,
 )
 from tools.global_npc_resources import WorldResource
@@ -277,9 +276,16 @@ def execute_current_authorized_handoff(
     resource: WorldResource,
     transfer: ResourceCustodyTransfer,
 ) -> ResourceHandoffResult:
+    """Compatibility guard for the former unjournaled reschedule executor.
+
+    A superseded authorization is still rejected with its historical reason code.
+    A current authorization must use the holder-aware executor in
+    global_npc_resource_handoff_rescheduling_holder so every successful holder
+    mutation receives a ResourceHolderTransition.
+    """
     current_id = current_authorization_id(reschedule_ledger, transfer.authorization_id)
+    authorization = _authorization_by_id(handoff_ledger, transfer.authorization_id)
     if current_id != transfer.authorization_id:
-        authorization = _authorization_by_id(handoff_ledger, transfer.authorization_id)
         return ResourceHandoffResult(
             False,
             handoff_ledger,
@@ -287,4 +293,10 @@ def execute_current_authorized_handoff(
             authorization,
             reason_code="HANDOFF_AUTHORIZATION_SUPERSEDED",
         )
-    return execute_authorized_handoff(handoff_ledger, resource, transfer)
+    return ResourceHandoffResult(
+        False,
+        handoff_ledger,
+        resource,
+        authorization,
+        reason_code="HOLDER_TRANSITION_LEDGER_REQUIRED",
+    )
