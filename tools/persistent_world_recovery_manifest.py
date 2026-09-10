@@ -8,6 +8,9 @@ from typing import Mapping
 from tools.global_npc_world_action_interruption_provenance_checkpoint import (
     WORLD_ACTION_INTERRUPTION_PROVENANCE_CHECKPOINT_SCHEMA,
 )
+from tools.holder_history_coverage_baseline_checkpoint import (
+    HOLDER_HISTORY_COVERAGE_BASELINE_CHECKPOINT_SCHEMA,
+)
 from tools.persistent_world_evidence_checkpoint import (
     PERSISTENT_WORLD_EVIDENCE_CHECKPOINT_SCHEMA,
 )
@@ -21,7 +24,8 @@ from tools.world_resource_catalog_checkpoint import (
 
 PERSISTENT_WORLD_RECOVERY_MANIFEST_V1_SCHEMA = "OUROS_PERSISTENT_WORLD_RECOVERY_MANIFEST_V1"
 PERSISTENT_WORLD_RECOVERY_MANIFEST_V2_SCHEMA = "OUROS_PERSISTENT_WORLD_RECOVERY_MANIFEST_V2"
-PERSISTENT_WORLD_RECOVERY_MANIFEST_SCHEMA = "OUROS_PERSISTENT_WORLD_RECOVERY_MANIFEST_V3"
+PERSISTENT_WORLD_RECOVERY_MANIFEST_V3_SCHEMA = "OUROS_PERSISTENT_WORLD_RECOVERY_MANIFEST_V3"
+PERSISTENT_WORLD_RECOVERY_MANIFEST_SCHEMA = "OUROS_PERSISTENT_WORLD_RECOVERY_MANIFEST_V4"
 
 
 @dataclass(frozen=True)
@@ -31,6 +35,7 @@ class ReconciledPersistentWorldRecoveryManifest:
     persistent_world_evidence_checkpoint_sha256: str
     world_resource_catalog_checkpoint_sha256: str | None
     resource_holder_transition_checkpoint_sha256: str | None = None
+    holder_history_coverage_baseline_checkpoint_sha256: str | None = None
 
 
 def _canonical_bytes(payload: Mapping[str, object]) -> bytes:
@@ -69,11 +74,14 @@ def build_persistent_world_recovery_manifest(
     persistent_world_evidence_checkpoint: Mapping[str, object],
     world_resource_catalog_checkpoint: Mapping[str, object],
     resource_holder_transition_checkpoint: Mapping[str, object],
+    holder_history_coverage_baseline_checkpoint: Mapping[str, object],
 ) -> dict:
     """Bind one coherent generation across the current persistent-world recovery owners.
 
-    V3 adds the independently recoverable holder-transition journal to generation selection. The
-    manifest owns selection only: every owner still performs its own restore-time semantic checks.
+    V4 adds the independently recoverable holder-history coverage baseline owner to generation
+    selection. The manifest owns selection only: every owner still performs its own restore-time
+    semantic checks. A selected baseline generation remains future-facing evidence from its own cut;
+    selection does not let that baseline validate or complete history before that cut.
     """
     global_minute, global_digest = _verified_checkpoint_identity(
         global_npc_checkpoint,
@@ -95,7 +103,12 @@ def build_persistent_world_recovery_manifest(
         expected_schema=RESOURCE_HOLDER_TRANSITION_CHECKPOINT_SCHEMA,
         label="resource holder transition",
     )
-    if len({global_minute, evidence_minute, resource_minute, holder_minute}) != 1:
+    baseline_minute, baseline_digest = _verified_checkpoint_identity(
+        holder_history_coverage_baseline_checkpoint,
+        expected_schema=HOLDER_HISTORY_COVERAGE_BASELINE_CHECKPOINT_SCHEMA,
+        label="holder history coverage baseline",
+    )
+    if len({global_minute, evidence_minute, resource_minute, holder_minute, baseline_minute}) != 1:
         raise ValueError("recovery manifest requires checkpoints from the same semantic minute")
 
     payload = {
@@ -105,6 +118,7 @@ def build_persistent_world_recovery_manifest(
         "persistent_world_evidence_checkpoint_sha256": evidence_digest,
         "world_resource_catalog_checkpoint_sha256": resource_digest,
         "resource_holder_transition_checkpoint_sha256": holder_digest,
+        "holder_history_coverage_baseline_checkpoint_sha256": baseline_digest,
     }
     return payload | {"sha256": _digest(payload)}
 
@@ -116,16 +130,19 @@ def reconcile_persistent_world_recovery_manifest(
     persistent_world_evidence_checkpoint: Mapping[str, object],
     world_resource_catalog_checkpoint: Mapping[str, object] | None = None,
     resource_holder_transition_checkpoint: Mapping[str, object] | None = None,
+    holder_history_coverage_baseline_checkpoint: Mapping[str, object] | None = None,
 ) -> ReconciledPersistentWorldRecoveryManifest:
     """Verify candidate checkpoints against exactly one selected recovery generation.
 
     V1 remains readable for legacy two-owner recovery. V2 remains readable for legacy three-owner
-    recovery and never fabricates a holder-transition journal. V3 requires all four current owners.
+    recovery. V3 remains readable for legacy four-owner recovery. None fabricates newer owners.
+    V4 requires all five current owners.
     """
     schema = snapshot.get("schema")
     supported = {
         PERSISTENT_WORLD_RECOVERY_MANIFEST_V1_SCHEMA,
         PERSISTENT_WORLD_RECOVERY_MANIFEST_V2_SCHEMA,
+        PERSISTENT_WORLD_RECOVERY_MANIFEST_V3_SCHEMA,
         PERSISTENT_WORLD_RECOVERY_MANIFEST_SCHEMA,
     }
     if schema not in supported:
@@ -160,6 +177,8 @@ def reconcile_persistent_world_recovery_manifest(
         raise ValueError("recovery manifest persistent world evidence checkpoint digest mismatch")
 
     if schema == PERSISTENT_WORLD_RECOVERY_MANIFEST_V1_SCHEMA:
+        if holder_history_coverage_baseline_checkpoint is not None:
+            raise ValueError("legacy recovery manifest did not select holder history coverage baseline")
         return ReconciledPersistentWorldRecoveryManifest(
             semantic_minute=raw_minute,
             global_npc_checkpoint_sha256=global_digest,
@@ -168,7 +187,7 @@ def reconcile_persistent_world_recovery_manifest(
         )
 
     if world_resource_catalog_checkpoint is None:
-        raise ValueError("V2/V3 recovery manifest requires world resource catalog checkpoint")
+        raise ValueError("V2/V3/V4 recovery manifest requires world resource catalog checkpoint")
     resource_minute, resource_digest = _verified_checkpoint_identity(
         world_resource_catalog_checkpoint,
         expected_schema=WORLD_RESOURCE_CATALOG_CHECKPOINT_SCHEMA,
@@ -180,6 +199,8 @@ def reconcile_persistent_world_recovery_manifest(
         raise ValueError("recovery manifest world resource catalog checkpoint digest mismatch")
 
     if schema == PERSISTENT_WORLD_RECOVERY_MANIFEST_V2_SCHEMA:
+        if holder_history_coverage_baseline_checkpoint is not None:
+            raise ValueError("legacy recovery manifest did not select holder history coverage baseline")
         return ReconciledPersistentWorldRecoveryManifest(
             semantic_minute=raw_minute,
             global_npc_checkpoint_sha256=global_digest,
@@ -188,7 +209,7 @@ def reconcile_persistent_world_recovery_manifest(
         )
 
     if resource_holder_transition_checkpoint is None:
-        raise ValueError("V3 recovery manifest requires resource holder transition checkpoint")
+        raise ValueError("V3/V4 recovery manifest requires resource holder transition checkpoint")
     holder_minute, holder_digest = _verified_checkpoint_identity(
         resource_holder_transition_checkpoint,
         expected_schema=RESOURCE_HOLDER_TRANSITION_CHECKPOINT_SCHEMA,
@@ -199,10 +220,34 @@ def reconcile_persistent_world_recovery_manifest(
     if payload.get("resource_holder_transition_checkpoint_sha256") != holder_digest:
         raise ValueError("recovery manifest resource holder transition checkpoint digest mismatch")
 
+    if schema == PERSISTENT_WORLD_RECOVERY_MANIFEST_V3_SCHEMA:
+        if holder_history_coverage_baseline_checkpoint is not None:
+            raise ValueError("V3 recovery manifest did not select holder history coverage baseline")
+        return ReconciledPersistentWorldRecoveryManifest(
+            semantic_minute=raw_minute,
+            global_npc_checkpoint_sha256=global_digest,
+            persistent_world_evidence_checkpoint_sha256=evidence_digest,
+            world_resource_catalog_checkpoint_sha256=resource_digest,
+            resource_holder_transition_checkpoint_sha256=holder_digest,
+        )
+
+    if holder_history_coverage_baseline_checkpoint is None:
+        raise ValueError("V4 recovery manifest requires holder history coverage baseline checkpoint")
+    baseline_minute, baseline_digest = _verified_checkpoint_identity(
+        holder_history_coverage_baseline_checkpoint,
+        expected_schema=HOLDER_HISTORY_COVERAGE_BASELINE_CHECKPOINT_SCHEMA,
+        label="holder history coverage baseline",
+    )
+    if baseline_minute != raw_minute:
+        raise ValueError("recovery manifest candidate checkpoint semantic minute mismatch")
+    if payload.get("holder_history_coverage_baseline_checkpoint_sha256") != baseline_digest:
+        raise ValueError("recovery manifest holder history coverage baseline checkpoint digest mismatch")
+
     return ReconciledPersistentWorldRecoveryManifest(
         semantic_minute=raw_minute,
         global_npc_checkpoint_sha256=global_digest,
         persistent_world_evidence_checkpoint_sha256=evidence_digest,
         world_resource_catalog_checkpoint_sha256=resource_digest,
         resource_holder_transition_checkpoint_sha256=holder_digest,
+        holder_history_coverage_baseline_checkpoint_sha256=baseline_digest,
     )
