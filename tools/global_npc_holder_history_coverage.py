@@ -31,22 +31,28 @@ class HolderHistoryCoverageBaseline:
             raise ValueError("source_ref is required")
 
 
-def derive_complete_holder_history_resource_ids(
+@dataclass(frozen=True)
+class BoundedHolderHistoryCoverage:
+    resource_id: str
+    baseline_id: str
+    baseline_tick: int
+    through_tick: int
+    expected_holder_actor_id: str | None
+    evidence_refs: tuple[str, ...]
+
+
+def derive_bounded_holder_history_coverage(
     resources: Iterable[WorldResource],
     baselines: Iterable[HolderHistoryCoverageBaseline],
     holder_transition_ledger: ResourceHolderTransitionLedger,
     *,
     through_tick: int,
-) -> frozenset[str]:
-    """Derive bounded holder-history coverage from authoritative cut-state baselines.
+) -> tuple[BoundedHolderHistoryCoverage, ...]:
+    """Derive holder state from an authoritative cut and later journal continuity.
 
     A baseline states the authoritative holder immediately after all holder mutations at
-    its semantic tick. The current production mutation boundary is expected to journal
-    every later accepted holder change. This function verifies that all journaled
-    transitions after the baseline remain causally continuous through ``through_tick``.
-
-    It does not compare the derived holder with the current resource catalog. That is
-    the reconciliation layer's responsibility.
+    its semantic tick. Only transitions strictly later than that cut are replayed. This
+    deliberately makes no completeness claim about holder history before the baseline.
     """
     if isinstance(through_tick, bool) or not isinstance(through_tick, int):
         raise ValueError("through_tick must be an integer")
@@ -73,10 +79,11 @@ def derive_complete_holder_history_resource_ids(
             raise ValueError("holder history coverage baseline is later than requested coverage cut")
         by_resource[baseline.resource_id] = baseline
 
-    complete: set[str] = set()
-    for resource_id, baseline in by_resource.items():
+    coverage: list[BoundedHolderHistoryCoverage] = []
+    for resource_id, baseline in sorted(by_resource.items()):
         expected_holder = baseline.holder_actor_id
-        transitions = (
+        evidence_refs = [baseline.source_ref, baseline.baseline_id]
+        transitions = tuple(
             transition
             for transition in holder_history(
                 holder_transition_ledger,
@@ -89,6 +96,16 @@ def derive_complete_holder_history_resource_ids(
             if transition.from_actor_id != expected_holder:
                 raise ValueError("holder history coverage baseline conflicts with journal continuity")
             expected_holder = transition.to_actor_id
-        complete.add(resource_id)
+            evidence_refs.append(transition.transition_id)
+        coverage.append(
+            BoundedHolderHistoryCoverage(
+                resource_id=resource_id,
+                baseline_id=baseline.baseline_id,
+                baseline_tick=baseline.at_tick,
+                through_tick=through_tick,
+                expected_holder_actor_id=expected_holder,
+                evidence_refs=tuple(evidence_refs),
+            )
+        )
 
-    return frozenset(complete)
+    return tuple(coverage)
