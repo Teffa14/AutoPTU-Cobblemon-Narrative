@@ -10,7 +10,7 @@ Pass 397 makes the Pass 396 resource holder-transition journal recoverable throu
 Implementation:
 
 - `tools/resource_holder_transition_checkpoint.py`;
-- `tests/test_resource_holder_transition_checkpoint.py`;
+- `tests/test_global_npc_resource_holder_transition_checkpoint.py`;
 - `design/resource-holder-transition-recovery-contract-pass-397.md`.
 
 Research/content:
