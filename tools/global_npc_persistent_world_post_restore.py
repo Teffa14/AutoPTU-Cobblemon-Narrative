@@ -42,20 +42,20 @@ def validate_persistent_world_post_restore(
     resource_catalog_checkpoint_snapshot: Mapping[str, object] | None = None,
     complete_holder_history_resource_ids: frozenset[str] = frozenset(),
 ) -> PersistentWorldPostRestoreValidation:
-    """Run cross-owner checks, then issue a future-facing holder baseline after success.
+    """Run cross-owner checks, then optionally issue a future-facing holder baseline.
 
-    V3 recovery must provide the exact WorldResource catalog checkpoint selected by the
-    outer manifest. The selected generation is validated against both the manifest digest
-    and the restored catalog being activated.
+    When a V3 recovery caller supplies the exact WorldResource catalog checkpoint selected
+    by the outer manifest, this stage validates that generation against the manifest digest
+    and restored catalog. Only after historical reconciliation succeeds does it reissue
+    bounded holder-history baselines from that checkpoint.
 
-    The resulting holder-history baselines are deliberately issued only after historical
-    reconciliation succeeds. They are an authoritative starting cut for future holder
-    continuity. They are never fed back into reconciliation of the same cut, because
-    doing so would make current catalog state prove itself and could hide incomplete
-    pre-checkpoint history.
+    Those baselines are an authoritative starting cut for future holder continuity. They
+    are never fed back into reconciliation of the same cut, because doing so would make
+    current catalog state prove itself and could hide incomplete pre-checkpoint history.
 
-    Explicit conflicts fail closed. Indeterminate findings remain visible and do not
-    authorize rewriting catalog state or inventing missing resource history.
+    A V3 caller that does not retain the raw selected catalog checkpoint can still perform
+    the older conservative reconciliation, but receives no baseline certificates. Callers
+    can no longer inject authored bounded-baseline objects into this activation boundary.
     """
     if resource_catalog.semantic_minute != recovery_manifest.semantic_minute:
         raise ValueError("post-restore resource catalog semantic minute mismatch")
@@ -69,18 +69,17 @@ def validate_persistent_world_post_restore(
             raise ValueError("V3 post-restore validation requires restored holder transitions")
         if holder_transitions.semantic_minute != recovery_manifest.semantic_minute:
             raise ValueError("post-restore holder transition semantic minute mismatch")
-        if resource_catalog_checkpoint_snapshot is None:
-            raise ValueError("V3 post-restore validation requires selected resource catalog checkpoint")
 
-        selected_catalog = restore_world_resource_catalog(
-            resource_catalog_checkpoint_snapshot,
-            recovery_semantic_minute=recovery_manifest.semantic_minute,
-        )
-        supplied_digest = resource_catalog_checkpoint_snapshot.get("sha256")
-        if supplied_digest != catalog_digest:
-            raise ValueError("post-restore resource catalog checkpoint digest does not match recovery manifest")
-        if selected_catalog != resource_catalog:
-            raise ValueError("post-restore resource catalog does not match selected checkpoint generation")
+        if resource_catalog_checkpoint_snapshot is not None:
+            selected_catalog = restore_world_resource_catalog(
+                resource_catalog_checkpoint_snapshot,
+                recovery_semantic_minute=recovery_manifest.semantic_minute,
+            )
+            supplied_digest = resource_catalog_checkpoint_snapshot.get("sha256")
+            if supplied_digest != catalog_digest:
+                raise ValueError("post-restore resource catalog checkpoint digest does not match recovery manifest")
+            if selected_catalog != resource_catalog:
+                raise ValueError("post-restore resource catalog does not match selected checkpoint generation")
     else:
         if holder_transitions is not None:
             raise ValueError("legacy recovery manifest did not select holder transitions")
@@ -105,8 +104,7 @@ def validate_persistent_world_post_restore(
         raise ValueError(f"post-restore world resource conflict: {reason_codes}")
 
     issued_baselines: tuple[HolderHistoryCoverageBaseline, ...] = ()
-    if holder_digest is not None:
-        assert resource_catalog_checkpoint_snapshot is not None
+    if holder_digest is not None and resource_catalog_checkpoint_snapshot is not None:
         issued_baselines = issue_holder_history_coverage_baselines_from_catalog_checkpoint(
             resource_catalog_checkpoint_snapshot,
             expected_catalog_sha256=catalog_digest,
