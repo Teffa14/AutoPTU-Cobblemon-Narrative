@@ -4,6 +4,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Iterable
 
+from tools.global_npc_holder_history_coverage import (
+    HolderHistoryCoverageBaseline,
+    derive_bounded_holder_history_coverage,
+)
 from tools.global_npc_resource_handoffs import ResourceHandoffLedger, custody_history
 from tools.global_npc_resource_holder_transitions import (
     ResourceHolderTransitionLedger,
@@ -89,20 +93,22 @@ def reconcile_world_resource_history(
     semantic_minute: int,
     holder_transition_ledger: ResourceHolderTransitionLedger | None = None,
     complete_holder_history_resource_ids: frozenset[str] = frozenset(),
+    holder_history_coverage_baselines: tuple[HolderHistoryCoverageBaseline, ...] = (),
 ) -> WorldResourceReconciliationReport:
     """Compare current resource state with historical ledgers conservatively.
 
     The current catalog remains authoritative for present operational state. Historical
     reservation, custody and holder-transition ledgers can confirm compatible facts or
-    prove narrow contradictions, but only an explicitly audited holder history may be
-    treated as complete for a resource. Missing or unaudited holder transitions remain
-    indeterminate because legal mutation paths can exist outside the journal.
+    prove narrow contradictions. Bounded baselines prove holder continuity only after
+    their own semantic cut; they never retroactively complete older journal history.
     """
     if isinstance(semantic_minute, bool) or not isinstance(semantic_minute, int):
         raise ValueError("semantic_minute must be an integer")
     if semantic_minute < 0:
         raise ValueError("semantic_minute must be non-negative")
-    if complete_holder_history_resource_ids and holder_transition_ledger is None:
+    if complete_holder_history_resource_ids and holder_history_coverage_baselines:
+        raise ValueError("use holder history coverage baselines or explicit complete ids, not both")
+    if (complete_holder_history_resource_ids or holder_history_coverage_baselines) and holder_transition_ledger is None:
         raise ValueError("complete holder history requires a holder transition ledger")
 
     catalog: dict[str, WorldResource] = {}
@@ -114,6 +120,18 @@ def reconcile_world_resource_history(
     unknown_complete_ids = complete_holder_history_resource_ids - set(catalog)
     if unknown_complete_ids:
         raise ValueError("complete holder history references resource absent from current catalog")
+
+    bounded_coverage = {}
+    if holder_history_coverage_baselines:
+        bounded_coverage = {
+            coverage.resource_id: coverage
+            for coverage in derive_bounded_holder_history_coverage(
+                catalog.values(),
+                holder_history_coverage_baselines,
+                holder_transition_ledger,
+                through_tick=semantic_minute,
+            )
+        }
 
     findings: list[ResourceReconciliationFinding] = []
 
@@ -217,44 +235,15 @@ def reconcile_world_resource_history(
                 resource_id,
                 through_tick=semantic_minute,
             )
-            history_is_complete = resource_id in complete_holder_history_resource_ids
-            if transitions:
-                latest_transition = transitions[-1]
-                if history_is_complete:
-                    if resource.holder_actor_id == latest_transition.to_actor_id:
-                        findings.append(
-                            _finding(
-                                resource_id,
-                                ReconciliationStatus.CONFIRMED,
-                                "CURRENT_HOLDER_MATCHES_COMPLETE_HOLDER_JOURNAL",
-                                latest_transition.transition_id,
-                            )
-                        )
-                    else:
-                        findings.append(
-                            _finding(
-                                resource_id,
-                                ReconciliationStatus.CONFLICT,
-                                "CURRENT_HOLDER_CONFLICTS_COMPLETE_HOLDER_JOURNAL",
-                                latest_transition.transition_id,
-                            )
-                        )
-                else:
-                    findings.append(
-                        _finding(
-                            resource_id,
-                            ReconciliationStatus.INDETERMINATE,
-                            "HOLDER_JOURNAL_COVERAGE_NOT_AUDITED_COMPLETE",
-                            latest_transition.transition_id,
-                        )
-                    )
-            elif history_is_complete:
-                if resource.holder_actor_id is None:
+            coverage = bounded_coverage.get(resource_id)
+            if coverage is not None:
+                if resource.holder_actor_id == coverage.expected_holder_actor_id:
                     findings.append(
                         _finding(
                             resource_id,
                             ReconciliationStatus.CONFIRMED,
-                            "CURRENT_UNHELD_STATE_MATCHES_COMPLETE_EMPTY_HOLDER_JOURNAL",
+                            "CURRENT_HOLDER_MATCHES_BOUNDED_HOLDER_HISTORY",
+                            *coverage.evidence_refs,
                         )
                     )
                 else:
@@ -262,9 +251,59 @@ def reconcile_world_resource_history(
                         _finding(
                             resource_id,
                             ReconciliationStatus.CONFLICT,
-                            "CURRENT_HOLDER_LACKS_COMPLETE_HOLDER_JOURNAL_TRANSITION",
+                            "CURRENT_HOLDER_CONFLICTS_BOUNDED_HOLDER_HISTORY",
+                            *coverage.evidence_refs,
                         )
                     )
+            else:
+                history_is_complete = resource_id in complete_holder_history_resource_ids
+                if transitions:
+                    latest_transition = transitions[-1]
+                    if history_is_complete:
+                        if resource.holder_actor_id == latest_transition.to_actor_id:
+                            findings.append(
+                                _finding(
+                                    resource_id,
+                                    ReconciliationStatus.CONFIRMED,
+                                    "CURRENT_HOLDER_MATCHES_COMPLETE_HOLDER_JOURNAL",
+                                    latest_transition.transition_id,
+                                )
+                            )
+                        else:
+                            findings.append(
+                                _finding(
+                                    resource_id,
+                                    ReconciliationStatus.CONFLICT,
+                                    "CURRENT_HOLDER_CONFLICTS_COMPLETE_HOLDER_JOURNAL",
+                                    latest_transition.transition_id,
+                                )
+                            )
+                    else:
+                        findings.append(
+                            _finding(
+                                resource_id,
+                                ReconciliationStatus.INDETERMINATE,
+                                "HOLDER_JOURNAL_COVERAGE_NOT_AUDITED_COMPLETE",
+                                latest_transition.transition_id,
+                            )
+                        )
+                elif history_is_complete:
+                    if resource.holder_actor_id is None:
+                        findings.append(
+                            _finding(
+                                resource_id,
+                                ReconciliationStatus.CONFIRMED,
+                                "CURRENT_UNHELD_STATE_MATCHES_COMPLETE_EMPTY_HOLDER_JOURNAL",
+                            )
+                        )
+                    else:
+                        findings.append(
+                            _finding(
+                                resource_id,
+                                ReconciliationStatus.CONFLICT,
+                                "CURRENT_HOLDER_LACKS_COMPLETE_HOLDER_JOURNAL_TRANSITION",
+                            )
+                        )
 
     referenced_reservation_ids: dict[str, list[str]] = {}
     for reservation in reservation_ledger.reservations:
