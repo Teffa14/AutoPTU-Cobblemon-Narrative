@@ -5,6 +5,10 @@ from enum import Enum
 from typing import Iterable
 
 from tools.global_npc_resource_handoffs import ResourceHandoffLedger, custody_history
+from tools.global_npc_resource_holder_transitions import (
+    ResourceHolderTransitionLedger,
+    holder_history,
+)
 from tools.global_npc_resource_reservations import (
     ReservationLedger,
     active_reservations_for_resource,
@@ -83,27 +87,33 @@ def reconcile_world_resource_history(
     reservation_ledger: ReservationLedger,
     handoff_ledger: ResourceHandoffLedger,
     semantic_minute: int,
+    holder_transition_ledger: ResourceHolderTransitionLedger | None = None,
+    complete_holder_history_resource_ids: frozenset[str] = frozenset(),
 ) -> WorldResourceReconciliationReport:
     """Compare current resource state with historical ledgers conservatively.
 
     The current catalog remains authoritative for present operational state. Historical
-    reservation and custody ledgers can confirm compatible facts or prove narrow
-    contradictions, but they do not form a complete event stream for every mutation of
-    ``WorldResource``. In particular, checkout, return, service-state changes and other
-    legal operations may change current holder/state without creating a custody
-    transfer. A mismatch with the latest known handoff is therefore indeterminate, not
-    automatically corruption.
+    reservation, custody and holder-transition ledgers can confirm compatible facts or
+    prove narrow contradictions, but only an explicitly audited holder history may be
+    treated as complete for a resource. Missing or unaudited holder transitions remain
+    indeterminate because legal mutation paths can exist outside the journal.
     """
     if isinstance(semantic_minute, bool) or not isinstance(semantic_minute, int):
         raise ValueError("semantic_minute must be an integer")
     if semantic_minute < 0:
         raise ValueError("semantic_minute must be non-negative")
+    if complete_holder_history_resource_ids and holder_transition_ledger is None:
+        raise ValueError("complete holder history requires a holder transition ledger")
 
     catalog: dict[str, WorldResource] = {}
     for resource in sorted(resources, key=lambda item: item.resource_id):
         if resource.resource_id in catalog:
             raise ValueError("duplicate world resource id")
         catalog[resource.resource_id] = resource
+
+    unknown_complete_ids = complete_holder_history_resource_ids - set(catalog)
+    if unknown_complete_ids:
+        raise ValueError("complete holder history references resource absent from current catalog")
 
     findings: list[ResourceReconciliationFinding] = []
 
@@ -201,6 +211,61 @@ def reconcile_world_resource_history(
                     )
                 )
 
+        if holder_transition_ledger is not None:
+            transitions = holder_history(
+                holder_transition_ledger,
+                resource_id,
+                through_tick=semantic_minute,
+            )
+            history_is_complete = resource_id in complete_holder_history_resource_ids
+            if transitions:
+                latest_transition = transitions[-1]
+                if history_is_complete:
+                    if resource.holder_actor_id == latest_transition.to_actor_id:
+                        findings.append(
+                            _finding(
+                                resource_id,
+                                ReconciliationStatus.CONFIRMED,
+                                "CURRENT_HOLDER_MATCHES_COMPLETE_HOLDER_JOURNAL",
+                                latest_transition.transition_id,
+                            )
+                        )
+                    else:
+                        findings.append(
+                            _finding(
+                                resource_id,
+                                ReconciliationStatus.CONFLICT,
+                                "CURRENT_HOLDER_CONFLICTS_COMPLETE_HOLDER_JOURNAL",
+                                latest_transition.transition_id,
+                            )
+                        )
+                else:
+                    findings.append(
+                        _finding(
+                            resource_id,
+                            ReconciliationStatus.INDETERMINATE,
+                            "HOLDER_JOURNAL_COVERAGE_NOT_AUDITED_COMPLETE",
+                            latest_transition.transition_id,
+                        )
+                    )
+            elif history_is_complete:
+                if resource.holder_actor_id is None:
+                    findings.append(
+                        _finding(
+                            resource_id,
+                            ReconciliationStatus.CONFIRMED,
+                            "CURRENT_UNHELD_STATE_MATCHES_COMPLETE_EMPTY_HOLDER_JOURNAL",
+                        )
+                    )
+                else:
+                    findings.append(
+                        _finding(
+                            resource_id,
+                            ReconciliationStatus.CONFLICT,
+                            "CURRENT_HOLDER_LACKS_COMPLETE_HOLDER_JOURNAL_TRANSITION",
+                        )
+                    )
+
     referenced_reservation_ids: dict[str, list[str]] = {}
     for reservation in reservation_ledger.reservations:
         referenced_reservation_ids.setdefault(reservation.resource_id, []).append(
@@ -212,9 +277,21 @@ def reconcile_world_resource_history(
             referenced_transfer_ids.setdefault(transfer.resource_id, []).append(
                 transfer.transfer_id
             )
+    referenced_transition_ids: dict[str, list[str]] = {}
+    if holder_transition_ledger is not None:
+        for transition in holder_transition_ledger.transitions:
+            if transition.at_tick <= semantic_minute:
+                referenced_transition_ids.setdefault(transition.resource_id, []).append(
+                    transition.transition_id
+                )
 
     missing_ids = sorted(
-        (set(referenced_reservation_ids) | set(referenced_transfer_ids)) - set(catalog)
+        (
+            set(referenced_reservation_ids)
+            | set(referenced_transfer_ids)
+            | set(referenced_transition_ids)
+        )
+        - set(catalog)
     )
     for resource_id in missing_ids:
         findings.append(
@@ -224,6 +301,7 @@ def reconcile_world_resource_history(
                 "HISTORY_REFERENCES_RESOURCE_ABSENT_FROM_CURRENT_CATALOG",
                 *referenced_reservation_ids.get(resource_id, []),
                 *referenced_transfer_ids.get(resource_id, []),
+                *referenced_transition_ids.get(resource_id, []),
             )
         )
 

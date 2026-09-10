@@ -94,6 +94,29 @@ class ResourceHolderTransitionCheckpointTests(unittest.TestCase):
             snapshot_resource_holder_transitions(right, semantic_minute=8),
         )
 
+    def test_snapshot_rejects_transition_later_than_its_semantic_cut(self):
+        transition = ResourceHolderTransition(
+            transition_id="future-checkout",
+            resource_id="meter-1",
+            kind=HolderTransitionKind.CHECKOUT,
+            from_actor_id=None,
+            to_actor_id="npc-a",
+            at_tick=21,
+        )
+        with self.assertRaisesRegex(ValueError, "later than checkpoint semantic_minute"):
+            snapshot_resource_holder_transitions(
+                ResourceHolderTransitionLedger((transition,)),
+                semantic_minute=20,
+            )
+
+    def test_restore_rejects_transition_later_than_cut_even_after_redigest(self):
+        snapshot = snapshot_resource_holder_transitions(self._ledger(), semantic_minute=20)
+        tampered = copy.deepcopy(snapshot)
+        tampered["transitions"][-1]["at_tick"] = 21
+        tampered = redigest(tampered)
+        with self.assertRaisesRegex(ValueError, "later than checkpoint semantic_minute"):
+            restore_resource_holder_transitions(tampered)
+
     def test_restore_rejects_tampering_without_redigest(self):
         snapshot = snapshot_resource_holder_transitions(self._ledger(), semantic_minute=20)
         tampered = copy.deepcopy(snapshot)

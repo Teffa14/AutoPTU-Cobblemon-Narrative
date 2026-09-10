@@ -4,6 +4,11 @@ from tools.global_npc_resource_handoffs import (
     ResourceCustodyTransfer,
     ResourceHandoffLedger,
 )
+from tools.global_npc_resource_holder_transitions import (
+    HolderTransitionKind,
+    ResourceHolderTransition,
+    ResourceHolderTransitionLedger,
+)
 from tools.global_npc_resource_reservations import (
     ReservationLedger,
     ResourceReservation,
@@ -162,6 +167,147 @@ class WorldResourceHistoryReconciliationTests(unittest.TestCase):
             "CURRENT_HOLDER_NOT_DERIVABLE_FROM_HANDOFF_HISTORY",
         )
 
+    def test_complete_holder_journal_can_confirm_current_holder(self):
+        resource = WorldResource(
+            resource_id="meter-1",
+            capability_refs=frozenset({"SURVEY_METER"}),
+            state=ResourceState.IN_USE,
+            holder_actor_id="npc-b",
+        )
+        holder_ledger = ResourceHolderTransitionLedger(
+            (
+                ResourceHolderTransition(
+                    transition_id="meter-checkout",
+                    resource_id="meter-1",
+                    kind=HolderTransitionKind.CHECKOUT,
+                    from_actor_id=None,
+                    to_actor_id="npc-a",
+                    at_tick=10,
+                    source_ref="reservation-meter",
+                ),
+                ResourceHolderTransition(
+                    transition_id="meter-handoff",
+                    resource_id="meter-1",
+                    kind=HolderTransitionKind.HANDOFF,
+                    from_actor_id="npc-a",
+                    to_actor_id="npc-b",
+                    at_tick=14,
+                    source_ref="transfer-meter",
+                ),
+            )
+        )
+
+        report = reconcile_world_resource_history(
+            (resource,),
+            reservation_ledger=ReservationLedger(),
+            handoff_ledger=ResourceHandoffLedger(),
+            semantic_minute=20,
+            holder_transition_ledger=holder_ledger,
+            complete_holder_history_resource_ids=frozenset({"meter-1"}),
+        )
+
+        holder_findings = [
+            finding
+            for finding in report.confirmed
+            if finding.reason_code == "CURRENT_HOLDER_MATCHES_COMPLETE_HOLDER_JOURNAL"
+        ]
+        self.assertEqual(len(holder_findings), 1)
+        self.assertEqual(holder_findings[0].evidence_refs, ("meter-handoff",))
+
+    def test_complete_holder_journal_can_prove_current_holder_conflict(self):
+        resource = WorldResource(
+            resource_id="meter-1",
+            capability_refs=frozenset({"SURVEY_METER"}),
+            state=ResourceState.AVAILABLE,
+            holder_actor_id=None,
+        )
+        holder_ledger = ResourceHolderTransitionLedger(
+            (
+                ResourceHolderTransition(
+                    transition_id="meter-checkout",
+                    resource_id="meter-1",
+                    kind=HolderTransitionKind.CHECKOUT,
+                    from_actor_id=None,
+                    to_actor_id="npc-a",
+                    at_tick=10,
+                ),
+            )
+        )
+
+        report = reconcile_world_resource_history(
+            (resource,),
+            reservation_ledger=ReservationLedger(),
+            handoff_ledger=ResourceHandoffLedger(),
+            semantic_minute=20,
+            holder_transition_ledger=holder_ledger,
+            complete_holder_history_resource_ids=frozenset({"meter-1"}),
+        )
+
+        self.assertFalse(report.safe_to_restore)
+        self.assertEqual(
+            report.conflicts[0].reason_code,
+            "CURRENT_HOLDER_CONFLICTS_COMPLETE_HOLDER_JOURNAL",
+        )
+
+    def test_unaudited_holder_journal_never_upgrades_to_conflict_or_confirmation(self):
+        resource = WorldResource(
+            resource_id="meter-1",
+            capability_refs=frozenset({"SURVEY_METER"}),
+            state=ResourceState.AVAILABLE,
+            holder_actor_id=None,
+        )
+        holder_ledger = ResourceHolderTransitionLedger(
+            (
+                ResourceHolderTransition(
+                    transition_id="meter-checkout",
+                    resource_id="meter-1",
+                    kind=HolderTransitionKind.CHECKOUT,
+                    from_actor_id=None,
+                    to_actor_id="npc-a",
+                    at_tick=10,
+                ),
+            )
+        )
+
+        report = reconcile_world_resource_history(
+            (resource,),
+            reservation_ledger=ReservationLedger(),
+            handoff_ledger=ResourceHandoffLedger(),
+            semantic_minute=20,
+            holder_transition_ledger=holder_ledger,
+        )
+
+        self.assertTrue(report.safe_to_restore)
+        self.assertFalse(report.confirmed)
+        self.assertFalse(report.conflicts)
+        self.assertEqual(
+            report.indeterminate[0].reason_code,
+            "HOLDER_JOURNAL_COVERAGE_NOT_AUDITED_COMPLETE",
+        )
+
+    def test_complete_empty_holder_journal_conflicts_with_unexplained_current_holder(self):
+        resource = WorldResource(
+            resource_id="meter-1",
+            capability_refs=frozenset({"SURVEY_METER"}),
+            state=ResourceState.IN_USE,
+            holder_actor_id="npc-a",
+        )
+
+        report = reconcile_world_resource_history(
+            (resource,),
+            reservation_ledger=ReservationLedger(),
+            handoff_ledger=ResourceHandoffLedger(),
+            semantic_minute=20,
+            holder_transition_ledger=ResourceHolderTransitionLedger(),
+            complete_holder_history_resource_ids=frozenset({"meter-1"}),
+        )
+
+        self.assertFalse(report.safe_to_restore)
+        self.assertEqual(
+            report.conflicts[0].reason_code,
+            "CURRENT_HOLDER_LACKS_COMPLETE_HOLDER_JOURNAL_TRANSITION",
+        )
+
     def test_reserved_state_without_actor_is_a_catalog_conflict(self):
         resource = WorldResource(
             resource_id="kit-1",
@@ -208,6 +354,58 @@ class WorldResourceHistoryReconciliationTests(unittest.TestCase):
             "HISTORY_REFERENCES_RESOURCE_ABSENT_FROM_CURRENT_CATALOG",
         )
         self.assertEqual(report.indeterminate[0].evidence_refs, ("old-res",))
+
+    def test_holder_history_for_missing_resource_is_included_in_indeterminate_evidence(self):
+        holder_ledger = ResourceHolderTransitionLedger(
+            (
+                ResourceHolderTransition(
+                    transition_id="old-checkout",
+                    resource_id="retired-kit",
+                    kind=HolderTransitionKind.CHECKOUT,
+                    from_actor_id=None,
+                    to_actor_id="npc-a",
+                    at_tick=4,
+                ),
+            )
+        )
+
+        report = reconcile_world_resource_history(
+            (),
+            reservation_ledger=ReservationLedger(),
+            handoff_ledger=ResourceHandoffLedger(),
+            semantic_minute=20,
+            holder_transition_ledger=holder_ledger,
+        )
+
+        self.assertTrue(report.safe_to_restore)
+        self.assertEqual(
+            report.indeterminate[0].reason_code,
+            "HISTORY_REFERENCES_RESOURCE_ABSENT_FROM_CURRENT_CATALOG",
+        )
+        self.assertEqual(report.indeterminate[0].evidence_refs, ("old-checkout",))
+
+    def test_complete_history_requires_ledger_and_known_catalog_resource(self):
+        resource = WorldResource(
+            resource_id="kit-1",
+            capability_refs=frozenset({"FIELD_KIT"}),
+        )
+        with self.assertRaisesRegex(ValueError, "requires a holder transition ledger"):
+            reconcile_world_resource_history(
+                (resource,),
+                reservation_ledger=ReservationLedger(),
+                handoff_ledger=ResourceHandoffLedger(),
+                semantic_minute=20,
+                complete_holder_history_resource_ids=frozenset({"kit-1"}),
+            )
+        with self.assertRaisesRegex(ValueError, "absent from current catalog"):
+            reconcile_world_resource_history(
+                (resource,),
+                reservation_ledger=ReservationLedger(),
+                handoff_ledger=ResourceHandoffLedger(),
+                semantic_minute=20,
+                holder_transition_ledger=ResourceHolderTransitionLedger(),
+                complete_holder_history_resource_ids=frozenset({"missing-kit"}),
+            )
 
     def test_duplicate_catalog_identity_fails_closed(self):
         resource = WorldResource(
