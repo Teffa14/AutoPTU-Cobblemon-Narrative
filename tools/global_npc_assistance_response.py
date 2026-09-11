@@ -86,7 +86,7 @@ def _validate_delivered_request(
     receiver_ledger = coordinator.information_queue.ledgers.get(request.target_ref)
     if receiver_ledger is None:
         raise KeyError("assistance recipient has no knowledge ledger")
-    received_claim = receiver_ledger.claims.get(envelope.receiver_claim_id)
+    received_claim = receiver_ledger.claims.get(envelope.new_claim_id)
     if received_claim is None:
         raise ValueError("DELIVERED assistance request lacks the recipient claim")
     if received_claim.provenance_root != request.action_id:
