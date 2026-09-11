@@ -50,10 +50,10 @@ def _commitments():
     return ledger, record
 
 
-def _observe(commitments, viability, queue, **overrides):
+def _observe(commitments, viability_ledger, queue, **overrides):
     values = dict(
         commitment_ledger=commitments,
-        viability_ledger=viability,
+        viability_ledger=viability_ledger,
         replan_queue=queue,
         commitment_id=COMMITMENT,
         observation_id="viability:route-closed-pass437",
