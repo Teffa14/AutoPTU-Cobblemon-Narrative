@@ -98,8 +98,17 @@ def _validate_record_shape(record: AssistanceCounterproposalRecord) -> None:
         raise ValueError("invalid assistance counterproposal identity")
     if not record.requester_id or not record.responder_id or not record.provenance_root:
         raise ValueError("invalid assistance counterproposal actor/provenance identity")
+    if record.provenance_root != record.response_action_id:
+        raise ValueError("assistance counterproposal provenance must match response action")
     if record.requester_id == record.responder_id:
         raise ValueError("assistance counterproposal requires two distinct actors")
+    for value, name in (
+        (record.location_ref, "location_ref"),
+        (record.scope_ref, "scope_ref"),
+        (record.alternative_ref, "alternative_ref"),
+    ):
+        if value is not None and not value.strip():
+            raise ValueError(f"{name} cannot be blank")
     if record.proposed_start_minute is not None and record.proposed_start_minute < 0:
         raise ValueError("proposed_start_minute must be non-negative")
     if record.proposed_end_minute is not None:
