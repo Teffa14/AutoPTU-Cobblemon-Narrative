@@ -10,6 +10,11 @@ from tools.global_npc_assistance_acceptance_commitment import (
     AssistanceCommitmentLedger,
     AssistanceCommitmentRecord,
 )
+from tools.global_npc_assistance_commitment_viability import (
+    AssistanceCommitmentViabilityLedger,
+    AssistanceCommitmentViabilityObservation,
+    CommitmentViability,
+)
 from tools.global_npc_assistance_counterproposal import (
     AssistanceCounterproposalLedger,
     AssistanceCounterproposalRecord,
@@ -26,7 +31,8 @@ from tools.global_npc_world_checkpoint import RestoredWorldCheckpoint, build_che
 from tools.global_npc_world_event_coordinator import AgentAgendaProfile, GlobalNpcWorldEventCoordinator
 
 
-SCHEMA_VERSION = "OUROS_ASSISTANCE_WORLD_CHECKPOINT_V3"
+SCHEMA_VERSION = "OUROS_ASSISTANCE_WORLD_CHECKPOINT_V4"
+LEGACY_SCHEMA_VERSION_V3 = "OUROS_ASSISTANCE_WORLD_CHECKPOINT_V3"
 LEGACY_SCHEMA_VERSION_V2 = "OUROS_ASSISTANCE_WORLD_CHECKPOINT_V2"
 LEGACY_SCHEMA_VERSION_V1 = "OUROS_ASSISTANCE_WORLD_CHECKPOINT_V1"
 
@@ -39,6 +45,7 @@ class RestoredAssistanceWorldCheckpoint:
     deferral_ledger: AssistanceDeferralLedger
     counterproposal_ledger: AssistanceCounterproposalLedger
     counterproposal_commitment_ledger: AssistanceCounterproposalCommitmentLedger
+    commitment_viability_ledger: AssistanceCommitmentViabilityLedger
 
 
 def _digest(payload: Mapping[str, object]) -> str:
@@ -86,6 +93,17 @@ def _pending_deferral_trigger(coordinator: GlobalNpcWorldEventCoordinator, recor
     matches = [entry[3] for entry in coordinator.replan_queue.pending if entry[3].trigger_id == record.trigger_id]
     if len(matches) > 1:
         raise ValueError(f"duplicate assistance deferral trigger in replan queue: {record.deferral_id}")
+    return matches[0] if matches else None
+
+
+def _pending_viability_trigger(
+    coordinator: GlobalNpcWorldEventCoordinator,
+    record: AssistanceCommitmentViabilityObservation,
+):
+    trigger_id = f"replan:assistance-viability:{record.observation_id}"
+    matches = [entry[3] for entry in coordinator.replan_queue.pending if entry[3].trigger_id == trigger_id]
+    if len(matches) > 1:
+        raise ValueError(f"duplicate assistance viability trigger in replan queue: {record.observation_id}")
     return matches[0] if matches else None
 
 
@@ -166,6 +184,45 @@ def _validate_counterproposal_commitment(
         raise ValueError(f"counterproposal commitment agenda mismatch: {record.commitment_id}")
 
 
+def _validate_viability_observation(
+    *,
+    record: AssistanceCommitmentViabilityObservation,
+    counterproposal_commitment_ledger: AssistanceCounterproposalCommitmentLedger,
+    coordinator: GlobalNpcWorldEventCoordinator,
+    semantic_minute: int,
+) -> None:
+    commitment = counterproposal_commitment_ledger.records.get(record.commitment_id)
+    if commitment is None:
+        raise ValueError(f"assistance viability references missing negotiated commitment: {record.observation_id}")
+    if record.proposal_id != commitment.proposal_id:
+        raise ValueError(f"assistance viability proposal binding mismatch: {record.observation_id}")
+    if record.requester_id != commitment.requester_id or record.responder_id != commitment.responder_id:
+        raise ValueError(f"assistance viability actor binding mismatch: {record.observation_id}")
+    if record.observer_id != commitment.responder_id:
+        raise ValueError(f"assistance viability observer does not own commitment: {record.observation_id}")
+    if record.semantic_minute >= commitment.start_minute:
+        raise ValueError(f"assistance viability observation is not pre-start: {record.observation_id}")
+    if record.semantic_minute > semantic_minute:
+        raise ValueError(f"assistance viability observation comes from the future: {record.observation_id}")
+
+    trigger_id = f"replan:assistance-viability:{record.observation_id}"
+    if trigger_id not in coordinator.replan_queue.known_trigger_ids:
+        raise ValueError(f"assistance viability trigger missing from replan queue: {record.observation_id}")
+    pending = _pending_viability_trigger(coordinator, record)
+    completed = trigger_id in coordinator.replan_queue.completed_trigger_ids
+    if pending is None and not completed:
+        raise ValueError(f"assistance viability trigger has no pending or completed state: {record.observation_id}")
+    if pending is not None:
+        if pending.agent_id != commitment.responder_id:
+            raise ValueError(f"assistance viability trigger agent mismatch: {record.observation_id}")
+        if pending.reason != ReplanReason.EXTERNAL_EVENT:
+            raise ValueError(f"assistance viability trigger reason mismatch: {record.observation_id}")
+        if pending.due_minute != record.semantic_minute:
+            raise ValueError(f"assistance viability trigger time mismatch: {record.observation_id}")
+        if pending.source_ref != record.observation_id:
+            raise ValueError(f"assistance viability trigger provenance mismatch: {record.observation_id}")
+
+
 def _validate_causal_generation(
     *,
     coordinator: GlobalNpcWorldEventCoordinator,
@@ -174,6 +231,7 @@ def _validate_causal_generation(
     deferral_ledger: AssistanceDeferralLedger,
     counterproposal_ledger: AssistanceCounterproposalLedger,
     counterproposal_commitment_ledger: AssistanceCounterproposalCommitmentLedger,
+    commitment_viability_ledger: AssistanceCommitmentViabilityLedger,
     semantic_minute: int,
 ) -> None:
     for action in action_ledger.records.values():
@@ -260,6 +318,24 @@ def _validate_causal_generation(
             semantic_minute=semantic_minute,
         )
 
+    viability_history: dict[str, list[AssistanceCommitmentViabilityObservation]] = {}
+    for record in commitment_viability_ledger.records.values():
+        _validate_viability_observation(
+            record=record,
+            counterproposal_commitment_ledger=counterproposal_commitment_ledger,
+            coordinator=coordinator,
+            semantic_minute=semantic_minute,
+        )
+        viability_history.setdefault(record.commitment_id, []).append(record)
+    for commitment_id, history in viability_history.items():
+        ordered = sorted(history, key=lambda row: (row.semantic_minute, row.observation_id))
+        previous = None
+        for record in ordered:
+            if record.viability == CommitmentViability.RESTORED.value:
+                if previous is None or previous.viability == CommitmentViability.RESTORED.value:
+                    raise ValueError(f"assistance viability restore lacks blocker history: {record.observation_id}")
+            previous = record
+
 
 def build_assistance_world_checkpoint(
     coordinator: GlobalNpcWorldEventCoordinator,
@@ -270,11 +346,13 @@ def build_assistance_world_checkpoint(
     deferral_ledger: AssistanceDeferralLedger | None = None,
     counterproposal_ledger: AssistanceCounterproposalLedger | None = None,
     counterproposal_commitment_ledger: AssistanceCounterproposalCommitmentLedger | None = None,
+    commitment_viability_ledger: AssistanceCommitmentViabilityLedger | None = None,
 ) -> dict[str, object]:
     """Snapshot world state and assistance causal state as one logical generation."""
     deferral_ledger = deferral_ledger or AssistanceDeferralLedger()
     counterproposal_ledger = counterproposal_ledger or AssistanceCounterproposalLedger()
     counterproposal_commitment_ledger = counterproposal_commitment_ledger or AssistanceCounterproposalCommitmentLedger()
+    commitment_viability_ledger = commitment_viability_ledger or AssistanceCommitmentViabilityLedger()
     _validate_causal_generation(
         coordinator=coordinator,
         action_ledger=action_ledger,
@@ -282,6 +360,7 @@ def build_assistance_world_checkpoint(
         deferral_ledger=deferral_ledger,
         counterproposal_ledger=counterproposal_ledger,
         counterproposal_commitment_ledger=counterproposal_commitment_ledger,
+        commitment_viability_ledger=commitment_viability_ledger,
         semantic_minute=semantic_minute,
     )
     payload: dict[str, object] = {
@@ -293,6 +372,7 @@ def build_assistance_world_checkpoint(
         "assistance_deferrals": deferral_ledger.snapshot(),
         "assistance_counterproposals": counterproposal_ledger.snapshot(),
         "assistance_counterproposal_commitments": counterproposal_commitment_ledger.snapshot(),
+        "assistance_commitment_viability": commitment_viability_ledger.snapshot(),
     }
     return payload | {"sha256": _digest(payload)}
 
@@ -326,7 +406,7 @@ def restore_assistance_world_checkpoint(
     agendas: Mapping[str, AgentAgendaProfile] | None = None,
 ) -> RestoredAssistanceWorldCheckpoint:
     schema_version = snapshot.get("schema_version")
-    supported = {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION_V2, LEGACY_SCHEMA_VERSION_V1}
+    supported = {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION_V3, LEGACY_SCHEMA_VERSION_V2, LEGACY_SCHEMA_VERSION_V1}
     if schema_version not in supported:
         raise ValueError("unsupported assistance world checkpoint schema")
     digest = snapshot.get("sha256")
@@ -342,18 +422,21 @@ def restore_assistance_world_checkpoint(
     deferral_snapshot = payload.get("assistance_deferrals")
     counterproposal_snapshot = payload.get("assistance_counterproposals")
     counterproposal_commitment_snapshot = payload.get("assistance_counterproposal_commitments")
+    viability_snapshot = payload.get("assistance_commitment_viability")
     if not isinstance(world_snapshot, Mapping):
         raise ValueError("world_checkpoint must be a mapping")
     if not isinstance(action_snapshot, Mapping):
         raise ValueError("world_action_intents must be a mapping")
     if not isinstance(commitment_snapshot, Mapping):
         raise ValueError("assistance_commitments must be a mapping")
-    if schema_version in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION_V2} and not isinstance(deferral_snapshot, Mapping):
+    if schema_version in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION_V3, LEGACY_SCHEMA_VERSION_V2} and not isinstance(deferral_snapshot, Mapping):
         raise ValueError("assistance_deferrals must be a mapping")
-    if schema_version == SCHEMA_VERSION and not isinstance(counterproposal_snapshot, Mapping):
+    if schema_version in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION_V3} and not isinstance(counterproposal_snapshot, Mapping):
         raise ValueError("assistance_counterproposals must be a mapping")
-    if schema_version == SCHEMA_VERSION and not isinstance(counterproposal_commitment_snapshot, Mapping):
+    if schema_version in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION_V3} and not isinstance(counterproposal_commitment_snapshot, Mapping):
         raise ValueError("assistance_counterproposal_commitments must be a mapping")
+    if schema_version == SCHEMA_VERSION and not isinstance(viability_snapshot, Mapping):
+        raise ValueError("assistance_commitment_viability must be a mapping")
 
     action_ledger = WorldActionIntentLedger.from_snapshot(action_snapshot)
     commitment_ledger = AssistanceCommitmentLedger.from_snapshot(commitment_snapshot)
@@ -371,6 +454,11 @@ def restore_assistance_world_checkpoint(
         AssistanceCounterproposalCommitmentLedger.from_snapshot(counterproposal_commitment_snapshot)
         if isinstance(counterproposal_commitment_snapshot, Mapping)
         else AssistanceCounterproposalCommitmentLedger()
+    )
+    commitment_viability_ledger = (
+        AssistanceCommitmentViabilityLedger.from_snapshot(viability_snapshot)
+        if isinstance(viability_snapshot, Mapping)
+        else AssistanceCommitmentViabilityLedger()
     )
     world = restore_checkpoint(world_snapshot, channels=channels, agendas=agendas)
 
@@ -399,6 +487,7 @@ def restore_assistance_world_checkpoint(
         deferral_ledger=deferral_ledger,
         counterproposal_ledger=counterproposal_ledger,
         counterproposal_commitment_ledger=counterproposal_commitment_ledger,
+        commitment_viability_ledger=commitment_viability_ledger,
         semantic_minute=checkpoint_minute,
     )
     return RestoredAssistanceWorldCheckpoint(
@@ -408,4 +497,5 @@ def restore_assistance_world_checkpoint(
         deferral_ledger=deferral_ledger,
         counterproposal_ledger=counterproposal_ledger,
         counterproposal_commitment_ledger=counterproposal_commitment_ledger,
+        commitment_viability_ledger=commitment_viability_ledger,
     )
