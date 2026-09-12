@@ -190,7 +190,7 @@ def test_restored_or_never_blocked_start_creates_no_failure_fact():
     ) is None
 
 
-def test_assessment_requires_exact_start_and_matching_watch():
+def test_assessment_requires_exact_start_and_known_commitment():
     commitments, _ = _commitments()
     viability, _ = _viability()
     starts = AssistanceCommitmentStartLedger()
@@ -207,11 +207,9 @@ def test_assessment_requires_exact_start_and_matching_watch():
             semantic_minute=1501,
         )
 
-    other_commitments, other = _commitments()
-    other_commitments.records[COMMITMENT] = replace(other, commitment_id="commitment:other")
     with pytest.raises(KeyError, match="unknown negotiated assistance commitment"):
         assess_commitment_start(
-            commitment_ledger=other_commitments,
+            commitment_ledger=AssistanceCounterproposalCommitmentLedger(),
             viability_ledger=viability,
             start_ledger=starts,
             commitment_id=COMMITMENT,
