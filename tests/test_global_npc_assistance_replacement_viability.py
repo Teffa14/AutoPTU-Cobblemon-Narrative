@@ -93,11 +93,11 @@ def _replacements(two=False):
     return ledger
 
 
-def _record(*, initial=None, replacements=None, viability=None, queue=None, commitment_id=SECOND, **overrides):
+def _record(*, initial=None, replacements=None, viability_ledger=None, queue=None, commitment_id=SECOND, **overrides):
     values = dict(
         initial_ledger=initial or _initial(),
         replacement_ledger=replacements or _replacements(),
-        viability_ledger=viability or AssistanceCommitmentViabilityLedger(),
+        viability_ledger=viability_ledger or AssistanceCommitmentViabilityLedger(),
         replan_queue=queue or NpcReplanQueue(),
         commitment_id=commitment_id,
         observation_id="viability:452:blocker",
@@ -117,10 +117,10 @@ def _record(*, initial=None, replacements=None, viability=None, queue=None, comm
 def test_active_replacement_accepts_prestart_blocker_and_wakes_owner():
     initial = _initial()
     replacements = _replacements()
-    viability = AssistanceCommitmentViabilityLedger()
+    ledger = AssistanceCommitmentViabilityLedger()
     queue = NpcReplanQueue()
 
-    observation = _record(initial=initial, replacements=replacements, viability=viability, queue=queue)
+    observation = _record(initial=initial, replacements=replacements, viability_ledger=ledger, queue=queue)
 
     assert observation.commitment_id == SECOND
     assert observation.proposal_id == "proposal:452:second"
@@ -171,24 +171,24 @@ def test_wrong_actor_past_start_and_orphan_lineage_fail_closed():
 def test_restoration_requires_prior_blocker_on_same_active_generation():
     initial = _initial()
     replacements = _replacements()
-    viability = AssistanceCommitmentViabilityLedger()
+    ledger = AssistanceCommitmentViabilityLedger()
     queue = NpcReplanQueue()
 
     with pytest.raises(ValueError, match="requires a prior"):
         _record(
             initial=initial,
             replacements=replacements,
-            viability=viability,
+            viability_ledger=ledger,
             queue=queue,
             viability=CommitmentViability.RESTORED,
             constraint_kind=CommitmentConstraintKind.CLEARED,
         )
 
-    _record(initial=initial, replacements=replacements, viability=viability, queue=queue)
+    _record(initial=initial, replacements=replacements, viability_ledger=ledger, queue=queue)
     restored = _record(
         initial=initial,
         replacements=replacements,
-        viability=viability,
+        viability_ledger=ledger,
         queue=queue,
         observation_id="viability:452:restored",
         semantic_minute=135,
@@ -198,16 +198,16 @@ def test_restoration_requires_prior_blocker_on_same_active_generation():
         evidence_ref="claim:crossing-open",
         provenance_root="notice:crossing-open",
     )
-    assert viability.history_for(SECOND)[-1] == restored
+    assert ledger.history_for(SECOND)[-1] == restored
 
 
 def test_replay_is_idempotent_and_conflicting_identity_fails_closed():
     initial = _initial()
     replacements = _replacements()
-    viability = AssistanceCommitmentViabilityLedger()
+    ledger = AssistanceCommitmentViabilityLedger()
     queue = NpcReplanQueue()
-    first = _record(initial=initial, replacements=replacements, viability=viability, queue=queue)
-    replay = _record(initial=initial, replacements=replacements, viability=viability, queue=queue)
+    first = _record(initial=initial, replacements=replacements, viability_ledger=ledger, queue=queue)
+    replay = _record(initial=initial, replacements=replacements, viability_ledger=ledger, queue=queue)
     assert replay == first
     assert len(queue.pending) == 1
 
@@ -215,7 +215,7 @@ def test_replay_is_idempotent_and_conflicting_identity_fails_closed():
         _record(
             initial=initial,
             replacements=replacements,
-            viability=viability,
+            viability_ledger=ledger,
             queue=queue,
             constraint_ref="route-state:different",
         )
